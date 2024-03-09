@@ -2,7 +2,7 @@ from sqlalchemy import text
 
 from web_api_template.core.db.database import Database
 from web_api_template.core.logging import logger
-from web_api_template.repository.interfaces import HealthcheckRepository
+from web_api_template.domain.repository import HealthcheckRepository
 
 
 class HealthcheckRepositoryImpl(HealthcheckRepository):

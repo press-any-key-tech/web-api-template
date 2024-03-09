@@ -7,32 +7,32 @@ from sqlalchemy.exc import IntegrityError
 from web_api_template.core.db.database import Database
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.domain.entities import Person, PersonFilter
-from web_api_template.domain.repository import PersonRepository
-from web_api_template.infrastructure.models.postgresql import PersonModel
+from web_api_template.domain.entities import Policy, PolicyFilter
+from web_api_template.domain.repository import PolicyRepository
+from web_api_template.infrastructure.models.postgresql import PolicyModel
 
 
-class PersonRepositoryImpl(PersonRepository):
-    """Repository implementation for Person"""
+class PolicyRepositoryImpl(PolicyRepository):
+    """Repository implementation for Policy"""
 
-    _model = PersonModel
+    _model = PolicyModel
 
     async def create(
         self,
         *,
         # current_user: User,
-        entity: Person,
-    ) -> Person:
+        entity: Policy,
+    ) -> Policy:
         """
-        Create a person on DB
+        Create a policy on DB
 
         Args:
-            entity (person): person to create
+            entity (policy): policy to create
         Returns:
-            person (person): person created
+            policy (policy): policy created
         """
 
-        entity_model: PersonModel = mapper.to(PersonModel).map(entity)
+        entity_model: PolicyModel = mapper.to(PolicyModel).map(entity)
 
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
@@ -55,16 +55,16 @@ class PersonRepositoryImpl(PersonRepository):
                 logger.exception("Commit error")
                 raise ex
 
-            return mapper.to(Person).map(entity_model)
+            return mapper.to(Policy).map(entity_model)
 
     async def get_list(
         self,
         *,
-        filter: PersonFilter,
+        filter: PolicyFilter,
         # query: CommonQueryModel,
         # current_user: User,
-    ) -> List[Person]:
-        """Gets filtered persons
+    ) -> List[Policy]:
+        """Gets filtered policies
 
         Args:
             request (Request): request (from fastAPI)
@@ -83,29 +83,29 @@ class PersonRepositoryImpl(PersonRepository):
             try:
                 # TODO: Apply filters
 
-                result = await session.execute(select(PersonModel))
+                result = await session.execute(select(PolicyModel))
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Person).map(item) for item in items]
+                return [mapper.to(Policy).map(item) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
                 raise ex
 
-    async def __get_by_id(self, id: str) -> PersonModel | None:
-        """Get person model by ID
+    async def __get_by_id(self, id: str) -> PolicyModel | None:
+        """Get policy model by ID
 
         Args:
             id (str): _description_
 
         Returns:
-            PersonModel: _description_
+            PolicyModel: _description_
         """
         async with Database.get_db_session() as session:
             try:
                 result = await session.execute(
-                    select(PersonModel).where(PersonModel.id == id)
+                    select(PolicyModel).where(PolicyModel.id == id)
                 )
                 return result.scalar_one_or_none()
 
@@ -113,31 +113,31 @@ class PersonRepositoryImpl(PersonRepository):
                 logger.exception("Database error")
                 raise ex
 
-    async def get_by_id(self, id: str) -> Person:
-        """Gets person by id
+    async def get_by_id(self, id: str) -> Policy:
+        """Gets policy by id
 
         Args:
             id: str
 
         Returns:
-            Person
+            Policy
         """
 
         try:
-            entity_model: PersonModel = await self.__get_by_id(id)
+            entity_model: PolicyModel = await self.__get_by_id(id)
 
             if not entity_model:
                 logger.debug("Item with id: %s not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            return mapper.to(Person).map(entity_model)
+            return mapper.to(Policy).map(entity_model)
 
         except Exception as ex:
             logger.exception("Database error")
             raise ex
 
     async def __delete(self, id: str) -> None:
-        """Delete person model by ID
+        """Delete policy model by ID
 
         Args:
             id (str): _description_
@@ -148,7 +148,7 @@ class PersonRepositoryImpl(PersonRepository):
         """
         async with Database.get_db_session() as session:
             try:
-                delete_query = delete(PersonModel).where(PersonModel.id == id)
+                delete_query = delete(PolicyModel).where(PolicyModel.id == id)
                 await session.execute(delete_query)
                 await session.commit()
                 return
@@ -158,7 +158,7 @@ class PersonRepositoryImpl(PersonRepository):
                 raise ex
 
     async def delete(self, id: str) -> None:
-        """Delete person by id
+        """Delete policy by id
 
         Args:
             request (Request): request (from fastAPI)
@@ -169,10 +169,10 @@ class PersonRepositoryImpl(PersonRepository):
         """
 
         try:
-            entity_model: PersonModel = await self.__get_by_id(id)
+            entity_model: PolicyModel = await self.__get_by_id(id)
 
             if not entity_model:
-                # TODO : check if person is in delete status
+                # TODO : check if policy is in delete status
                 logger.debug("Item with id: %s not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
@@ -183,14 +183,14 @@ class PersonRepositoryImpl(PersonRepository):
             logger.exception("Database error")
             raise ex
 
-    async def __update(self, id: str, model: PersonModel) -> PersonModel:
-        """update person model with the given ID
+    async def __update(self, id: str, model: PolicyModel) -> PolicyModel:
+        """update policy model with the given ID
 
         Args:
             id (str): _description_
 
         Returns:
-            PersonModel
+            PolicyModel
 
         """
 
@@ -202,12 +202,12 @@ class PersonRepositoryImpl(PersonRepository):
             try:
                 # Vuild the update query
                 update_query = (
-                    update(PersonModel)
-                    .where(PersonModel.id == id)
+                    update(PolicyModel)
+                    .where(PolicyModel.id == id)
                     .values(
-                        name=model.name,
-                        surname=model.surname,
-                        email=model.email,
+                        policy_number=model.policy_number,
+                        person_id=model.person_id,
+                        status=model.status,
                     )
                 )
 
@@ -225,42 +225,42 @@ class PersonRepositoryImpl(PersonRepository):
         self,
         *,
         id: str,
-        person: Person,
+        policy: Policy,
         # current_user: User
-    ) -> Optional[Person]:
+    ) -> Optional[Policy]:
         """
-        Update person into DB
+        Update policy into DB
         Args:
             id (str): Template ID used to update
-            person (Person): Person that will be updated
+            policy (Policy): Policy that will be updated
         Returns:
-            Person: Person updated
+            Policy: Policy updated
         """
 
         try:
-            entity_model: PersonModel = await self.__get_by_id(id)
+            entity_model: PolicyModel = await self.__get_by_id(id)
 
             if not entity_model:
-                # TODO : check if person is in delete status
+                # TODO : check if policy is in delete status
                 logger.debug("Item with id: %s not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            new_model: PersonModel = mapper.to(PersonModel).map(person)
+            new_model: PolicyModel = mapper.to(PolicyModel).map(policy)
 
             # Update the given (and existing) id
-            result: PersonModel = await self.__update(id=id, model=new_model)
+            result: PolicyModel = await self.__update(id=id, model=new_model)
 
-            return mapper.to(Person).map(result)
+            return mapper.to(Policy).map(result)
 
         except Exception as ex:
             logger.exception("Database error")
             raise ex
 
-    # async def count_Persons(self) -> int:
+    # async def count_Policies(self) -> int:
     #     with DbConnectionManager() as manager:
     #         search_db: int = (
-    #             manager.session.query(PersonModel)
-    #             .filter(PersonModel.deleted == False)
+    #             manager.session.query(PolicyModel)
+    #             .filter(PolicyModel.deleted == False)
     #             .count()
     #         )
 

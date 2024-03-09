@@ -2,12 +2,14 @@ from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field
+
 from web_api_template.domain.types import PolicyStatusEnum
 
 
 class PolicyFilter(BaseModel):
     """
     Represents a data structure for filtering policies.
+    TODO: Filter by person_id
 
     Args:
         BaseModel (BaseModel): Inherited properties.
@@ -37,5 +39,3 @@ class PolicyFilter(BaseModel):
             "example": "inactive",
         },
     )
-
-
