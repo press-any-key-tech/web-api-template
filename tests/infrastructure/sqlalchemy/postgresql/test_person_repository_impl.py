@@ -13,7 +13,7 @@ PERSON_ID: str = str(Ksuid())
 
 
 @patch(
-    "web_api_template.core.db.database.Database.get_db_session",
+    "web_api_template.core.repository.manager.sqlalchemy.database.Database.get_db_session",
     new_callable=MagicMock(),
 )
 @pytest.mark.asyncio
@@ -35,7 +35,7 @@ async def test_create_success(mock_database):
 
 
 # @patch(
-#     "web_api_template.core.db.database.Database.get_db_session",
+#     "web_api_template.core.repository.manager.sqlalchemy.database.Database.get_db_session",
 #     new_callable=MagicMock(),
 # )
 # @pytest.mark.asyncio
@@ -63,7 +63,7 @@ async def test_create_success(mock_database):
 
 
 # @patch(
-#     "web_api_template.core.db.database.Database.get_db_session",
+#     "web_api_template.core.repository.manager.sqlalchemy.database.Database.get_db_session",
 #     new_callable=MagicMock(),
 # )
 # @pytest.mark.asyncio
@@ -97,14 +97,14 @@ async def test_create_success(mock_database):
 # # def mock_db_session(mock_session):
 # #     # Mock para Database.get_db_session
 # #     with patch(
-# #         "web_api_template.core.db.database.Database.get_db_session",
+# #         "web_api_template.core.repository.manager.sqlalchemy.database.Database.get_db_session",
 # #         return_value=mock_session,
 # #     ) as mock:
 # #         yield mock
 
 
 # # # @patch(
-# # #     "web_api_template.core.db.database.Database.get_db_session",
+# # #     "web_api_template.core.repository.manager.sqlalchemy.database.Database.get_db_session",
 # # #     new_callable=MagicMock(),
 # # # )
 # # @pytest.mark.asyncio
@@ -133,7 +133,7 @@ async def test_create_success(mock_database):
 
 
 # # @patch(
-# #     "web_api_template.core.db.database.Database.get_db_session",
+# #     "web_api_template.core.repository.manager.sqlalchemy.database.Database.get_db_session",
 # #     new_callable=MagicMock(),
 # # )
 # # @pytest.mark.asyncio

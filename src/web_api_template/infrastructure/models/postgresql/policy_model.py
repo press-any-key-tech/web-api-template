@@ -3,7 +3,7 @@ from typing import cast
 from ksuid import Ksuid
 from sqlalchemy import Column, Enum, ForeignKey, String
 
-from web_api_template.core.repository.postgresql import Base, BaseModel
+from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
 from web_api_template.domain.types.policy_status_enum import PolicyStatusEnum
 
 

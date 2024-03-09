@@ -101,7 +101,7 @@ See: https://coverage.readthedocs.io/en/6.4.4/excluding.html
 From root directory execute:
 
 ```bash
-docker build -f ./docker/Dockerfile.api -t web-api-template .
+docker build -f ./Dockerfile -t web-api-template .
 ```
 
 ### Run

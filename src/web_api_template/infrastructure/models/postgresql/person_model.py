@@ -1,7 +1,7 @@
 from ksuid import Ksuid
 from sqlalchemy import Column, Enum, String
 
-from web_api_template.core.repository.postgresql import Base, BaseModel
+from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
 
 
 class PersonModel(Base, BaseModel):

@@ -4,7 +4,7 @@ from automapper import mapper
 from sqlalchemy import delete, desc, select, text, update
 from sqlalchemy.exc import IntegrityError
 
-from web_api_template.core.db.database import Database
+from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Policy, PolicyFilter

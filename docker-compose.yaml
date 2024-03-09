@@ -5,7 +5,7 @@ services:
       - app-network
     build:
       context: .
-      dockerfile: docker/Dockerfile.api
+      dockerfile: ./Dockerfile
       args:
         package_name: web_api_template
     depends_on:
