@@ -3,8 +3,8 @@ from typing import List
 from fastapi import Depends, HTTPException
 
 from web_api_template.core.logging import logger
-from web_api_template.core.settings import settings
 
+from .settings import settings
 from .user import User
 from .utils import get_current_active_user
 

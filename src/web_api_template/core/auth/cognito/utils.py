@@ -3,10 +3,10 @@ from typing import Any, Tuple
 from fastapi import Depends, HTTPException, status
 
 from web_api_template.core.logging import logger
-from web_api_template.core.settings import settings
 
 from .jw_types import JWTAuthorizationCredentials
 from .jwt_bearer import JWTBearer
+from .settings import settings
 from .user import User
 from .user_not_found_exception import UserNotFoundException
 

@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Optional
+from typing import List, Optional
 
 from web_api_template.domain.entities import Policy, PolicyFilter
 
@@ -17,7 +17,11 @@ class PolicyRepository(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    async def get_list(self, *, filter: PolicyFilter) -> dict:
+    async def get_list(self, *, filter: PolicyFilter) -> List[Policy]:
+        raise NotImplementedError()
+
+    @abstractmethod
+    async def get_list_by_person_id(self, *, id: str) -> List[Policy]:
         raise NotImplementedError()
 
     @abstractmethod

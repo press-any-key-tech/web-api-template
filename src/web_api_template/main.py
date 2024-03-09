@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pythondi import Provider, configure
 
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.core.logging import logger
+from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.core.repository.model.sqlalchemy import metadata
 from web_api_template.core.settings import settings
 from web_api_template.di import include_di
@@ -39,14 +39,24 @@ async def lifespan(app: FastAPI):
     if settings.INITIALIZE_DATABASE:
         logger.debug("Initializing database ...")
 
-        if settings.SQLALCHEMY_DATABASE_URI:
+        # TODO: check for the existence of related files for the database (e.g. core.api.repository.manager.sqlalchemy.database)
+
+        from web_api_template.core.repository.manager.sqlalchemy.settings import (
+            settings as sqlalchemy_settings,
+        )
+
+        if sqlalchemy_settings.SQLALCHEMY_DATABASE_URI:
             logger.debug("Initializing SQLALCHEMY database ...")
             async with Database().engine.begin() as conn:
                 await conn.run_sync(metadata.create_all)
 
             logger.debug("Database initialized")
 
-        if settings.DYNAMODB_REPOSITORY:
+        from web_api_template.core.repository.model.dynamodb.settings import (
+            settings as dynamodb_settings,
+        )
+
+        if dynamodb_settings.DYNAMODB_REPOSITORY:
             logger.debug("Initializing DYNAMODB database ...")
             raise NotImplementedError("DynamoDB initialization not implemented yet")
 

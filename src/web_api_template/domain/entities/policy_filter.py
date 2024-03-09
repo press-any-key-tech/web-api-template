@@ -32,7 +32,7 @@ class PolicyFilter(BaseModel):
         },
     )
 
-    status: PolicyStatusEnum = Field(
+    status: Optional[PolicyStatusEnum] = Field(
         default=None,
         json_schema_extra={
             "description": "Policy status",

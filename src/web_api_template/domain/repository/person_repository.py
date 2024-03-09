@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Optional
+from typing import List, Optional
 
 from web_api_template.domain.entities import Person, PersonFilter
 
@@ -17,7 +17,7 @@ class PersonRepository(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    async def get_list(self, *, filter: PersonFilter) -> dict:
+    async def get_list(self, *, filter: PersonFilter) -> List[Person]:
         raise NotImplementedError()
 
     # @abstractmethod

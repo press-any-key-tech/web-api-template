@@ -6,10 +6,9 @@ from jose import JWTError, jwt
 from starlette.requests import Request
 from starlette.status import HTTP_403_FORBIDDEN
 
-from web_api_template.core.settings import settings
-
 from .cognito_client import CognitoClient
 from .jw_types import JWTAuthorizationCredentials
+from .settings import settings
 
 
 class JWTBearer(HTTPBearer):

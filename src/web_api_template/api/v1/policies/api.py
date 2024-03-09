@@ -14,15 +14,15 @@ from web_api_template.api.v1.policies.services import ReadService, WriteService
 from web_api_template.core.api import ApiMessage
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_content_type
-from web_api_template.core.auth.group_checker import GroupChecker
-from web_api_template.core.auth.user import User
-from web_api_template.core.auth.utils import get_current_active_user
-from web_api_template.core.logging import logger
-from web_api_template.domain.entities import Policy, PolicyCreate, PolicyFilter
+from web_api_template.core.auth.cognito.group_checker import GroupChecker
+from web_api_template.core.auth.cognito.user import User
+from web_api_template.core.auth.cognito.utils import get_current_active_user
 from web_api_template.core.http.validators import (
     ksuid_path_validator,
     ksuid_query_validator,
 )
+from web_api_template.core.logging import logger
+from web_api_template.domain.entities import Policy, PolicyCreate, PolicyFilter
 from web_api_template.domain.exceptions import (
     PolicyIsActiveException,
     PolicyNotFoundException,
@@ -348,5 +348,3 @@ async def create(
         status_code=status_code,
         content=error_message,
     )
-
-

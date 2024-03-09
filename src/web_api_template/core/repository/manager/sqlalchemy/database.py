@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from web_api_template.core.settings import settings
+from .settings import settings
 
 
 class Database:

@@ -11,10 +11,10 @@ from jose import jwk
 from jose.utils import base64url_decode
 
 from web_api_template.core.logging import logger
-from web_api_template.core.settings import settings
 
 from .aws_exception import AWSException
 from .jw_types import JWK, JWKS, JWTAuthorizationCredentials
+from .settings import settings
 
 # import boto3
 # import botocore

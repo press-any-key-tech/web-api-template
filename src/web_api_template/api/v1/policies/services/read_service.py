@@ -52,3 +52,20 @@ class ReadService:
             raise PolicyNotFoundException(f"Policy with id [{id}] not found")
 
         return entity
+
+    async def get_list_by_person_id(self, id: str) -> List[Policy]:
+        """
+        Get a list of policys for a given person
+
+        Args:
+            id (str): Person id
+
+        Returns:
+            List[Policy]: domain entity to return
+        """
+
+        logger.debug("Entering. filter: %s", id)
+
+        entities: List[Policy] = await self.policy_db_repo.get_list_by_person_id(id=id)
+
+        return entities

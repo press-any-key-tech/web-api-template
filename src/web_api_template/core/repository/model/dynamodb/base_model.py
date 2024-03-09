@@ -1,6 +1,6 @@
 from pynamodb.models import Model
 
-from web_api_template.core.settings import settings
+from .settings import settings
 
 
 class BaseModel(Model):
