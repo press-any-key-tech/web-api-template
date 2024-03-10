@@ -3,36 +3,44 @@ from typing import Optional
 from pydantic import BaseModel, Field, field_validator
 
 from web_api_template.core.domain.validators import ksuid_validator
-from web_api_template.domain.entities import Address
 from web_api_template.domain.types import CurrencyEnum
 
 
-class BuildingBase(BaseModel):
+class ContentBase(BaseModel):
     """
-    Represents a data structure for a policy building.
+    Represents a data structure for a policy content.
     """
 
     id: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "Unique Building ID (ksuid)",
+            "description": "Unique Content ID (ksuid)",
             "example": "0ujsswThIGTUYm2K8FjOOfXtY1K",
         },
     )
 
-    alias: Optional[str] = Field(
+    name: str = Field(
         default=None,
         max_length=500,
         json_schema_extra={
-            "description": "Building alias name",
-            "example": "Beach house",
+            "description": "Content name",
+            "example": "Steinway & Sons Grand Piano (1989 model)",
+        },
+    )
+
+    description: Optional[str] = Field(
+        default=None,
+        max_length=500,
+        json_schema_extra={
+            "description": "Content description",
+            "example": "Dinner room piano",
         },
     )
 
     value: float = Field(
         ...,
         json_schema_extra={
-            "description": "Building value",
+            "description": "Content value",
             "example": "12345678",
         },
     )
@@ -40,7 +48,7 @@ class BuildingBase(BaseModel):
     value_currency: CurrencyEnum = Field(
         default=...,
         json_schema_extra={
-            "description": "Building value currency",
+            "description": "Content value currency",
             "example": "EUR",
         },
     )

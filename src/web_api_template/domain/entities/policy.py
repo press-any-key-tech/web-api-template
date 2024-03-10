@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field, field_validator, validator
 
 from web_api_template.core.domain.validators import ksuid_validator
 from web_api_template.domain.entities import Building, Content
-from web_api_template.domain.types import PolicyStatusEnum
 
 from .policy_base import PolicyBase
 

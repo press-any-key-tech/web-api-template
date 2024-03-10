@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import Response
 
-from web_api_template.api.v1.policies.services import ReadService, WriteService
+from web_api_template.api.v1.contents.services import ReadService, WriteService
 from web_api_template.core.api import ApiMessage
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_content_type
@@ -22,11 +22,8 @@ from web_api_template.core.http.validators import (
     ksuid_query_validator,
 )
 from web_api_template.core.logging import logger
-from web_api_template.domain.entities import Policy, PolicyCreate, PolicyFilter
-from web_api_template.domain.exceptions import (
-    PolicyIsActiveException,
-    PolicyNotFoundException,
-)
+from web_api_template.domain.entities import Content, ContentCreate, ContentFilter
+from web_api_template.domain.exceptions import ContentNotFoundException
 
 # Permissions
 allow_customer_group: GroupChecker = GroupChecker(["customer"])
@@ -38,7 +35,7 @@ api_router = APIRouter()
 
 @api_router.get(
     "/",
-    response_model=List[Policy],
+    response_model=List[Content],
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
@@ -51,9 +48,9 @@ async def get_list(
     request: Request,
     response: Response,
     current_user: User = Depends(get_current_active_user),
-    list_filter: PolicyFilter = Depends(),
+    list_filter: ContentFilter = Depends(),
     query: CommonQueryModel = Depends(),
-) -> List[Policy] | JSONResponse:
+) -> List[Content] | JSONResponse:
     """Get a list of policies
 
     Args:
@@ -62,7 +59,7 @@ async def get_list(
         current_user (User, optional): _description_. Defaults to Depends(get_current_active_user).
 
     Returns:
-        List[Policy] | JSONResponse: _description_
+        List[Content] | JSONResponse: _description_
     """
 
     status_code: int
@@ -71,7 +68,7 @@ async def get_list(
     logger.debug("Current user: %s", current_user)
 
     try:
-        result: List[Policy] = await ReadService().get_list(filter=list_filter)
+        result: List[Content] = await ReadService().get_list(filter=list_filter)
         return result
 
     except Exception as e:
@@ -87,7 +84,7 @@ async def get_list(
 
 @api_router.get(
     "/{id}",
-    response_model=Policy,
+    response_model=Content,
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_404_NOT_FOUND: {
@@ -104,8 +101,8 @@ async def get_by_id(
     response: Response,
     id: str,
     current_user: User = Depends(get_current_active_user),
-) -> Policy | JSONResponse:
-    """Get a policy by id
+) -> Content | JSONResponse:
+    """Get a content by id
 
     Args:
         request (Request): _description_
@@ -114,7 +111,7 @@ async def get_by_id(
         current_user (User, optional): _description_. Defaults to Depends(get_current_active_user).
 
     Returns:
-        Policy: _description_
+        Content: _description_
     """
 
     status_code: int
@@ -123,10 +120,10 @@ async def get_by_id(
     logger.debug("Current user: %s", current_user)
 
     try:
-        entity: Policy = await ReadService().get_by_id(id=id)
+        entity: Content = await ReadService().get_by_id(id=id)
         return entity
-    except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+    except ContentNotFoundException as e:
+        logger.exception(f"Content with id {id} not found")
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -165,8 +162,8 @@ async def delete_by_id(
     id: str,
     current_user: User = Depends(get_current_active_user),
 ):
-    """Deletes a policy with the specific id.
-    - Policy should not have any active policies associated with it.
+    """Deletes a content with the specific id.
+    - Content should not have any active policies associated with it.
 
     Args:
         request (Request): _description_
@@ -185,12 +182,12 @@ async def delete_by_id(
     try:
         await WriteService().delete_by_id(id=id)
         return
-    except PolicyIsActiveException as e:
-        logger.exception(f"Policy with id {id} is active and cannot be deleted")
+    except ContentIsActiveException as e:
+        logger.exception(f"Content with id {id} is active and cannot be deleted")
         status_code = status.HTTP_409_CONFLICT
         error_message = {"message": str(e)}
-    except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+    except ContentNotFoundException as e:
+        logger.exception(f"Content with id {id} not found")
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -227,38 +224,38 @@ async def update(
     request: Request,
     response: Response,
     id: str,
-    policy: PolicyCreate,
+    content: ContentCreate,
     # current_user: User = Depends(get_current_active_user),
-) -> Policy:
-    """Update the policy with the given information.
-    - Do not allow to dissasociate any active polcies from the policy.
+) -> Content:
+    """Update the content with the given information.
+    - Do not allow to dissasociate any active polcies from the content.
 
     Args:
         request (Request): _description_
         response (Response): _description_
         id (str): _description_
-        pot_request (PolicyCreate): _description_
+        pot_request (ContentCreate): _description_
 
     Returns:
-        Policy | JSONResponse: _description_
+        Content | JSONResponse: _description_
     """
 
     status_code: int
     error_message: dict
 
-    logger.debug("update request: %s", policy)
+    logger.debug("update request: %s", content)
 
     try:
-        response: Policy = await WriteService().update(
+        response: Content = await WriteService().update(
             id=id,
             # current_user=current_user,
-            request=policy,
+            request=content,
         )
 
         return response
 
-    except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+    except ContentNotFoundException as e:
+        logger.exception(f"Content with id {id} not found")
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -274,7 +271,7 @@ async def update(
 
 @api_router.post(
     "/",
-    response_model=Policy,
+    response_model=Content,
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_403_FORBIDDEN: {
@@ -295,20 +292,20 @@ async def update(
 async def create(
     request: Request,
     response: Response,
-    policy: PolicyCreate,
+    content: ContentCreate,
     current_user: User = Depends(get_current_active_user),
-) -> Policy | JSONResponse:
-    """Create a new policy with the given information.
+) -> Content | JSONResponse:
+    """Create a new content with the given information.
     - Check for existence of addresses and policies.
 
     Args:
         request (Request): _description_
         response (Response): _description_
-        policy (PolicyCreate): _description_
+        content (ContentCreate): _description_
         current_user (User, optional): _description_. Defaults to Depends(get_current_active_user).
 
     Returns:
-        Policy | JSONResponse: _description_
+        Content | JSONResponse: _description_
     """
 
     status_code: int
@@ -316,9 +313,9 @@ async def create(
 
     try:
 
-        response: Policy = await WriteService().create(
+        response: Content = await WriteService().create(
             # current_user=current_user,
-            request=policy,
+            request=content,
         )
 
         return response
@@ -335,8 +332,8 @@ async def create(
     #     status_code = status.HTTP_400_BAD_REQUEST
     #     error_message = {"message": str(e)}
 
-    except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+    except ContentNotFoundException as e:
+        logger.exception(f"Content with id {id} not found")
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:

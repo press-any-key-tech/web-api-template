@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Web API Template - Python: Current File",
+      "name": "Python: Current File - Web API Template",
       "type": "debugpy",
       "request": "launch",
       "program": "${file}",
@@ -13,7 +13,7 @@
       "justMyCode": true
     },
     {
-      "name": "Web API Template - Pytest",
+      "name": "Pytest - Web API Template",
       "type": "debugpy",
       "request": "launch",
       "module": "pytest",
@@ -21,7 +21,7 @@
       "args": ["tests"]
     },
     {
-      "name": "Web API Template - API",
+      "name": "API - Web API Template",
       "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
@@ -29,7 +29,7 @@
       "args": ["main:app", "--reload", "--port", "8000"]
     },
     {
-      "name": "Web API Template - MyPy",
+      "name": "MyPy - Web API Template",
       "type": "debugpy",
       "request": "launch",
       "module": "mypy",

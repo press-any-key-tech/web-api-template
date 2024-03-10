@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from ksuid import Ksuid
 from pythondi import Provider, configure
 
-from web_api_template.api.v1.persons.api import api_router, get_list
+from web_api_template.api.v1.persons.api_persons import api_router, get_list
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.di import include_di
 from web_api_template.domain.entities import Person, PersonFilter

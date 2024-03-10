@@ -446,7 +446,7 @@ async def get_policies_by_person(
     },
     dependencies=[Depends(allow_administrator_group)],
 )
-async def create(
+async def create_policy(
     request: Request,
     response: Response,
     policy: PolicyCreate,
