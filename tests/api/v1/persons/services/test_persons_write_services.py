@@ -11,7 +11,7 @@ from web_api_template.core.auth.cognito.user import User
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Person, PersonFilter
 from web_api_template.domain.exceptions import PersonNotFoundException
-from web_api_template.infrastructure.models.postgresql import PersonModel
+from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 
 PERSON_ID: str = str(Ksuid())
 

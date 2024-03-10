@@ -9,7 +9,7 @@ from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.domain.entities import Content, ContentFilter
 from web_api_template.domain.repository import ContentRepository
-from web_api_template.infrastructure.models.postgresql import ContentModel
+from web_api_template.infrastructure.models.sqlalchemy import ContentModel
 
 
 class ContentRepositoryImpl(ContentRepository):

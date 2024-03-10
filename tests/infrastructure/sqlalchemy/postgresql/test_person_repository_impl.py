@@ -6,8 +6,8 @@ from ksuid import Ksuid
 from sqlalchemy.exc import IntegrityError
 
 from web_api_template.domain.entities import Person, PersonFilter
-from web_api_template.infrastructure.models.postgresql import PersonModel
-from web_api_template.infrastructure.repositories.postgresql import PersonRepositoryImpl
+from web_api_template.infrastructure.models.sqlalchemy import PersonModel
+from web_api_template.infrastructure.repositories.sqlalchemy import PersonRepositoryImpl
 
 PERSON_ID: str = str(Ksuid())
 

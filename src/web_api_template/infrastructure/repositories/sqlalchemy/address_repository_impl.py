@@ -7,32 +7,32 @@ from sqlalchemy.exc import IntegrityError
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Policy, PolicyFilter
-from web_api_template.domain.repository import PolicyRepository
-from web_api_template.infrastructure.models.postgresql import PolicyModel
+from web_api_template.domain.entities import Address, AddressFilter
+from web_api_template.domain.repository import AddressRepository
+from web_api_template.infrastructure.models.sqlalchemy import AddressModel
 
 
-class PolicyRepositoryImpl(PolicyRepository):
-    """Repository implementation for Policy"""
+class AddressRepositoryImpl(AddressRepository):
+    """Repository implementation for Address"""
 
-    _model = PolicyModel
+    _model = AddressModel
 
     async def create(
         self,
         *,
         # current_user: User,
-        entity: Policy,
-    ) -> Policy:
+        entity: Address,
+    ) -> Address:
         """
-        Create a policy on DB
+        Create a address on DB
 
         Args:
-            entity (policy): policy to create
+            entity (address): address to create
         Returns:
-            policy (policy): policy created
+            address (address): address created
         """
 
-        entity_model: PolicyModel = mapper.to(PolicyModel).map(entity)
+        entity_model: AddressModel = mapper.to(AddressModel).map(entity)
 
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
@@ -55,15 +55,15 @@ class PolicyRepositoryImpl(PolicyRepository):
                 logger.exception("Commit error")
                 raise ex
 
-            return mapper.to(Policy).map(entity_model)
+            return mapper.to(Address).map(entity_model)
 
     async def get_list(
         self,
         *,
-        filter: PolicyFilter,
+        filter: AddressFilter,
         # query: CommonQueryModel,
         # current_user: User,
-    ) -> List[Policy]:
+    ) -> List[Address]:
         """Gets filtered policies
 
         Args:
@@ -83,11 +83,11 @@ class PolicyRepositoryImpl(PolicyRepository):
             try:
                 # TODO: Apply filters
 
-                result = await session.execute(select(PolicyModel))
+                result = await session.execute(select(AddressModel))
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Policy).map(item) for item in items]
+                return [mapper.to(Address).map(item) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
@@ -99,7 +99,7 @@ class PolicyRepositoryImpl(PolicyRepository):
         id: str,
         # query: CommonQueryModel,
         # current_user: User,
-    ) -> List[Policy]:
+    ) -> List[Address]:
         """Gets filtered policies
 
         Args:
@@ -119,30 +119,30 @@ class PolicyRepositoryImpl(PolicyRepository):
             try:
 
                 result = await session.execute(
-                    select(PolicyModel).where(PolicyModel.person_id == id)
+                    select(AddressModel).where(AddressModel.person_id == id)
                 )
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Policy).map(item) for item in items]
+                return [mapper.to(Address).map(item) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
                 raise ex
 
-    async def __get_by_id(self, id: str) -> PolicyModel | None:
-        """Get policy model by ID
+    async def __get_by_id(self, id: str) -> AddressModel | None:
+        """Get address model by ID
 
         Args:
             id (str): _description_
 
         Returns:
-            PolicyModel: _description_
+            AddressModel: _description_
         """
         async with Database.get_db_session() as session:
             try:
                 result = await session.execute(
-                    select(PolicyModel).where(PolicyModel.id == id)
+                    select(AddressModel).where(AddressModel.id == id)
                 )
                 return result.scalar_one_or_none()
 
@@ -150,31 +150,31 @@ class PolicyRepositoryImpl(PolicyRepository):
                 logger.exception("Database error")
                 raise ex
 
-    async def get_by_id(self, id: str) -> Policy:
-        """Gets policy by id
+    async def get_by_id(self, id: str) -> Address:
+        """Gets address by id
 
         Args:
             id: str
 
         Returns:
-            Policy
+            Address
         """
 
         try:
-            entity_model: PolicyModel = await self.__get_by_id(id)
+            entity_model: AddressModel = await self.__get_by_id(id)
 
             if not entity_model:
                 logger.debug("Item with id: %s not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            return mapper.to(Policy).map(entity_model)
+            return mapper.to(Address).map(entity_model)
 
         except Exception as ex:
             logger.exception("Database error")
             raise ex
 
     async def __delete(self, id: str) -> None:
-        """Delete policy model by ID
+        """Delete address model by ID
 
         Args:
             id (str): _description_
@@ -185,7 +185,7 @@ class PolicyRepositoryImpl(PolicyRepository):
         """
         async with Database.get_db_session() as session:
             try:
-                delete_query = delete(PolicyModel).where(PolicyModel.id == id)
+                delete_query = delete(AddressModel).where(AddressModel.id == id)
                 await session.execute(delete_query)
                 await session.commit()
                 return
@@ -195,7 +195,7 @@ class PolicyRepositoryImpl(PolicyRepository):
                 raise ex
 
     async def delete(self, id: str) -> None:
-        """Delete policy by id
+        """Delete address by id
 
         Args:
             request (Request): request (from fastAPI)
@@ -206,10 +206,10 @@ class PolicyRepositoryImpl(PolicyRepository):
         """
 
         try:
-            entity_model: PolicyModel = await self.__get_by_id(id)
+            entity_model: AddressModel = await self.__get_by_id(id)
 
             if not entity_model:
-                # TODO : check if policy is in delete status
+                # TODO : check if address is in delete status
                 logger.debug("Item with id: %s not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
@@ -220,14 +220,14 @@ class PolicyRepositoryImpl(PolicyRepository):
             logger.exception("Database error")
             raise ex
 
-    async def __update(self, id: str, model: PolicyModel) -> PolicyModel:
-        """update policy model with the given ID
+    async def __update(self, id: str, model: AddressModel) -> AddressModel:
+        """update address model with the given ID
 
         Args:
             id (str): _description_
 
         Returns:
-            PolicyModel
+            AddressModel
 
         """
 
@@ -239,10 +239,10 @@ class PolicyRepositoryImpl(PolicyRepository):
             try:
                 # Vuild the update query
                 update_query = (
-                    update(PolicyModel)
-                    .where(PolicyModel.id == id)
+                    update(AddressModel)
+                    .where(AddressModel.id == id)
                     .values(
-                        policy_number=model.policy_number,
+                        address_number=model.address_number,
                         person_id=model.person_id,
                         status=model.status,
                     )
@@ -262,32 +262,32 @@ class PolicyRepositoryImpl(PolicyRepository):
         self,
         *,
         id: str,
-        policy: Policy,
+        address: Address,
         # current_user: User
-    ) -> Optional[Policy]:
+    ) -> Optional[Address]:
         """
-        Update policy into DB
+        Update address into DB
         Args:
             id (str): Template ID used to update
-            policy (Policy): Policy that will be updated
+            address (Address): Address that will be updated
         Returns:
-            Policy: Policy updated
+            Address: Address updated
         """
 
         try:
-            entity_model: PolicyModel = await self.__get_by_id(id)
+            entity_model: AddressModel = await self.__get_by_id(id)
 
             if not entity_model:
-                # TODO : check if policy is in delete status
+                # TODO : check if address is in delete status
                 logger.debug("Item with id: %s not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            new_model: PolicyModel = mapper.to(PolicyModel).map(policy)
+            new_model: AddressModel = mapper.to(AddressModel).map(address)
 
             # Update the given (and existing) id
-            result: PolicyModel = await self.__update(id=id, model=new_model)
+            result: AddressModel = await self.__update(id=id, model=new_model)
 
-            return mapper.to(Policy).map(result)
+            return mapper.to(Address).map(result)
 
         except Exception as ex:
             logger.exception("Database error")
@@ -296,8 +296,8 @@ class PolicyRepositoryImpl(PolicyRepository):
     # async def count_Policies(self) -> int:
     #     with DbConnectionManager() as manager:
     #         search_db: int = (
-    #             manager.session.query(PolicyModel)
-    #             .filter(PolicyModel.deleted == False)
+    #             manager.session.query(AddressModel)
+    #             .filter(AddressModel.deleted == False)
     #             .count()
     #         )
 
