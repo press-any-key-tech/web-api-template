@@ -5,18 +5,26 @@ from pythondi import Provider
 
 from web_api_template.core.logging import logger
 from web_api_template.domain.repository import (
+    AddressReadRepository,
+    AddressWriteRepository,
+    ContentReadRepository,
+    ContentWriteRepository,
     HealthcheckRepository,
-    PersonRepository,
-    PolicyRepository,
+    PersonReadRepository,
+    PersonWriteRepository,
+    PolicyReadRepository,
+    PolicyWriteRepository,
 )
-from web_api_template.infrastructure.repositories.sqlalchemy.healthcheck_repository_impl import (
+from web_api_template.infrastructure.repositories.sqlalchemy import (
+    AddressReadRepositoryImpl,
+    AddressWriteRepositoryImpl,
+    ContentReadRepositoryImpl,
+    ContentWriteRepositoryImpl,
     HealthcheckRepositoryImpl,
-)
-from web_api_template.infrastructure.repositories.sqlalchemy.person_repository_impl import (
-    PersonRepositoryImpl,
-)
-from web_api_template.infrastructure.repositories.sqlalchemy.policy_repository_impl import (
-    PolicyRepositoryImpl,
+    PersonReadRepositoryImpl,
+    PersonWriteRepositoryImpl,
+    PolicyReadRepositoryImpl,
+    PolicyWriteRepositoryImpl,
 )
 
 
@@ -30,6 +38,12 @@ def include_di(provider: Provider):
     logger.debug("Initializing dependency injection")
 
     # Include your modules
-    provider.bind(HealthcheckRepository, HealthcheckRepositoryImpl)
-    provider.bind(PersonRepository, PersonRepositoryImpl)
-    provider.bind(PolicyRepository, PolicyRepositoryImpl)
+    provider.bind(HealthcheckRepository, HealthcheckRepositoryImpl(), lazy=True)
+    provider.bind(PersonReadRepository, PersonReadRepositoryImpl(), lazy=True)
+    provider.bind(PolicyReadRepository, PolicyReadRepositoryImpl(), lazy=True)
+    provider.bind(ContentReadRepository, ContentReadRepositoryImpl(), lazy=True)
+    provider.bind(AddressReadRepository, AddressReadRepositoryImpl(), lazy=True)
+    provider.bind(PersonWriteRepository, PersonWriteRepositoryImpl(), lazy=True)
+    provider.bind(PolicyWriteRepository, PolicyWriteRepositoryImpl(), lazy=True)
+    provider.bind(ContentWriteRepository, ContentWriteRepositoryImpl(), lazy=True)
+    provider.bind(AddressWriteRepository, AddressWriteRepositoryImpl(), lazy=True)

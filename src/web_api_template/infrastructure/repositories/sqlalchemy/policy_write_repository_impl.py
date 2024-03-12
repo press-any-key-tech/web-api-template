@@ -7,32 +7,32 @@ from sqlalchemy.exc import IntegrityError
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Content, ContentFilter
-from web_api_template.domain.repository import ContentRepository
-from web_api_template.infrastructure.models.sqlalchemy import ContentModel
+from web_api_template.domain.entities import Policy, PolicyFilter
+from web_api_template.domain.repository import PolicyRepository
+from web_api_template.infrastructure.models.sqlalchemy import PolicyModel
 
 
-class ContentRepositoryImpl(ContentRepository):
-    """Repository implementation for Content"""
+class PolicyWriteRepositoryImpl(PolicyRepository):
+    """Repository implementation for Policy"""
 
-    _model = ContentModel
+    _model = PolicyModel
 
     async def create(
         self,
         *,
         # current_user: User,
-        entity: Content,
-    ) -> Content:
+        entity: Policy,
+    ) -> Policy:
         """
-        Create a content on DB
+        Create a policy on DB
 
         Args:
-            entity (content): content to create
+            entity (policy): policy to create
         Returns:
-            content (content): content created
+            policy (policy): policy created
         """
 
-        entity_model: ContentModel = mapper.to(ContentModel).map(entity)
+        entity_model: PolicyModel = mapper.to(PolicyModel).map(entity)
 
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
@@ -55,15 +55,15 @@ class ContentRepositoryImpl(ContentRepository):
                 logger.exception("Commit error")
                 raise ex
 
-            return mapper.to(Content).map(entity_model)
+            return mapper.to(Policy).map(entity_model)
 
     async def get_list(
         self,
         *,
-        filter: ContentFilter,
+        filter: PolicyFilter,
         # query: CommonQueryModel,
         # current_user: User,
-    ) -> List[Content]:
+    ) -> List[Policy]:
         """Gets filtered policies
 
         Args:
@@ -83,11 +83,11 @@ class ContentRepositoryImpl(ContentRepository):
             try:
                 # TODO: Apply filters
 
-                result = await session.execute(select(ContentModel))
+                result = await session.execute(select(PolicyModel))
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Content).map(item) for item in items]
+                return [mapper.to(Policy).map(item) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
@@ -99,7 +99,7 @@ class ContentRepositoryImpl(ContentRepository):
         id: str,
         # query: CommonQueryModel,
         # current_user: User,
-    ) -> List[Content]:
+    ) -> List[Policy]:
         """Gets filtered policies
 
         Args:
@@ -119,30 +119,30 @@ class ContentRepositoryImpl(ContentRepository):
             try:
 
                 result = await session.execute(
-                    select(ContentModel).where(ContentModel.person_id == id)
+                    select(PolicyModel).where(PolicyModel.person_id == id)
                 )
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Content).map(item) for item in items]
+                return [mapper.to(Policy).map(item) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
                 raise ex
 
-    async def __get_by_id(self, id: str) -> ContentModel | None:
-        """Get content model by ID
+    async def __get_by_id(self, id: str) -> PolicyModel | None:
+        """Get policy model by ID
 
         Args:
             id (str): _description_
 
         Returns:
-            ContentModel: _description_
+            PolicyModel: _description_
         """
         async with Database.get_db_session() as session:
             try:
                 result = await session.execute(
-                    select(ContentModel).where(ContentModel.id == id)
+                    select(PolicyModel).where(PolicyModel.id == id)
                 )
                 return result.scalar_one_or_none()
 
@@ -150,31 +150,31 @@ class ContentRepositoryImpl(ContentRepository):
                 logger.exception("Database error")
                 raise ex
 
-    async def get_by_id(self, id: str) -> Content:
-        """Gets content by id
+    async def get_by_id(self, id: str) -> Policy:
+        """Gets policy by id
 
         Args:
             id: str
 
         Returns:
-            Content
+            Policy
         """
 
         try:
-            entity_model: ContentModel = await self.__get_by_id(id)
+            entity_model: PolicyModel = await self.__get_by_id(id)
 
             if not entity_model:
                 logger.debug("Item with id: %s not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            return mapper.to(Content).map(entity_model)
+            return mapper.to(Policy).map(entity_model)
 
         except Exception as ex:
             logger.exception("Database error")
             raise ex
 
     async def __delete(self, id: str) -> None:
-        """Delete content model by ID
+        """Delete policy model by ID
 
         Args:
             id (str): _description_
@@ -185,7 +185,7 @@ class ContentRepositoryImpl(ContentRepository):
         """
         async with Database.get_db_session() as session:
             try:
-                delete_query = delete(ContentModel).where(ContentModel.id == id)
+                delete_query = delete(PolicyModel).where(PolicyModel.id == id)
                 await session.execute(delete_query)
                 await session.commit()
                 return
@@ -195,7 +195,7 @@ class ContentRepositoryImpl(ContentRepository):
                 raise ex
 
     async def delete(self, id: str) -> None:
-        """Delete content by id
+        """Delete policy by id
 
         Args:
             request (Request): request (from fastAPI)
@@ -206,10 +206,10 @@ class ContentRepositoryImpl(ContentRepository):
         """
 
         try:
-            entity_model: ContentModel = await self.__get_by_id(id)
+            entity_model: PolicyModel = await self.__get_by_id(id)
 
             if not entity_model:
-                # TODO : check if content is in delete status
+                # TODO : check if policy is in delete status
                 logger.debug("Item with id: %s not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
@@ -220,14 +220,14 @@ class ContentRepositoryImpl(ContentRepository):
             logger.exception("Database error")
             raise ex
 
-    async def __update(self, id: str, model: ContentModel) -> ContentModel:
-        """update content model with the given ID
+    async def __update(self, id: str, model: PolicyModel) -> PolicyModel:
+        """update policy model with the given ID
 
         Args:
             id (str): _description_
 
         Returns:
-            ContentModel
+            PolicyModel
 
         """
 
@@ -239,10 +239,10 @@ class ContentRepositoryImpl(ContentRepository):
             try:
                 # Vuild the update query
                 update_query = (
-                    update(ContentModel)
-                    .where(ContentModel.id == id)
+                    update(PolicyModel)
+                    .where(PolicyModel.id == id)
                     .values(
-                        content_number=model.content_number,
+                        policy_number=model.policy_number,
                         person_id=model.person_id,
                         status=model.status,
                     )
@@ -262,32 +262,32 @@ class ContentRepositoryImpl(ContentRepository):
         self,
         *,
         id: str,
-        content: Content,
+        policy: Policy,
         # current_user: User
-    ) -> Optional[Content]:
+    ) -> Optional[Policy]:
         """
-        Update content into DB
+        Update policy into DB
         Args:
             id (str): Template ID used to update
-            content (Content): Content that will be updated
+            policy (Policy): Policy that will be updated
         Returns:
-            Content: Content updated
+            Policy: Policy updated
         """
 
         try:
-            entity_model: ContentModel = await self.__get_by_id(id)
+            entity_model: PolicyModel = await self.__get_by_id(id)
 
             if not entity_model:
-                # TODO : check if content is in delete status
+                # TODO : check if policy is in delete status
                 logger.debug("Item with id: %s not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            new_model: ContentModel = mapper.to(ContentModel).map(content)
+            new_model: PolicyModel = mapper.to(PolicyModel).map(policy)
 
             # Update the given (and existing) id
-            result: ContentModel = await self.__update(id=id, model=new_model)
+            result: PolicyModel = await self.__update(id=id, model=new_model)
 
-            return mapper.to(Content).map(result)
+            return mapper.to(Policy).map(result)
 
         except Exception as ex:
             logger.exception("Database error")
@@ -296,8 +296,8 @@ class ContentRepositoryImpl(ContentRepository):
     # async def count_Policies(self) -> int:
     #     with DbConnectionManager() as manager:
     #         search_db: int = (
-    #             manager.session.query(ContentModel)
-    #             .filter(ContentModel.deleted == False)
+    #             manager.session.query(PolicyModel)
+    #             .filter(PolicyModel.deleted == False)
     #             .count()
     #         )
 

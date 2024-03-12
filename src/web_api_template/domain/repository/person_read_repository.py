@@ -4,7 +4,7 @@ from typing import List, Optional
 from web_api_template.domain.entities import Person, PersonFilter
 
 
-class PersonRepository(metaclass=ABCMeta):
+class PersonReadRepository(metaclass=ABCMeta):
     """
     Abstract class for database person repository
 
@@ -23,15 +23,3 @@ class PersonRepository(metaclass=ABCMeta):
     # @abstractmethod
     # async def get_list(self, *, filter: PersonsFilter, query: CommonQueryModel) -> dict:
     #     raise NotImplementedError()
-
-    @abstractmethod
-    async def create(self, *, entity: Person) -> Optional[Person]:
-        raise NotImplementedError()
-
-    @abstractmethod
-    async def update(self, *, id: str, person: Person) -> Optional[Person]:
-        raise NotImplementedError()
-
-    @abstractmethod
-    async def delete(self, *, id: str):
-        return NotImplementedError()

@@ -5,14 +5,14 @@ from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Policy, PolicyFilter
 from web_api_template.domain.exceptions import PolicyNotFoundException
-from web_api_template.domain.repository import PolicyRepository
+from web_api_template.domain.repository import PolicyReadRepository
 
 
 class ReadService:
     """Query operations"""
 
     @inject()
-    def __init__(self, policy_db_repo: PolicyRepository):
+    def __init__(self, policy_db_repo: PolicyReadRepository):
         self.policy_db_repo = policy_db_repo
 
     async def get_list(self, filter: PolicyFilter) -> List[Policy]:

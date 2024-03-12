@@ -5,14 +5,14 @@ from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Content, ContentFilter
 from web_api_template.domain.exceptions import ContentNotFoundException
-from web_api_template.domain.repository import ContentRepository
+from web_api_template.domain.repository import ContentReadRepository
 
 
 class ReadService:
     """Query operations"""
 
     @inject()
-    def __init__(self, content_db_repo: ContentRepository):
+    def __init__(self, content_db_repo: ContentReadRepository):
         self.content_db_repo = content_db_repo
 
     async def get_list(self, filter: ContentFilter) -> List[Content]:

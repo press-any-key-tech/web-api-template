@@ -5,14 +5,14 @@ from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Person, PersonFilter
 from web_api_template.domain.exceptions import PersonNotFoundException
-from web_api_template.domain.repository import PersonRepository
+from web_api_template.domain.repository import PersonReadRepository
 
 
 class ReadService:
     """Query operations"""
 
     @inject()
-    def __init__(self, person_db_repo: PersonRepository):
+    def __init__(self, person_db_repo: PersonReadRepository):
         self.person_db_repo = person_db_repo
 
     async def get_list(self, filter: PersonFilter) -> List[Person]:

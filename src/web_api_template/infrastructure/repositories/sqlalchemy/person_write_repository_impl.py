@@ -12,7 +12,7 @@ from web_api_template.domain.repository import PersonRepository
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 
 
-class PersonRepositoryImpl(PersonRepository):
+class PersonWriteRepositoryImpl(PersonRepository):
     """Repository implementation for Person"""
 
     _model = PersonModel

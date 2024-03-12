@@ -199,3 +199,9 @@ coverage
 test-results/
 playwright-report/
 
+
+*.bkp
+*.bak
+.temp
+.temp/
+.temp/*

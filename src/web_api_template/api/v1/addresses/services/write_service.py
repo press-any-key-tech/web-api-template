@@ -4,14 +4,14 @@ from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Content, ContentFilter
 from web_api_template.domain.entities.content_create import ContentCreate
 from web_api_template.domain.exceptions import ContentNotFoundException
-from web_api_template.domain.repository import ContentRepository
+from web_api_template.domain.repository import ContentWriteRepository
 
 
 class WriteService:
     """Command operations"""
 
     @inject()
-    def __init__(self, content_db_repo: ContentRepository):
+    def __init__(self, content_db_repo: ContentWriteRepository):
         self.content_db_repo = content_db_repo
 
     async def create(

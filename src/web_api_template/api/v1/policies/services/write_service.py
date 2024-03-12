@@ -4,14 +4,14 @@ from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Policy, PolicyFilter
 from web_api_template.domain.entities.policy_create import PolicyCreate
 from web_api_template.domain.exceptions import PolicyNotFoundException
-from web_api_template.domain.repository import PolicyRepository
+from web_api_template.domain.repository import PolicyWriteRepository
 
 
 class WriteService:
     """Command operations"""
 
     @inject()
-    def __init__(self, policy_db_repo: PolicyRepository):
+    def __init__(self, policy_db_repo: PolicyWriteRepository):
         self.policy_db_repo = policy_db_repo
 
     async def create(
