@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
+from typing import Dict
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from .settings import settings
@@ -11,6 +12,9 @@ class Database:
     _instance = None
     _engine = None
     _async_session = None
+
+    _engines: Dict[str, AsyncEngine] = {}
+    _sessions: Dict[str, AsyncSession] = {}
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -34,25 +38,49 @@ class Database:
                 self._engine, class_=AsyncSession, expire_on_commit=False
             )
 
-    @property
-    def async_session(self):
-        if self._async_session is None:
-            self.init_engine()
-        return self._async_session
+    def init_engines(self):
+        """Initialize all engines"""
+
+        if not self._engines:
+            self._engines = {}
+            self._sessions = {}
+            for label in settings.labels:
+                self._engines[label] = create_async_engine(
+                    settings.get_settings(label).DATABASE_URI,
+                    pool_pre_ping=settings.get_settings(label).POOL_PRE_PING,
+                    pool_size=settings.get_settings(label).POOL_SIZE,
+                    echo=settings.get_settings(label).ECHO_POOL,
+                    max_overflow=settings.get_settings(label).MAX_OVERFLOW,
+                    pool_recycle=settings.get_settings(label).POOL_RECYCLE_IN_SECONDS,
+                    echo_pool=settings.get_settings(label).ECHO_POOL,
+                    pool_reset_on_return=settings.get_settings(
+                        label
+                    ).POOL_RESET_ON_RETURN,
+                    pool_timeout=settings.get_settings(label).POOL_TIMEOUT_IN_SECONDS,
+                )
+                self._sessions[label] = sessionmaker(
+                    self._engines[label], class_=AsyncSession, expire_on_commit=False
+                )
+
+    def async_session(self, label: str = "DEFAULT"):
+        if not self._sessions:
+            self.init_engines()
+        return self._sessions[label]
 
     @property
-    def engine(self):
+    def engine(self, label: str = "DEFAULT"):
         if self._engine is None:
-            self.init_engine()
-        return self._engine
+            self.init_engines()
+        return self._engines[label]
 
     @staticmethod
     @asynccontextmanager
-    async def get_db_session():
+    async def get_db_session(label: str = "DEFAULT"):
         """Gets a session from database
 
         Yields:
             _type_: _description_
         """
-        async with Database().async_session() as session:
+        # Async session returns a sessión factory (sessionmaker) and it needs () to create a session
+        async with Database().async_session(label)() as session:
             yield session

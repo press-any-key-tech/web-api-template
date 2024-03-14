@@ -8,11 +8,11 @@ from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.domain.entities import Address, AddressFilter
-from web_api_template.domain.repository import AddressRepository
+from web_api_template.domain.repository import AddressReadRepository
 from web_api_template.infrastructure.models.sqlalchemy import AddressModel
 
 
-class AddressReadRepositoryImpl(AddressRepository):
+class AddressReadRepositoryImpl(AddressReadRepository):
     """Repository implementation for Address"""
 
     _model = AddressModel
@@ -37,7 +37,7 @@ class AddressReadRepositoryImpl(AddressRepository):
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
 
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
                 session.add(entity_model)
                 await session.commit()
@@ -79,7 +79,7 @@ class AddressReadRepositoryImpl(AddressRepository):
         logger.debug("filter: %s", filter)
         # logger.debug("query: %s", query)
 
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
                 # TODO: Apply filters
 
@@ -115,7 +115,7 @@ class AddressReadRepositoryImpl(AddressRepository):
         logger.debug("Person id: %s", id)
         # logger.debug("query: %s", query)
 
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
 
                 result = await session.execute(
@@ -139,7 +139,7 @@ class AddressReadRepositoryImpl(AddressRepository):
         Returns:
             AddressModel: _description_
         """
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
                 result = await session.execute(
                     select(AddressModel).where(AddressModel.id == id)
@@ -183,7 +183,7 @@ class AddressReadRepositoryImpl(AddressRepository):
             None
 
         """
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
                 delete_query = delete(AddressModel).where(AddressModel.id == id)
                 await session.execute(delete_query)
@@ -235,7 +235,7 @@ class AddressReadRepositoryImpl(AddressRepository):
         # model.updated_at = datetime.utcnow()
         # model.updated_by = "fake"
 
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
                 # Vuild the update query
                 update_query = (

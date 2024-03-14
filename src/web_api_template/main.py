@@ -46,6 +46,7 @@ async def lifespan(app: FastAPI):
         )
 
         if sqlalchemy_settings.SQLALCHEMY_DATABASE_URI:
+            # TODO: loop through all databases, check if they are enabled and initialize them
             logger.debug("Initializing SQLALCHEMY database ...")
             async with Database().engine.begin() as conn:
                 await conn.run_sync(metadata.create_all)

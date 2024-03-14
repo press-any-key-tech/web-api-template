@@ -8,11 +8,11 @@ from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.domain.entities import Person, PersonFilter
-from web_api_template.domain.repository import PersonRepository
+from web_api_template.domain.repository import PersonReadRepository
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 
 
-class PersonReadRepositoryImpl(PersonRepository):
+class PersonReadRepositoryImpl(PersonReadRepository):
     """Repository implementation for Person"""
 
     _model = PersonModel
@@ -37,7 +37,7 @@ class PersonReadRepositoryImpl(PersonRepository):
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
 
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
                 session.add(entity_model)
                 await session.commit()
@@ -79,7 +79,8 @@ class PersonReadRepositoryImpl(PersonRepository):
         logger.debug("filter: %s", filter)
         # logger.debug("query: %s", query)
 
-        async with Database.get_db_session() as session:
+        # async with Database.get_db_session(self._label) as session:
+        async with self._session as session:
             try:
                 # TODO: Apply filters
 
@@ -102,7 +103,7 @@ class PersonReadRepositoryImpl(PersonRepository):
         Returns:
             PersonModel: _description_
         """
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
                 result = await session.execute(
                     select(PersonModel).where(PersonModel.id == id)
@@ -146,7 +147,7 @@ class PersonReadRepositoryImpl(PersonRepository):
             None
 
         """
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
                 delete_query = delete(PersonModel).where(PersonModel.id == id)
                 await session.execute(delete_query)
@@ -198,7 +199,7 @@ class PersonReadRepositoryImpl(PersonRepository):
         # model.updated_at = datetime.utcnow()
         # model.updated_by = "fake"
 
-        async with Database.get_db_session() as session:
+        async with self._session as session:
             try:
                 # Vuild the update query
                 update_query = (
