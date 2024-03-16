@@ -15,9 +15,8 @@ from web_api_template.api.v1.policies.services import ReadService, WriteService
 from web_api_template.core.api import ApiMessage
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_content_type
-from web_api_template.core.auth.cognito.group_checker import GroupChecker
 from web_api_template.core.auth.cognito.user import User
-from web_api_template.core.auth.cognito.utils import get_current_active_user
+from web_api_template.core.auth.cognito.utils import require_groups
 from web_api_template.core.http.validators import (
     ksuid_path_validator,
     ksuid_query_validator,
@@ -29,11 +28,6 @@ from web_api_template.domain.exceptions import (
     PolicyIsActiveException,
     PolicyNotFoundException,
 )
-
-# Permissions
-allow_customer_group: GroupChecker = GroupChecker(["customer"])
-allow_administrator_group: GroupChecker = GroupChecker(["administrator"])
-
 
 api_router = APIRouter()
 
@@ -47,12 +41,13 @@ api_router = APIRouter()
             "model": ApiMessage,
         },
     },
-    dependencies=[Depends(allow_customer_group)],
+    dependencies=[
+        Depends(require_groups(["customer"])),
+    ],
 )
 async def get_list(
     request: Request,
     response: Response,
-    current_user: User = Depends(get_current_active_user),
     list_filter: PolicyFilter = Depends(),
     query: CommonQueryModel = Depends(),
 ) -> List[Policy] | JSONResponse:
@@ -61,7 +56,6 @@ async def get_list(
     Args:
         request (Request): _description_
         response (Response): _description_
-        current_user (User, optional): _description_. Defaults to Depends(get_current_active_user).
 
     Returns:
         List[Policy] | JSONResponse: _description_
@@ -69,8 +63,6 @@ async def get_list(
 
     status_code: int
     error_message: dict
-
-    logger.debug("Current user: %s", current_user)
 
     try:
         result: List[Policy] = await ReadService().get_list(filter=list_filter)
@@ -99,13 +91,15 @@ async def get_list(
             "model": ApiMessage,
         },
     },
-    dependencies=[Depends(allow_customer_group), Depends(ksuid_path_validator)],
+    dependencies=[
+        Depends(require_groups(["customer"])),
+        Depends(ksuid_path_validator),
+    ],
 )
 async def get_by_id(
     request: Request,
     response: Response,
     id: str,
-    current_user: User = Depends(get_current_active_user),
 ) -> Policy | JSONResponse:
     """Get a policy by id
 
@@ -113,7 +107,6 @@ async def get_by_id(
         request (Request): _description_
         response (Response): _description_
         id (str): _description_
-        current_user (User, optional): _description_. Defaults to Depends(get_current_active_user).
 
     Returns:
         Policy: _description_
@@ -121,8 +114,6 @@ async def get_by_id(
 
     status_code: int
     error_message: dict
-
-    logger.debug("Current user: %s", current_user)
 
     try:
         entity: Policy = await ReadService().get_by_id(id=id)
@@ -159,13 +150,15 @@ async def get_by_id(
             "model": ApiMessage,
         },
     },
-    dependencies=[Depends(allow_administrator_group), Depends(ksuid_path_validator)],
+    dependencies=[
+        Depends(require_groups(["customer"])),
+        Depends(ksuid_path_validator),
+    ],
 )
 async def delete_by_id(
     request: Request,
     response: Response,
     id: str,
-    current_user: User = Depends(get_current_active_user),
 ):
     """Deletes a policy with the specific id.
     - Policy should not have any active policies associated with it.
@@ -174,15 +167,12 @@ async def delete_by_id(
         request (Request): _description_
         response (Response): _description_
         id (str): _description_
-        current_user (User, optional): _description_. Defaults to Depends(get_current_active_user).
 
     Returns:
         _type_: _description_
     """
 
     error_message: dict
-
-    logger.debug("Current user: %s", current_user)
 
     try:
         await WriteService().delete_by_id(id=id)
@@ -223,14 +213,16 @@ async def delete_by_id(
             "model": ApiMessage,
         },
     },
-    dependencies=[Depends(allow_administrator_group), Depends(ksuid_path_validator)],
+    dependencies=[
+        Depends(require_groups(["customer"])),
+        Depends(ksuid_path_validator),
+    ],
 )
 async def update(
     request: Request,
     response: Response,
     id: str,
     policy: PolicyCreate,
-    # current_user: User = Depends(get_current_active_user),
 ) -> Policy:
     """Update the policy with the given information.
     - Do not allow to dissasociate any active polcies from the policy.
@@ -292,13 +284,14 @@ async def update(
             "model": ApiMessage,
         },
     },
-    dependencies=[Depends(allow_administrator_group)],
+    dependencies=[
+        Depends(require_groups(["customer"])),
+    ],
 )
 async def create(
     request: Request,
     response: Response,
     policy: PolicyCreate,
-    current_user: User = Depends(get_current_active_user),
 ) -> Policy | JSONResponse:
     """Create a new policy with the given information.
     - Check for existence of addresses and policies.
@@ -307,7 +300,6 @@ async def create(
         request (Request): _description_
         response (Response): _description_
         policy (PolicyCreate): _description_
-        current_user (User, optional): _description_. Defaults to Depends(get_current_active_user).
 
     Returns:
         Policy | JSONResponse: _description_

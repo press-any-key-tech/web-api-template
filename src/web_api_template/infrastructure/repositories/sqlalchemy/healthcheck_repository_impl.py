@@ -22,7 +22,7 @@ class HealthcheckRepositoryImpl(HealthcheckRepository):
         try:
             logger.debug("Checking database health")
             # Run a simple query to check connection
-            async with self._session as session:
+            async with Database.get_db_session(self._label) as session:
                 await session.execute(text("SELECT 1"))
                 return True
         except Exception as ex:

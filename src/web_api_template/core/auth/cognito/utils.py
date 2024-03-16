@@ -1,7 +1,9 @@
-from typing import Any, Tuple
+from typing import Any, List, Tuple
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 
+from web_api_template.core.auth.cognito.group_checker import GroupChecker
+from web_api_template.core.auth.cognito.jwt_bearer_manager import JWTBearerManager
 from web_api_template.core.logging import logger
 
 from .jw_types import JWTAuthorizationCredentials
@@ -14,9 +16,20 @@ from .user_not_found_exception import UserNotFoundException
 oauth2_scheme: JWTBearer = JWTBearer()
 
 
-def get_current_active_user(
-    token: JWTAuthorizationCredentials = Depends(oauth2_scheme),
-) -> User:
+def require_groups(allowed_groups: List[str]):
+    """Check if the user has the required groups
+
+    Args:
+        allowed_groups (List[str]): _description_
+    """
+
+    def _group_checker(request: Request):
+        return GroupChecker(allowed_groups)(request)
+
+    return _group_checker
+
+
+async def get_current_user(request: Request) -> User:
     """Get current logged in and active user
 
     Args:
@@ -29,7 +42,14 @@ def get_current_active_user(
         User: Domain object.
     """
 
+    logger.debug("Get Current Active User ...")
+
     try:
+
+        token: JWTAuthorizationCredentials = await JWTBearerManager().get_credentials(
+            request=request
+        )
+
         # Create User object from token
         user: User = (
             __create_user_from_token(token=token)

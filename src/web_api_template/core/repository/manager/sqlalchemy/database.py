@@ -5,6 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from web_api_template.core.logging import logger
+from web_api_template.core.repository.model.sqlalchemy import metadata
+
 from .settings import settings
 
 
@@ -69,7 +72,20 @@ class Database:
 
     @property
     def engine(self, label: str = "DEFAULT"):
-        if self._engine is None:
+        if not self._engines:
+            self.init_engines()
+        return self._engines[label]
+
+    def get_engine(self, label: str = "DEFAULT"):
+        """Get engine by label
+
+        Args:
+            label (str, optional): _description_. Defaults to "DEFAULT".
+
+        Returns:
+            _type_: _description_
+        """
+        if not self._engines:
             self.init_engines()
         return self._engines[label]
 
@@ -84,3 +100,17 @@ class Database:
         # Async session returns a sessión factory (sessionmaker) and it needs () to create a session
         async with Database().async_session(label)() as session:
             yield session
+
+    @staticmethod
+    async def initialize(label: str = None):
+        """Initialize database (if active in settings)
+
+        Args:
+            label (str, optional): _description_. Defaults to None.
+        """
+        labels = [label] if label else settings.labels
+        for label in labels:
+            if settings.get_settings(label).INITIALIZE:
+                async with Database().get_engine(label).begin() as conn:
+                    logger.debug("Creating tables for: %s", label)
+                    await conn.run_sync(metadata.create_all)

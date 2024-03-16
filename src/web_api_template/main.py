@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pythondi import Provider, configure
 
+from web_api_template.core.auth.auth_middleware import AuthMiddleware
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.core.repository.model.sqlalchemy import metadata
@@ -35,31 +36,19 @@ async def lifespan(app: FastAPI):
     Substitute old app.on_event("startup")
     """
 
-    # TODO: send database initialization to a module
-    if settings.INITIALIZE_DATABASE:
-        logger.debug("Initializing database ...")
+    # Initialize SQLALCHEMY database
+    await Database.initialize()
 
-        # TODO: check for the existence of related files for the database (e.g. core.api.repository.manager.sqlalchemy.database)
+    # # TODO: send database initialization to a module
+    # if settings.INITIALIZE_DATABASE:
 
-        from web_api_template.core.repository.manager.sqlalchemy.settings import (
-            settings as sqlalchemy_settings,
-        )
+    #     from web_api_template.core.repository.model.dynamodb.settings import (
+    #         settings as dynamodb_settings,
+    #     )
 
-        if sqlalchemy_settings.SQLALCHEMY_DATABASE_URI:
-            # TODO: loop through all databases, check if they are enabled and initialize them
-            logger.debug("Initializing SQLALCHEMY database ...")
-            async with Database().engine.begin() as conn:
-                await conn.run_sync(metadata.create_all)
-
-            logger.debug("Database initialized")
-
-        from web_api_template.core.repository.model.dynamodb.settings import (
-            settings as dynamodb_settings,
-        )
-
-        if dynamodb_settings.DYNAMODB_REPOSITORY:
-            logger.debug("Initializing DYNAMODB database ...")
-            raise NotImplementedError("DynamoDB initialization not implemented yet")
+    #     if dynamodb_settings.DYNAMODB_REPOSITORY:
+    #         logger.debug("Initializing DYNAMODB database ...")
+    #         raise NotImplementedError("DynamoDB initialization not implemented yet")
 
     logger.info("Async initializations completed ...")
 
@@ -78,6 +67,9 @@ def start_application(app: FastAPI):
 
     include_cors(app)
     include_routers(app)
+
+    # TODO: Add middleware
+    app.add_middleware(AuthMiddleware)
 
     app.router.lifespan_context = lifespan
 

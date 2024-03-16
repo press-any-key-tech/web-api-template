@@ -15,8 +15,6 @@ from web_api_template.infrastructure.models.sqlalchemy import AddressModel
 class AddressWriteRepositoryImpl(AddressWriteRepository):
     """Repository implementation for Address"""
 
-    _model = AddressModel
-
     async def create(
         self,
         *,
@@ -37,7 +35,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
 
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 session.add(entity_model)
                 await session.commit()
@@ -57,79 +55,6 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
 
             return mapper.to(Address).map(entity_model)
 
-    async def get_list(
-        self,
-        *,
-        filter: AddressFilter,
-        # query: CommonQueryModel,
-        # current_user: User,
-    ) -> List[Address]:
-        """Gets filtered policies
-
-        Args:
-            request (Request): request (from fastAPI)
-            current_user (AuthUser, optional): Current user who makes the request
-            filter: parameter to search (owner_id)
-            query: parameter in pagination(page, size, sort)
-
-        Returns:
-            dict
-        """
-
-        logger.debug("filter: %s", filter)
-        # logger.debug("query: %s", query)
-
-        async with self._session as session:
-            try:
-                # TODO: Apply filters
-
-                result = await session.execute(select(AddressModel))
-                # It is done this way while I am creating the unit tests
-                scalars = result.scalars()
-                items = scalars.all()
-                return [mapper.to(Address).map(item) for item in items]
-
-            except Exception as ex:
-                logger.exception("Database error")
-                raise ex
-
-    async def get_list_by_person_id(
-        self,
-        *,
-        id: str,
-        # query: CommonQueryModel,
-        # current_user: User,
-    ) -> List[Address]:
-        """Gets filtered policies
-
-        Args:
-            request (Request): request (from fastAPI)
-            current_user (AuthUser, optional): Current user who makes the request
-            id: person id
-            query: parameter in pagination(page, size, sort)
-
-        Returns:
-            dict
-        """
-
-        logger.debug("Person id: %s", id)
-        # logger.debug("query: %s", query)
-
-        async with self._session as session:
-            try:
-
-                result = await session.execute(
-                    select(AddressModel).where(AddressModel.person_id == id)
-                )
-                # It is done this way while I am creating the unit tests
-                scalars = result.scalars()
-                items = scalars.all()
-                return [mapper.to(Address).map(item) for item in items]
-
-            except Exception as ex:
-                logger.exception("Database error")
-                raise ex
-
     async def __get_by_id(self, id: str) -> AddressModel | None:
         """Get address model by ID
 
@@ -139,7 +64,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         Returns:
             AddressModel: _description_
         """
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 result = await session.execute(
                     select(AddressModel).where(AddressModel.id == id)
@@ -149,29 +74,6 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             except Exception as ex:
                 logger.exception("Database error")
                 raise ex
-
-    async def get_by_id(self, id: str) -> Address:
-        """Gets address by id
-
-        Args:
-            id: str
-
-        Returns:
-            Address
-        """
-
-        try:
-            entity_model: AddressModel = await self.__get_by_id(id)
-
-            if not entity_model:
-                logger.debug("Item with id: %s not found", id)
-                raise ItemNotFoundException(f"Item with id: {id} not found")
-
-            return mapper.to(Address).map(entity_model)
-
-        except Exception as ex:
-            logger.exception("Database error")
-            raise ex
 
     async def __delete(self, id: str) -> None:
         """Delete address model by ID
@@ -183,7 +85,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             None
 
         """
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 delete_query = delete(AddressModel).where(AddressModel.id == id)
                 await session.execute(delete_query)
@@ -235,7 +137,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         # model.updated_at = datetime.utcnow()
         # model.updated_by = "fake"
 
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 # Vuild the update query
                 update_query = (

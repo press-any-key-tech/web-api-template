@@ -15,8 +15,6 @@ from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 class PersonWriteRepositoryImpl(PersonWriteRepository):
     """Repository implementation for Person"""
 
-    _model = PersonModel
-
     async def create(
         self,
         *,
@@ -37,7 +35,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
 
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 session.add(entity_model)
                 await session.commit()
@@ -57,42 +55,6 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
 
             return mapper.to(Person).map(entity_model)
 
-    async def get_list(
-        self,
-        *,
-        filter: PersonFilter,
-        # query: CommonQueryModel,
-        # current_user: User,
-    ) -> List[Person]:
-        """Gets filtered persons
-
-        Args:
-            request (Request): request (from fastAPI)
-            current_user (AuthUser, optional): Current user who makes the request
-            filter: parameter to search (owner_id)
-            query: parameter in pagination(page, size, sort)
-
-        Returns:
-            dict
-        """
-
-        logger.debug("filter: %s", filter)
-        # logger.debug("query: %s", query)
-
-        async with self._session as session:
-            try:
-                # TODO: Apply filters
-
-                result = await session.execute(select(PersonModel))
-                # It is done this way while I am creating the unit tests
-                scalars = result.scalars()
-                items = scalars.all()
-                return [mapper.to(Person).map(item) for item in items]
-
-            except Exception as ex:
-                logger.exception("Database error")
-                raise ex
-
     async def __get_by_id(self, id: str) -> PersonModel | None:
         """Get person model by ID
 
@@ -102,7 +64,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         Returns:
             PersonModel: _description_
         """
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 result = await session.execute(
                     select(PersonModel).where(PersonModel.id == id)
@@ -112,29 +74,6 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             except Exception as ex:
                 logger.exception("Database error")
                 raise ex
-
-    async def get_by_id(self, id: str) -> Person:
-        """Gets person by id
-
-        Args:
-            id: str
-
-        Returns:
-            Person
-        """
-
-        try:
-            entity_model: PersonModel = await self.__get_by_id(id)
-
-            if not entity_model:
-                logger.debug("Item with id: %s not found", id)
-                raise ItemNotFoundException(f"Item with id: {id} not found")
-
-            return mapper.to(Person).map(entity_model)
-
-        except Exception as ex:
-            logger.exception("Database error")
-            raise ex
 
     async def __delete(self, id: str) -> None:
         """Delete person model by ID
@@ -146,7 +85,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             None
 
         """
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 delete_query = delete(PersonModel).where(PersonModel.id == id)
                 await session.execute(delete_query)
@@ -198,7 +137,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         # model.updated_at = datetime.utcnow()
         # model.updated_by = "fake"
 
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 # Vuild the update query
                 update_query = (

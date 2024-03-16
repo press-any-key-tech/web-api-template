@@ -15,8 +15,6 @@ from web_api_template.infrastructure.models.sqlalchemy import ContentModel
 class ContentWriteRepositoryImpl(ContentWriteRepository):
     """Repository implementation for Content"""
 
-    _model = ContentModel
-
     async def create(
         self,
         *,
@@ -37,7 +35,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
 
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 session.add(entity_model)
                 await session.commit()
@@ -57,79 +55,6 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
 
             return mapper.to(Content).map(entity_model)
 
-    async def get_list(
-        self,
-        *,
-        filter: ContentFilter,
-        # query: CommonQueryModel,
-        # current_user: User,
-    ) -> List[Content]:
-        """Gets filtered policies
-
-        Args:
-            request (Request): request (from fastAPI)
-            current_user (AuthUser, optional): Current user who makes the request
-            filter: parameter to search (owner_id)
-            query: parameter in pagination(page, size, sort)
-
-        Returns:
-            dict
-        """
-
-        logger.debug("filter: %s", filter)
-        # logger.debug("query: %s", query)
-
-        async with self._session as session:
-            try:
-                # TODO: Apply filters
-
-                result = await session.execute(select(ContentModel))
-                # It is done this way while I am creating the unit tests
-                scalars = result.scalars()
-                items = scalars.all()
-                return [mapper.to(Content).map(item) for item in items]
-
-            except Exception as ex:
-                logger.exception("Database error")
-                raise ex
-
-    async def get_list_by_policy_id(
-        self,
-        *,
-        id: str,
-        # query: CommonQueryModel,
-        # current_user: User,
-    ) -> List[Content]:
-        """Gets filtered contents
-
-        Args:
-            request (Request): request (from fastAPI)
-            current_user (AuthUser, optional): Current user who makes the request
-            id: policy id
-            query: parameter in pagination(page, size, sort)
-
-        Returns:
-            dict
-        """
-
-        logger.debug("Person id: %s", id)
-        # logger.debug("query: %s", query)
-
-        async with self._session as session:
-            try:
-
-                result = await session.execute(
-                    select(ContentModel).where(ContentModel.policy_id == id)
-                )
-                # It is done this way while I am creating the unit tests
-                scalars = result.scalars()
-                items = scalars.all()
-                return [mapper.to(Content).map(item) for item in items]
-
-            except Exception as ex:
-                logger.exception("Database error")
-                raise ex
-
     async def __get_by_id(self, id: str) -> ContentModel | None:
         """Get content model by ID
 
@@ -139,7 +64,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
         Returns:
             ContentModel: _description_
         """
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 result = await session.execute(
                     select(ContentModel).where(ContentModel.id == id)
@@ -149,29 +74,6 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
             except Exception as ex:
                 logger.exception("Database error")
                 raise ex
-
-    async def get_by_id(self, id: str) -> Content:
-        """Gets content by id
-
-        Args:
-            id: str
-
-        Returns:
-            Content
-        """
-
-        try:
-            entity_model: ContentModel = await self.__get_by_id(id)
-
-            if not entity_model:
-                logger.debug("Item with id: %s not found", id)
-                raise ItemNotFoundException(f"Item with id: {id} not found")
-
-            return mapper.to(Content).map(entity_model)
-
-        except Exception as ex:
-            logger.exception("Database error")
-            raise ex
 
     async def __delete(self, id: str) -> None:
         """Delete content model by ID
@@ -183,7 +85,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
             None
 
         """
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 delete_query = delete(ContentModel).where(ContentModel.id == id)
                 await session.execute(delete_query)
@@ -235,7 +137,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
         # model.updated_at = datetime.utcnow()
         # model.updated_by = "fake"
 
-        async with self._session as session:
+        async with Database.get_db_session(self._label) as session:
             try:
                 # Vuild the update query
                 update_query = (

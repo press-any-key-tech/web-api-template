@@ -4,6 +4,7 @@
 from pythondi import Provider
 
 from web_api_template.core.logging import logger
+from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.domain.repository import (
     AddressReadRepository,
     AddressWriteRepository,
@@ -38,12 +39,50 @@ def include_di(provider: Provider):
     logger.debug("Initializing dependency injection")
 
     # Include your modules
-    provider.bind(HealthcheckRepository, HealthcheckRepositoryImpl(), lazy=True)
-    provider.bind(PersonReadRepository, PersonReadRepositoryImpl(), lazy=True)
-    provider.bind(PolicyReadRepository, PolicyReadRepositoryImpl(), lazy=True)
-    provider.bind(ContentReadRepository, ContentReadRepositoryImpl(), lazy=True)
-    provider.bind(AddressReadRepository, AddressReadRepositoryImpl(), lazy=True)
-    provider.bind(PersonWriteRepository, PersonWriteRepositoryImpl(), lazy=True)
-    provider.bind(PolicyWriteRepository, PolicyWriteRepositoryImpl(), lazy=True)
-    provider.bind(ContentWriteRepository, ContentWriteRepositoryImpl(), lazy=True)
-    provider.bind(AddressWriteRepository, AddressWriteRepositoryImpl(), lazy=True)
+    provider.bind(
+        HealthcheckRepository,
+        HealthcheckRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+    provider.bind(
+        PersonReadRepository,
+        PersonReadRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+    provider.bind(
+        PolicyReadRepository,
+        PolicyReadRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+    provider.bind(
+        ContentReadRepository,
+        ContentReadRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+    provider.bind(
+        AddressReadRepository,
+        AddressReadRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+    provider.bind(
+        PersonWriteRepository,
+        PersonWriteRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+    provider.bind(
+        PolicyWriteRepository,
+        PolicyWriteRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+    provider.bind(
+        ContentWriteRepository,
+        ContentWriteRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+    provider.bind(
+        AddressWriteRepository,
+        AddressWriteRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+
+    logger.debug("Dependency injection initialization completed ...")

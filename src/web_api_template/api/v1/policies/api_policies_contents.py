@@ -15,9 +15,8 @@ from web_api_template.api.v1.policies.services import ReadService, WriteService
 from web_api_template.core.api import ApiMessage
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_content_type
-from web_api_template.core.auth.cognito.group_checker import GroupChecker
 from web_api_template.core.auth.cognito.user import User
-from web_api_template.core.auth.cognito.utils import get_current_active_user
+from web_api_template.core.auth.cognito.utils import require_groups
 from web_api_template.core.http.validators import (
     ksuid_path_validator,
     ksuid_query_validator,
@@ -29,11 +28,6 @@ from web_api_template.domain.exceptions import (
     PolicyIsActiveException,
     PolicyNotFoundException,
 )
-
-# Permissions
-allow_customer_group: GroupChecker = GroupChecker(["customer"])
-allow_administrator_group: GroupChecker = GroupChecker(["administrator"])
-
 
 api_router = APIRouter()
 
@@ -47,12 +41,13 @@ api_router = APIRouter()
             "model": ApiMessage,
         },
     },
-    dependencies=[Depends(allow_customer_group)],
+    dependencies=[
+        Depends(require_groups(["customer"])),
+    ],
 )
 async def get_contents_by_policy(
     request: Request,
     response: Response,
-    current_user: User = Depends(get_current_active_user),
     id: str = Path(..., description="The ID of the policy"),
 ) -> List[Content] | JSONResponse:
     """Get a list of contents associated with the policy.
@@ -60,7 +55,6 @@ async def get_contents_by_policy(
     Args:
         request (Request): _description_
         response (Response): _description_
-        current_user (User, optional): _description_. Defaults to Depends(get_current_active_user).
         id (str, optional): _description_. Defaults to Path(..., description="The ID of the person").
 
     Returns:
@@ -70,7 +64,6 @@ async def get_contents_by_policy(
     status_code: int
     error_message: dict
 
-    logger.debug("Current user: %s", current_user)
     logger.debug("Policy id: %s", id)
 
     try:
@@ -115,14 +108,15 @@ async def get_contents_by_policy(
             "model": ApiMessage,
         },
     },
-    dependencies=[Depends(allow_administrator_group)],
+    dependencies=[
+        Depends(require_groups(["customer"])),
+    ],
 )
 async def create(
     request: Request,
     response: Response,
     policy: PolicyCreate,
     id: str = Path(..., description="The ID of the policy"),
-    current_user: User = Depends(get_current_active_user),
 ) -> Policy | JSONResponse:
     """Create a new policy with the given information.
     - Check for existence of addresses and policies.
@@ -131,7 +125,6 @@ async def create(
         request (Request): _description_
         response (Response): _description_
         policy (PolicyCreate): _description_
-        current_user (User, optional): _description_. Defaults to Depends(get_current_active_user).
 
     Returns:
         Policy | JSONResponse: _description_

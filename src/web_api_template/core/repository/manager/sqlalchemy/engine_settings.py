@@ -16,6 +16,7 @@ class EngineSettings(Settings):
     """
 
     __settings_defaults: Dict[str, Any] = {
+        "INITIALIZE": True,
         "DATABASE_URI": "None",
         "POOL_SIZE": 5,
         "MAX_OVERFLOW": -1,
