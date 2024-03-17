@@ -9,12 +9,13 @@ from starlette.status import HTTP_403_FORBIDDEN
 from web_api_template.core.auth.invalid_token_exception import InvalidTokenException
 from web_api_template.core.logging import logger
 
+from ...jwt_bearer_manager_protocol import JWTBearerManagerProtocol
+from ...types import JWTAuthorizationCredentials
 from .cognito_client import CognitoClient
-from .jw_types import JWTAuthorizationCredentials
 from .settings import settings
 
 
-class JWTBearerManager(HTTPBearer):
+class JWTBearerManager(HTTPBearer, JWTBearerManagerProtocol):
     def __init__(self, auto_error: bool = True):
         super().__init__(auto_error=auto_error)
 

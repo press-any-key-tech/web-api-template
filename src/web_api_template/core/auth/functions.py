@@ -2,7 +2,7 @@ from typing import Any, List, Tuple
 
 from fastapi import Depends, HTTPException, Request, status
 
-from web_api_template.core.auth.cognito.group_checker import GroupChecker
+from web_api_template.core.auth.group_checker import GroupChecker
 from web_api_template.core.logging import logger
 
 

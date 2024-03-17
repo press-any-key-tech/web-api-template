@@ -5,17 +5,15 @@ from fastapi.security.utils import get_authorization_scheme_param
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import JSONResponse, Response
 
-from web_api_template.core.auth.cognito.jw_types import JWTAuthorizationCredentials
-from web_api_template.core.auth.cognito.jwt_bearer import JWTBearer
-from web_api_template.core.auth.cognito.jwt_bearer_manager import JWTBearerManager
-from web_api_template.core.auth.cognito.user_not_found_exception import (
-    UserNotFoundException,
-)
 from web_api_template.core.auth.invalid_token_exception import InvalidTokenException
+from web_api_template.core.auth.providers.cognito.jwt_bearer_manager import (
+    JWTBearerManager,
+)
+from web_api_template.core.auth.types import JWTAuthorizationCredentials
 from web_api_template.core.auth.user import User
 from web_api_template.core.logging import logger
 
-oauth2_scheme: JWTBearer = JWTBearer()
+from .jwt_bearer_manager_protocol import JWTBearerManagerProtocol
 
 
 class JwtAuthMiddleware(BaseHTTPMiddleware):
@@ -26,9 +24,9 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
         BaseHTTPMiddleware (_type_): _description_
     """
 
-    def __init__(self, auth_provider: str, *args, **kwargs):
+    def __init__(self, jwt_bearer_manager: JWTBearerManagerProtocol, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.auth_provider = auth_provider
+        self.jwt_bearer_manager = jwt_bearer_manager
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -72,7 +70,7 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
                 return None
 
             token: JWTAuthorizationCredentials = (
-                await JWTBearerManager().get_credentials(request=request)
+                await self.jwt_bearer_manager.get_credentials(request=request)
             )
 
             # Create User object from token

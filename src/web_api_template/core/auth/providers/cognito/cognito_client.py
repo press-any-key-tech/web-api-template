@@ -12,26 +12,17 @@ from jose.utils import base64url_decode
 
 from web_api_template.core.logging import logger
 
+from ...types import JWK, JWKS, JWTAuthorizationCredentials
 from .aws_exception import AWSException
-from .jw_types import JWK, JWKS, JWTAuthorizationCredentials
 from .settings import settings
-
-# import boto3
-# import botocore
 
 
 class CognitoClient:
+
     def __new__(cls):
-        """creates a singleton object, if it is not created,
-        or else returns the previous singleton object"""
         if not hasattr(cls, "instance"):
             cls.instance = super(CognitoClient, cls).__new__(cls)
         return cls.instance
-
-    # def __init__(self):
-    #     self.client = boto3.client(
-    #         "cognito-idp", region_name=self._aws_cognito_user_pool_region
-    #     )
 
     def __get_jwks(self) -> JWKS | None:
         """

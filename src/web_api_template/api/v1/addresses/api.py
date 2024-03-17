@@ -14,7 +14,7 @@ from web_api_template.api.v1.addresses.services import ReadService, WriteService
 from web_api_template.core.api import ApiMessage
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_address_type
-from web_api_template.core.auth.cognito.utils import require_groups
+from web_api_template.core.auth.functions import require_groups
 from web_api_template.core.auth.user import User
 from web_api_template.core.http.validators import (
     ksuid_path_validator,
