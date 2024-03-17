@@ -21,7 +21,7 @@ class GroupChecker:
         if settings.AUTH_DISABLED:
             return
 
-        if not hasattr(request.state, "current_user"):
+        if not hasattr(request.state, "current_user") or not request.state.current_user:
             raise HTTPException(status_code=401, detail="Authentication required")
 
         user: User = request.state.current_user

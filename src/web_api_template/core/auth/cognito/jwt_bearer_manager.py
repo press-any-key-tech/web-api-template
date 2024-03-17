@@ -6,6 +6,8 @@ from jose import JWTError, jwt
 from starlette.requests import Request
 from starlette.status import HTTP_403_FORBIDDEN
 
+from web_api_template.core.logging import logger
+
 from .cognito_client import CognitoClient
 from .jw_types import JWTAuthorizationCredentials
 from .settings import settings
@@ -21,7 +23,14 @@ class JWTBearerManager(HTTPBearer):
         if settings.AUTH_DISABLED:
             return None
 
-        credentials: HTTPAuthorizationCredentials = await super().__call__(request)
+        try:
+            credentials: HTTPAuthorizationCredentials = await super().__call__(request)
+        except HTTPException as e:
+            logger.error("Error in JWTBearerManager: %s", str(e))
+            raise e
+        except Exception as e:
+            logger.error("Error in JWTBearerManager: %s", str(e))
+            raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="JWK-invalid")
 
         if credentials:
             # TODO: use a constant for the string "Bearer"

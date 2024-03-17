@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pythondi import Provider, configure
 
 from web_api_template.core.auth.auth_middleware import AuthMiddleware
+from web_api_template.core.auth.cognito.jwt_bearer import JWTBearer
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.core.repository.model.sqlalchemy import metadata
@@ -68,14 +69,24 @@ def start_application(app: FastAPI):
     include_cors(app)
     include_routers(app)
 
-    # TODO: Add middleware
-    app.add_middleware(AuthMiddleware)
-
+    # Dependency injection (lifespan)
+    # Execute async initializations on startup/shutdown
     app.router.lifespan_context = lifespan
+
+    # Add middlewares (in order)
+    # 1. AuthMiddleware (creates current_user). Requires auth provider
+    app.add_middleware(AuthMiddleware, auth_provider="cognito_provider")
+    # 2. AuditMiddleware (requires current_user)
 
     return app
 
 
 # Initialize application
-app: FastAPI = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
+# oauth2_scheme: JWTBearer = JWTBearer()
+
+app: FastAPI = FastAPI(
+    title=settings.PROJECT_NAME,
+    version=settings.PROJECT_VERSION,
+    # security=[Depends(oauth2_scheme)],
+)
 start_application(app)
