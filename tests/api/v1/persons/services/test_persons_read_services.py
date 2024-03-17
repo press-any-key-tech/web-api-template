@@ -5,7 +5,7 @@ from ksuid import Ksuid
 from mock import AsyncMock, patch
 
 from web_api_template.api.v1.persons.services import ReadService
-from web_api_template.core.auth.cognito.user import User
+from web_api_template.core.auth.user import User
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Person, PersonFilter
 from web_api_template.domain.exceptions import PersonNotFoundException

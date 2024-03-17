@@ -6,6 +6,7 @@ from jose import JWTError, jwt
 from starlette.requests import Request
 from starlette.status import HTTP_403_FORBIDDEN
 
+from web_api_template.core.auth.invalid_token_exception import InvalidTokenException
 from web_api_template.core.logging import logger
 
 from .cognito_client import CognitoClient
@@ -30,13 +31,18 @@ class JWTBearerManager(HTTPBearer):
             raise e
         except Exception as e:
             logger.error("Error in JWTBearerManager: %s", str(e))
-            raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="JWK-invalid")
+            raise InvalidTokenException(
+                status_code=HTTP_403_FORBIDDEN,
+                detail="JWK-invalid",
+            )
 
         if credentials:
             # TODO: use a constant for the string "Bearer"
             if credentials.scheme != "Bearer":
-                raise HTTPException(
-                    status_code=HTTP_403_FORBIDDEN, detail="Wrong authentication method"
+                logger.error("Error in JWTBearerManager: Wrong authentication method")
+                raise InvalidTokenException(
+                    status_code=HTTP_403_FORBIDDEN,
+                    detail="Wrong authentication method",
                 )
 
             jwt_token = credentials.credentials
@@ -52,19 +58,25 @@ class JWTBearerManager(HTTPBearer):
                     message=message,
                 )
             except JWTError:
-                raise HTTPException(
-                    status_code=HTTP_403_FORBIDDEN, detail="JWK-invalid"
+                logger.error("Error in JWTBearerManager: JWTError")
+                raise InvalidTokenException(
+                    status_code=HTTP_403_FORBIDDEN,
+                    detail="JWK-invalid",
                 )
 
             # TODO: perhaps these checks are a bit too excessive...
             if "token_use" not in jwt_credentials.claims:
-                raise HTTPException(
-                    status_code=HTTP_403_FORBIDDEN, detail="JWK invalid"
+                logger.error("Error in JWTBearerManager: token_use not in claims")
+                raise InvalidTokenException(
+                    status_code=HTTP_403_FORBIDDEN,
+                    detail="JWK invalid",
                 )
 
             if not CognitoClient().verify_token(jwt_credentials):
-                raise HTTPException(
-                    status_code=HTTP_403_FORBIDDEN, detail="JWK_invalid"
+                logger.error("Error in JWTBearerManager: token not verified")
+                raise InvalidTokenException(
+                    status_code=HTTP_403_FORBIDDEN,
+                    detail="JWK_invalid",
                 )
 
             return jwt_credentials

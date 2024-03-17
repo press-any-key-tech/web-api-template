@@ -3,24 +3,24 @@ from typing import Dict
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security.utils import get_authorization_scheme_param
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.responses import Response
+from starlette.responses import JSONResponse, Response
 
 from web_api_template.core.auth.cognito.jw_types import JWTAuthorizationCredentials
 from web_api_template.core.auth.cognito.jwt_bearer import JWTBearer
 from web_api_template.core.auth.cognito.jwt_bearer_manager import JWTBearerManager
-from web_api_template.core.auth.cognito.user import User
 from web_api_template.core.auth.cognito.user_not_found_exception import (
     UserNotFoundException,
 )
+from web_api_template.core.auth.invalid_token_exception import InvalidTokenException
+from web_api_template.core.auth.user import User
 from web_api_template.core.logging import logger
 
 oauth2_scheme: JWTBearer = JWTBearer()
 
 
-class AuthMiddleware(BaseHTTPMiddleware):
-    """Authorization middleware for FastAPI
+class JwtAuthMiddleware(BaseHTTPMiddleware):
+    """JWT Authorization middleware for FastAPI
     Adds the current user to the request state.
-
 
     Args:
         BaseHTTPMiddleware (_type_): _description_
@@ -32,11 +32,22 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    ) -> Response | JSONResponse:
         try:
             request.state.current_user = await self.get_current_user(request=request)
+        except InvalidTokenException as ite:
+            logger.error("Invalid Token %s", str(ite))
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={"detail": "Invalid token"},
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         except Exception as e:
             logger.error("Error in AuthMiddleware: %s", str(e))
+            return JSONResponse(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                content={"detail": f"Server error: {str(e)}"},
+            )
 
         response = await call_next(request)
         return response
@@ -72,19 +83,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
             )
             logger.debug("Returning %s", user)
             return user
-        except UserNotFoundException as unfe:
-            logger.exception("Invalid Token %s", str(unfe))
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        except InvalidTokenException as ite:
+            logger.error("Invalid Token %s", str(ite))
+            raise
         except Exception as e:
-            logger.exception("Not controlled exception")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Server error: {str(e)}",
-            )
+            logger.error("Not controlled exception")
+            raise
 
     def __validate_credentials(self, request: Request) -> bool:
         """Validate if credentials exist in the request headers
@@ -127,7 +131,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         )
 
         # TODO: token claims scope is a string but contains a list of groups
-        # separated by space. Modify the token claims to include a list of groups
+        # separated by space. Modify the token claims to allow to include a list of groups
         return User(
             id=token.claims["sub"],
             name=(

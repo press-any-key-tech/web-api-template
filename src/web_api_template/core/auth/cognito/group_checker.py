@@ -4,8 +4,8 @@ from fastapi import Depends, HTTPException, Request
 
 from web_api_template.core.logging import logger
 
+from ..user import User
 from .settings import settings
-from .user import User
 
 
 class GroupChecker:

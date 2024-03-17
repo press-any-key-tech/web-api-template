@@ -4,8 +4,8 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pythondi import Provider, configure
 
-from web_api_template.core.auth.auth_middleware import AuthMiddleware
 from web_api_template.core.auth.cognito.jwt_bearer import JWTBearer
+from web_api_template.core.auth.jwt_auth_middleware import JwtAuthMiddleware
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.core.repository.model.sqlalchemy import metadata
@@ -75,7 +75,7 @@ def start_application(app: FastAPI):
 
     # Add middlewares (in order)
     # 1. AuthMiddleware (creates current_user). Requires auth provider
-    app.add_middleware(AuthMiddleware, auth_provider="cognito_provider")
+    app.add_middleware(JwtAuthMiddleware, auth_provider="cognito_provider")
     # 2. AuditMiddleware (requires current_user)
 
     return app
