@@ -1,0 +1,56 @@
+version: '3.8'
+services:
+  api:
+    networks:
+      - app-network
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        package_name: web_api_template
+    depends_on:
+      - db
+      - redis
+    ports:
+      - 8000:8000
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql+asyncpg://test:test123@db:5432/mytemplate
+      - LOG_LEVEL=DEBUG
+      - CORS_ALLOWED_ORIGINS=["http://localhost", "http://localhost:9000", "http://localhost:4200"]
+      - ECHO_POOL=true
+      - HEALTHCHECK_DATABASE=true
+      - INITIALIZE_DATABASE=true
+      - LOGGER_NAME=web_api_template.Engine
+  # redis:
+  #   networks:
+  #     - app-network
+  #   image: redis:latest
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  db:
+    networks:
+      - app-network
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test123
+      - POSTGRES_DB=mytemplate
+    volumes:
+      # - ./data/postgres:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
+    # external: true
+  redis-data:
+    driver: local
+    # external: true

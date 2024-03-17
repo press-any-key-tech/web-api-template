@@ -158,3 +158,50 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+/junit/
+.coverage
+coverage.xml
+
+.volumes/
+
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.tfstate.lock.info
+.localstack/
+.temp/
+
+# Ignore macOS file system metadata
+**/.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+coverage
+*.local
+
+/cypress/videos/
+/cypress/screenshots/
+
+*.tsbuildinfo
+
+test-results/
+playwright-report/
+
+
+*.bkp
+*.bak
+.temp
+.temp/
+.temp/*
