@@ -7,7 +7,9 @@ from sqlalchemy.exc import IntegrityError
 
 from web_api_template.domain.entities import Person, PersonFilter
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel
-from web_api_template.infrastructure.repositories.sqlalchemy import PersonRepositoryImpl
+from web_api_template.infrastructure.repositories.sqlalchemy import (
+    PersonWriteRepositoryImpl,
+)
 
 PERSON_ID: str = str(Ksuid())
 
@@ -25,7 +27,7 @@ async def test_create_success(mock_database):
         id=PERSON_ID, name="Person1", surname="Surname1", email="email1@mail.com"
     )
 
-    repo = PersonRepositoryImpl()
+    repo = PersonWriteRepositoryImpl()
     result = await repo.create(entity=entity)
 
     mock_session.add.assert_called_once()
