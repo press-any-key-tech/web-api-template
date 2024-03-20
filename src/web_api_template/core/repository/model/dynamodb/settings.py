@@ -13,8 +13,6 @@ config = Config()
 class ModuleSettings(Settings):
     """Settings for the module"""
 
-    DYNAMODB_REPOSITORY = config("DYNAMODB_REPOSITORY", cast=bool, default=False)
-
     DYNAMODB_ENDPOINT = config(
         "DYNAMODB_ENDPOINT",
         cast=str,
