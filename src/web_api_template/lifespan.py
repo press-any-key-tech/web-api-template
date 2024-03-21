@@ -8,6 +8,7 @@ from fastapi import FastAPI
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
+from web_api_template.core.settings import settings
 from web_api_template.infrastructure.models.dynamodb import (
     ContentModel,
     PersonModel,
@@ -71,11 +72,13 @@ async def lifespan(app: FastAPI):
     # Startup section
     # --------------------------------------------------------------
 
-    # Initialize SQLALCHEMY database
-    await initialize_sqlalchemy()
+    if settings.INITIALIZE_DATABASE:
 
-    # Initialize DynamoDB database
-    await initialize_dynamodb()
+        # Initialize SQLALCHEMY database
+        await initialize_sqlalchemy()
+
+        # Initialize DynamoDB database
+        await initialize_dynamodb()
 
     logger.info("Async startup completed ...")
 
