@@ -4,8 +4,8 @@
 from fastapi import FastAPI
 
 # Healthcheck (do not touch)
-from web_api_template.api.healthcheck.api_healthcheck import (
-    api_router as healthcheck_router,
+from web_api_template.api.v1.healthcheck.router import (
+    api_router as healthcheck_v1_router,
 )
 from web_api_template.api.v1.persons.router import api_router as persons_v1_router
 from web_api_template.api.v1.policies.router import api_router as policies_v1_router
@@ -21,7 +21,7 @@ def include_routers(app: FastAPI):
     logger.debug("Including routers")
 
     # Healthcheck route (do not touch)
-    app.include_router(healthcheck_router)
+    app.include_router(healthcheck_v1_router)
 
     app.include_router(persons_v1_router)
     app.include_router(policies_v1_router)
