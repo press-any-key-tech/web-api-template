@@ -27,7 +27,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             person (person): person created
         """
 
-        my_dump = entity.model_dump(exclude_none=True)
+        my_dump = entity.model_dump(exclude_none=True, exclude_defaults=True)
         entity_model: PersonModel = PersonModel(**my_dump)
 
         try:
