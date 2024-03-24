@@ -108,7 +108,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         """
 
         try:
-            entity_model: PersonModel = await self.__get_by_id(id)
+            entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if person is in delete status
@@ -177,7 +177,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         """
 
         try:
-            entity_model: PersonModel = await self.__get_by_id(id)
+            entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if person is in delete status

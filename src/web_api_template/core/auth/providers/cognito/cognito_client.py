@@ -72,6 +72,7 @@ class CognitoClient:
         for key in self.__get_jwks().keys:
             if key["kid"] == token.header["kid"]:
                 return key
+        return None
 
     def verify_token(self, token: JWTAuthorizationCredentials) -> bool:
         hmac_key_candidate = self.__get_hmac_key(token)

@@ -108,7 +108,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         """
 
         try:
-            entity_model: PolicyModel = await self.__get_by_id(id)
+            entity_model: Optional[PolicyModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if policy is in delete status
@@ -177,7 +177,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         """
 
         try:
-            entity_model: PolicyModel = await self.__get_by_id(id)
+            entity_model: Optional[PolicyModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if policy is in delete status

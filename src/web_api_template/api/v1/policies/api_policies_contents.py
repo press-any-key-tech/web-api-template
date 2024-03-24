@@ -72,7 +72,7 @@ async def get_contents_by_policy(
         # TODO: create an "exists" method on service
         entity: Policy = await ReadService().get_by_id(id=id)
 
-        result: List[Policy] = await ContentReadService().get_list_by_policy_id(id=id)
+        result: List[Content] = await ContentReadService().get_list_by_policy_id(id=id)
         return result
 
     except PolicyNotFoundException as e:
@@ -135,12 +135,12 @@ async def create(
 
     try:
 
-        response: Policy = await WriteService().create(
+        entity: Policy = await WriteService().create(
             # current_user=current_user,
             request=policy,
         )
 
-        return response
+        return entity
 
     # except NotAllowedCreationException as e:
     #     logger.exception("You are not allowed to create this item")

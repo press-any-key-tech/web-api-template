@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from typing import Dict
+from typing import Dict, Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
@@ -102,7 +102,7 @@ class Database:
             yield session
 
     @staticmethod
-    async def initialize(label: str = None):
+    async def initialize(label: Optional[str] = None):
         """Initialize database (if active in settings)
 
         Args:

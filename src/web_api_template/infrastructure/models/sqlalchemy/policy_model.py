@@ -2,6 +2,7 @@ from typing import cast
 
 from ksuid import Ksuid
 from sqlalchemy import Column, Enum, ForeignKey, String
+from sqlalchemy.sql.sqltypes import Enum as SQLAEnum
 
 from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
 from web_api_template.domain.types.policy_status_enum import PolicyStatusEnum
@@ -27,6 +28,6 @@ class PolicyModel(Base, BaseModel):
     person_id = Column(String, ForeignKey("persons.id"), nullable=False)
 
     policy_number = Column(String(500), nullable=False)
-    status = Column(
+    status: Column[SQLAEnum] = Column(
         Enum(PolicyStatusEnum), nullable=False, default=PolicyStatusEnum.INACTIVE
     )

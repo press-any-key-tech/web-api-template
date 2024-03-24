@@ -119,7 +119,7 @@ class ContentReadRepositoryImpl(ContentReadRepository):
         """
 
         try:
-            entity_model: ContentModel = await self.__get_by_id(id)
+            entity_model: Optional[ContentModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 logger.debug("Item with id: %s not found", id)

@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from starlette.config import Config
 
@@ -13,13 +13,13 @@ config = Config()
 class ModuleSettings(Settings):
     """Settings for the module"""
 
-    AWS_COGNITO_USER_POOL_ID: str = config(
+    AWS_COGNITO_USER_POOL_ID: Optional[str] = config(
         "AWS_COGNITO_USER_POOL_ID",
         cast=str,
         default=None,
     )
 
-    AWS_COGNITO_USER_POOL_REGION: str = config(
+    AWS_COGNITO_USER_POOL_REGION: Optional[str] = config(
         "AWS_COGNITO_USER_POOL_REGION",
         cast=str,
         default=None,
@@ -42,13 +42,13 @@ class ModuleSettings(Settings):
         default=1000,
     )
 
-    AWS_COGNITO_USER_POOL_CLIENT_ID: str = config(
+    AWS_COGNITO_USER_POOL_CLIENT_ID: Optional[str] = config(
         "AWS_COGNITO_USER_POOL_CLIENT_ID",
         cast=str,
         default=None,
     )
 
-    AWS_COGNITO_USER_POOL_CLIENT_SECRET: str = config(
+    AWS_COGNITO_USER_POOL_CLIENT_SECRET: Optional[str] = config(
         "AWS_COGNITO_USER_POOL_CLIENT_SECRET",
         cast=str,
         default=None,

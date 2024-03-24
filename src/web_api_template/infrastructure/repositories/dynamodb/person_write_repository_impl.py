@@ -96,7 +96,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         """
 
         try:
-            entity_model: PersonModel = await self.__get_by_id(id)
+            entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if pot is in delete status
@@ -128,7 +128,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
 
         try:
             # TODO: careful, we need a model to update and not update fields as id
-            entity_model: PersonModel = await self.get_by_id(id)
+            entity_model: Optional[PersonModel] = await self.get_by_id(id)
 
             if not entity_model:
                 # TODO : check if person is in delete status

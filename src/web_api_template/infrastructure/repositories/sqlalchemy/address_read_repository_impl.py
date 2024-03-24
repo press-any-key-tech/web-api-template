@@ -119,7 +119,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
         """
 
         try:
-            entity_model: AddressModel = await self.__get_by_id(id)
+            entity_model: Optional[AddressModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 logger.debug("Item with id: %s not found", id)

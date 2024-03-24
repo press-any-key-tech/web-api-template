@@ -108,7 +108,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         """
 
         try:
-            entity_model: AddressModel = await self.__get_by_id(id)
+            entity_model: Optional[AddressModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if address is in delete status
@@ -177,7 +177,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         """
 
         try:
-            entity_model: AddressModel = await self.__get_by_id(id)
+            entity_model: Optional[AddressModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if address is in delete status

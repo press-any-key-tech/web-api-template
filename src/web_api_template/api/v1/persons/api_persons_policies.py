@@ -142,17 +142,17 @@ async def create_policy(
 
         # Check if person exists
         # TODO: create an "exists" method on service
-        entity: Person = await ReadService().get_by_id(id=id)
+        entity_person: Person = await ReadService().get_by_id(id=id)
 
-        policy.person_id = entity.id
+        policy.person_id = entity_person.id
 
         # TODO: it is better to have an explicit method for creating a policy with a person id + policy data
-        response: policy = await PolicyWriteService().create(
+        entity: Policy = await PolicyWriteService().create(
             # current_user=current_user,
             request=policy,
         )
 
-        return response
+        return entity
 
     # except NotAllowedCreationException as e:
     #     logger.exception("You are not allowed to create this item")

@@ -225,7 +225,7 @@ async def update(
     response: Response,
     id: str,
     person: PersonCreate,
-) -> Person:
+) -> Person | JSONResponse:
     """Update the person with the given information.
     - Do not allow to dissasociate any active polcies from the person.
 
@@ -245,13 +245,13 @@ async def update(
     logger.debug("update request: %s", person)
 
     try:
-        response: Person = await WriteService().update(
+        entity: Person = await WriteService().update(
             id=id,
             # current_user=current_user,
             request=person,
         )
 
-        return response
+        return entity
 
     except PersonHasActivePoliciesException as e:
         logger.exception(f"Person with id {id} has active policies associated with it")
@@ -317,12 +317,12 @@ async def create(
     try:
         # TODO: inject
 
-        response: Person = await WriteService().create(
+        entity: Person = await WriteService().create(
             # current_user=current_user,
             request=person,
         )
 
-        return response
+        return entity
 
     # except NotAllowedCreationException as e:
     #     logger.exception("You are not allowed to create this item")

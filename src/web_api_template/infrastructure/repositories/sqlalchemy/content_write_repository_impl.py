@@ -108,7 +108,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
         """
 
         try:
-            entity_model: ContentModel = await self.__get_by_id(id)
+            entity_model: Optional[ContentModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if content is in delete status
@@ -177,7 +177,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
         """
 
         try:
-            entity_model: ContentModel = await self.__get_by_id(id)
+            entity_model: Optional[ContentModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if content is in delete status
