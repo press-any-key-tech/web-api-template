@@ -1,4 +1,5 @@
-from web_api_template.core.di_injector import inject
+from pydilite import inject
+
 from web_api_template.core.settings import settings
 from web_api_template.domain.repository import HealthcheckRepository
 

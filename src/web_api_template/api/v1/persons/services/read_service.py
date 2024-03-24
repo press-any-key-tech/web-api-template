@@ -1,6 +1,7 @@
 from typing import List
 
-from web_api_template.core.di_injector import inject
+from pydilite import inject
+
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Person, PersonFilter
