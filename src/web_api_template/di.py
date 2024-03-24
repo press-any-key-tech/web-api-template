@@ -1,7 +1,7 @@
 """Dependency injection definition
 """
 
-from pythondi import Provider
+from pydilite import Provider
 
 from web_api_template.core.logging import logger
 from web_api_template.domain.repository import (

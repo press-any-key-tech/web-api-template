@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pythondi import Provider, configure
+from pydilite import Provider, configure
 
 from web_api_template.core.auth.jwt_auth_middleware import JwtAuthMiddleware
 from web_api_template.core.auth.providers.cognito.jwt_bearer_manager import (

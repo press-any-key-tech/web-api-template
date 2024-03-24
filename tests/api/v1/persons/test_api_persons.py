@@ -6,7 +6,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from ksuid import Ksuid
-from pythondi import Provider, configure
+from pydilite import Provider, configure
 
 from web_api_template.api.v1.persons.api_persons import api_router, get_list
 from web_api_template.core.repository.exceptions import ItemNotFoundException
