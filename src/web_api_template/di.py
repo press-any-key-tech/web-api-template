@@ -15,14 +15,16 @@ from web_api_template.domain.repository import (
     PolicyReadRepository,
     PolicyWriteRepository,
 )
+from web_api_template.infrastructure.repositories.dynamodb import (
+    PersonReadRepositoryImpl,
+    PersonWriteRepositoryImpl,
+)
 from web_api_template.infrastructure.repositories.sqlalchemy import (
     AddressReadRepositoryImpl,
     AddressWriteRepositoryImpl,
     ContentReadRepositoryImpl,
     ContentWriteRepositoryImpl,
     HealthcheckRepositoryImpl,
-    PersonReadRepositoryImpl,
-    PersonWriteRepositoryImpl,
     PolicyReadRepositoryImpl,
     PolicyWriteRepositoryImpl,
 )
@@ -48,9 +50,14 @@ def include_di(provider: Provider):
         PersonReadRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
+    # provider.bind(
+    #     PersonReadRepository,
+    #     PersonReadRepositoryImpl(label="DEFAULT"),
+    #     lazy=True,
+    # )
     provider.bind(
         PolicyReadRepository,
-        PolicyReadRepositoryImpl(label="DEFAULT"),
+        PolicyReadRepositoryImpl,
         lazy=True,
     )
     provider.bind(
@@ -63,9 +70,14 @@ def include_di(provider: Provider):
         AddressReadRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
+    # provider.bind(
+    #     PersonWriteRepository,
+    #     PersonWriteRepositoryImpl(label="DEFAULT"),
+    #     lazy=True,
+    # )
     provider.bind(
         PersonWriteRepository,
-        PersonWriteRepositoryImpl(label="DEFAULT"),
+        PersonWriteRepositoryImpl,
         lazy=True,
     )
     provider.bind(
