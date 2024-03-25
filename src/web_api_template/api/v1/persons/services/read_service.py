@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydilite import inject
 
@@ -33,7 +33,7 @@ class ReadService:
 
         return entities
 
-    async def get_by_id(self, id: str) -> Person:
+    async def get_by_id(self, id: str) -> Optional[Person]:
         """
         Search person by id
 
@@ -47,7 +47,7 @@ class ReadService:
         logger.debug("Entering. id: %s", id)
 
         try:
-            entity: Person | None = await self.person_db_repo.get_by_id(id=id)
+            entity: Optional[Person] = await self.person_db_repo.get_by_id(id=id)
         except ItemNotFoundException:
             # Domain exception raise if pot doesn't exists
             raise PersonNotFoundException(f"Person with id [{id}] not found")

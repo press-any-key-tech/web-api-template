@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydilite import inject
 
@@ -33,7 +33,7 @@ class ReadService:
 
         return entities
 
-    async def get_by_id(self, id: str) -> Content:
+    async def get_by_id(self, id: str) -> Optional[Content]:
         """
         Search content by id
 
@@ -54,7 +54,7 @@ class ReadService:
 
         return entity
 
-    async def get_list_by_person_id(self, id: str) -> List[Content]:
+    async def get_list_by_policy_id(self, id: str) -> List[Content]:
         """
         Get a list of contents for a given person
 
@@ -67,7 +67,7 @@ class ReadService:
 
         logger.debug("Entering. filter: %s", id)
 
-        entities: List[Content] = await self.content_db_repo.get_list_by_person_id(
+        entities: List[Content] = await self.content_db_repo.get_list_by_policy_id(
             id=id
         )
 

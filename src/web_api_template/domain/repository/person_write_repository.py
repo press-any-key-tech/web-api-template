@@ -4,7 +4,7 @@ from typing import List, Optional
 from web_api_template.core.repository.manager.sqlalchemy.repository_base import (
     RepositoryBase,
 )
-from web_api_template.domain.entities import Person, PersonFilter
+from web_api_template.domain.entities import Person, PersonCreate, PersonFilter
 
 
 class PersonWriteRepository(RepositoryBase):
@@ -16,7 +16,7 @@ class PersonWriteRepository(RepositoryBase):
     """
 
     @abstractmethod
-    async def create(self, *, entity: Person) -> Optional[Person]:
+    async def create(self, *, entity: PersonCreate) -> Optional[Person]:
         raise NotImplementedError()
 
     @abstractmethod

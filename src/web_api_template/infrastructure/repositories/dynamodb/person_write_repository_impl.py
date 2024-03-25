@@ -4,7 +4,7 @@ from automapper import mapper
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.domain.entities import Person, PersonFilter
+from web_api_template.domain.entities import Person, PersonCreate, PersonFilter
 from web_api_template.domain.repository import PersonWriteRepository
 from web_api_template.infrastructure.models.dynamodb import PersonModel
 
@@ -16,7 +16,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         self,
         *,
         # current_user: User,
-        entity: Person,
+        entity: PersonCreate,
     ) -> Person:
         """
         Create a person on DB
@@ -128,7 +128,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
 
         try:
             # TODO: careful, we need a model to update and not update fields as id
-            entity_model: Optional[PersonModel] = await self.get_by_id(id)
+            entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if person is in delete status

@@ -26,7 +26,9 @@ class GroupChecker:
 
         user: User = request.state.current_user
 
-        if not any(group in self.__allowed_groups for group in user.groups):
+        if user.groups is not None and not any(
+            group in self.__allowed_groups for group in user.groups
+        ):
             logger.debug(
                 f"User with groups {user.groups} not in {self.__allowed_groups}"
             )

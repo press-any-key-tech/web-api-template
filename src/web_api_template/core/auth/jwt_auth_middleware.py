@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security.utils import get_authorization_scheme_param
@@ -69,7 +69,7 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
                 logger.debug("There are no credentiasl in the request")
                 return None
 
-            token: JWTAuthorizationCredentials = (
+            token: Optional[JWTAuthorizationCredentials] = (
                 await self.jwt_bearer_manager.get_credentials(request=request)
             )
 
@@ -99,7 +99,7 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
         """
         authorization = request.headers.get("Authorization")
         scheme, credentials = get_authorization_scheme_param(authorization)
-        return authorization and scheme and credentials
+        return bool(authorization and scheme and credentials)
 
     def __create_synthetic_user(self) -> User:
         """Create a synthetic user for testing purposes

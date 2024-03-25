@@ -7,9 +7,9 @@ JWK = Dict[str, str]
 
 
 class JWKS(BaseModel):
-    keys: Optional[List[JWK]]
-    timestamp: Optional[int]
-    usage_counter: Optional[int]
+    keys: Optional[List[JWK]] = []
+    timestamp: Optional[int] = None
+    usage_counter: Optional[int] = 0
 
 
 class JWTAuthorizationCredentials(BaseModel):
