@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydilite import inject
 
 from web_api_template.core.logging import logger
@@ -19,7 +21,7 @@ class WriteService:
         self,
         # current_user: User,
         request: ContentCreate,
-    ) -> Content:
+    ) -> Optional[Content]:
         """
         Create a Content.
 
@@ -38,7 +40,7 @@ class WriteService:
         #         "You are not allowed to create this item"
         #     )
 
-        response: Content = await self.content_db_repo.create(
+        response: Optional[Content] = await self.content_db_repo.create(
             # current_user=current_user,
             entity=request
         )
@@ -73,9 +75,9 @@ class WriteService:
     async def update(
         self,
         id: str,
-        request: ContentCreate,
+        request: Content,
         # current_user: User
-    ) -> Content:
+    ) -> Optional[Content]:
         """
         Updates the given content
 
@@ -90,7 +92,9 @@ class WriteService:
         logger.debug("Entering. id: %s request: %s", id, request)
 
         try:
-            result: Content = await self.content_db_repo.update(id=id, content=request)
+            result: Optional[Content] = await self.content_db_repo.update(
+                id=id, content=request
+            )
 
             return result
 

@@ -39,6 +39,7 @@ pytest-env = "^1.1.3"
 mypy = "^1.8.0"
 jupyter = "^1.0.0"
 py-spy = "^0.3.14"
+types-requests = "^2.31.0.20240311"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

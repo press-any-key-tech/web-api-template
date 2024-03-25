@@ -26,7 +26,9 @@ class JWTBearerManager(HTTPBearer, JWTBearerManagerProtocol):
             return None
 
         try:
-            credentials: HTTPAuthorizationCredentials = await super().__call__(request)
+            credentials: Optional[HTTPAuthorizationCredentials] = (
+                await super().__call__(request)
+            )
         except HTTPException as e:
             logger.error("Error in JWTBearerManager: %s", str(e))
             raise e
@@ -81,3 +83,5 @@ class JWTBearerManager(HTTPBearer, JWTBearerManagerProtocol):
                 )
 
             return jwt_credentials
+
+        return None

@@ -1,5 +1,5 @@
 import math
-from typing import Any
+from typing import Any, List
 from uuid import UUID
 
 from sqlalchemy import asc, desc, func, or_
@@ -94,7 +94,7 @@ class DbPaginator:
                 column: Any = getattr(self._model, key, None)
                 self._query = self._query.filter(getattr(self._model, key) == value)
 
-    def _sort(self, order_by: list = []):
+    def _sort(self, order_by: List = []):
         """Builds the sort object for SQLAlchemy
 
         Args:

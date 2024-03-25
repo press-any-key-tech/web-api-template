@@ -61,7 +61,8 @@ class CognitoClient:
                     keys=keys, timestamp=timestamp, usage_counter=usage_counter
                 )
             else:
-                self.jks.usage_counter = self.jks.usage_counter - 1
+                if self.jks.usage_counter is not None:
+                    self.jks.usage_counter -= 1
 
         except KeyError:
             return None
@@ -69,9 +70,12 @@ class CognitoClient:
         return self.jks
 
     def __get_hmac_key(self, token: JWTAuthorizationCredentials) -> Optional[JWK]:
-        for key in self.__get_jwks().keys:
-            if key["kid"] == token.header["kid"]:
-                return key
+        jwks: Optional[JWKS] = self.__get_jwks()
+        if jwks is not None and jwks.keys is not None:
+            for key in jwks.keys:
+                if key["kid"] == token.header["kid"]:
+                    return key
+        return None
 
     def verify_token(self, token: JWTAuthorizationCredentials) -> bool:
         hmac_key_candidate = self.__get_hmac_key(token)

@@ -172,10 +172,6 @@ async def delete_by_id(
     try:
         await WriteService().delete_by_id(id=id)
         return
-    except ContentIsActiveException as e:
-        logger.exception(f"Content with id {id} is active and cannot be deleted")
-        status_code = status.HTTP_409_CONFLICT
-        error_message = {"message": str(e)}
     except ContentNotFoundException as e:
         logger.exception(f"Content with id {id} not found")
         status_code = status.HTTP_404_NOT_FOUND
@@ -218,7 +214,7 @@ async def update(
     response: Response,
     id: str,
     content: ContentCreate,
-) -> Content:
+) -> Content | JSONResponse:
     """Update the content with the given information.
     - Do not allow to dissasociate any active polcies from the content.
 
@@ -238,13 +234,13 @@ async def update(
     logger.debug("update request: %s", content)
 
     try:
-        response: Content = await WriteService().update(
+        entity: Content = await WriteService().update(
             id=id,
             # current_user=current_user,
             request=content,
         )
 
-        return response
+        return entity
 
     except ContentNotFoundException as e:
         logger.exception(f"Content with id {id} not found")
@@ -305,12 +301,12 @@ async def create(
 
     try:
 
-        response: Content = await WriteService().create(
+        entity: Content = await WriteService().create(
             # current_user=current_user,
             request=content,
         )
 
-        return response
+        return entity
 
     # except NotAllowedCreationException as e:
     #     logger.exception("You are not allowed to create this item")

@@ -223,7 +223,7 @@ async def update(
     response: Response,
     id: str,
     policy: PolicyCreate,
-) -> Policy:
+) -> Policy | JSONResponse:
     """Update the policy with the given information.
     - Do not allow to dissasociate any active polcies from the policy.
 
@@ -243,13 +243,13 @@ async def update(
     logger.debug("update request: %s", policy)
 
     try:
-        response: Policy = await WriteService().update(
+        entity: Policy = await WriteService().update(
             id=id,
             # current_user=current_user,
             request=policy,
         )
 
-        return response
+        return entity
 
     except PolicyNotFoundException as e:
         logger.exception(f"Policy with id {id} not found")
@@ -310,12 +310,12 @@ async def create(
 
     try:
 
-        response: Policy = await WriteService().create(
+        entity: Policy = await WriteService().create(
             # current_user=current_user,
             request=policy,
         )
 
-        return response
+        return entity
 
     # except NotAllowedCreationException as e:
     #     logger.exception("You are not allowed to create this item")

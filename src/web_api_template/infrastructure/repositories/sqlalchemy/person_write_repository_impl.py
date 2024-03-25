@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Person, PersonFilter
+from web_api_template.domain.entities import Person, PersonCreate, PersonFilter
 from web_api_template.domain.repository import PersonWriteRepository
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 
@@ -19,7 +19,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         self,
         *,
         # current_user: User,
-        entity: Person,
+        entity: PersonCreate,
     ) -> Person:
         """
         Create a person on DB
@@ -108,7 +108,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         """
 
         try:
-            entity_model: PersonModel = await self.__get_by_id(id)
+            entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if person is in delete status
@@ -122,7 +122,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             logger.exception("Database error")
             raise ex
 
-    async def __update(self, id: str, model: PersonModel) -> PersonModel:
+    async def __update(self, id: str, model: PersonModel) -> Optional[PersonModel]:
         """update person model with the given ID
 
         Args:
@@ -177,7 +177,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         """
 
         try:
-            entity_model: PersonModel = await self.__get_by_id(id)
+            entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if person is in delete status
@@ -187,7 +187,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             new_model: PersonModel = mapper.to(PersonModel).map(person)
 
             # Update the given (and existing) id
-            result: PersonModel = await self.__update(id=id, model=new_model)
+            result: Optional[PersonModel] = await self.__update(id=id, model=new_model)
 
             return mapper.to(Person).map(result)
 

@@ -83,7 +83,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
         """
 
         try:
-            entity_model: PersonModel = await self.__get_by_id(id)
+            entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 logger.debug("Item with id: %s not found", id)

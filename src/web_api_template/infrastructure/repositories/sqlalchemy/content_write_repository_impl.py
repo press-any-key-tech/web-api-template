@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Content, ContentFilter
+from web_api_template.domain.entities import Content, ContentCreate, ContentFilter
 from web_api_template.domain.repository import ContentWriteRepository
 from web_api_template.infrastructure.models.sqlalchemy import ContentModel
 
@@ -19,7 +19,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
         self,
         *,
         # current_user: User,
-        entity: Content,
+        entity: ContentCreate,
     ) -> Content:
         """
         Create a content on DB
@@ -108,7 +108,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
         """
 
         try:
-            entity_model: ContentModel = await self.__get_by_id(id)
+            entity_model: Optional[ContentModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if content is in delete status
@@ -122,7 +122,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
             logger.exception("Database error")
             raise ex
 
-    async def __update(self, id: str, model: ContentModel) -> ContentModel:
+    async def __update(self, id: str, model: ContentModel) -> Optional[ContentModel]:
         """update content model with the given ID
 
         Args:
@@ -177,7 +177,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
         """
 
         try:
-            entity_model: ContentModel = await self.__get_by_id(id)
+            entity_model: Optional[ContentModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if content is in delete status
@@ -187,7 +187,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
             new_model: ContentModel = mapper.to(ContentModel).map(content)
 
             # Update the given (and existing) id
-            result: ContentModel = await self.__update(id=id, model=new_model)
+            result: Optional[ContentModel] = await self.__update(id=id, model=new_model)
 
             return mapper.to(Content).map(result)
 

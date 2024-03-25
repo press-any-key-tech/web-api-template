@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Policy, PolicyFilter
+from web_api_template.domain.entities import Policy, PolicyCreate, PolicyFilter
 from web_api_template.domain.repository import PolicyWriteRepository
 from web_api_template.infrastructure.models.sqlalchemy import PolicyModel
 
@@ -19,7 +19,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         self,
         *,
         # current_user: User,
-        entity: Policy,
+        entity: PolicyCreate,
     ) -> Policy:
         """
         Create a policy on DB
@@ -108,7 +108,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         """
 
         try:
-            entity_model: PolicyModel = await self.__get_by_id(id)
+            entity_model: Optional[PolicyModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if policy is in delete status
@@ -122,7 +122,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
             logger.exception("Database error")
             raise ex
 
-    async def __update(self, id: str, model: PolicyModel) -> PolicyModel:
+    async def __update(self, id: str, model: PolicyModel) -> Optional[PolicyModel]:
         """update policy model with the given ID
 
         Args:
@@ -177,7 +177,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         """
 
         try:
-            entity_model: PolicyModel = await self.__get_by_id(id)
+            entity_model: Optional[PolicyModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if policy is in delete status
@@ -187,7 +187,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
             new_model: PolicyModel = mapper.to(PolicyModel).map(policy)
 
             # Update the given (and existing) id
-            result: PolicyModel = await self.__update(id=id, model=new_model)
+            result: Optional[PolicyModel] = await self.__update(id=id, model=new_model)
 
             return mapper.to(Policy).map(result)
 

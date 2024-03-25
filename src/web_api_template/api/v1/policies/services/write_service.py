@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydilite import inject
 
 from web_api_template.core.logging import logger
@@ -19,7 +21,7 @@ class WriteService:
         self,
         # current_user: User,
         request: PolicyCreate,
-    ) -> Policy:
+    ) -> Optional[Policy]:
         """
         Create a Policy.
 
@@ -38,7 +40,7 @@ class WriteService:
         #         "You are not allowed to create this item"
         #     )
 
-        response: Policy = await self.policy_db_repo.create(
+        response: Optional[Policy] = await self.policy_db_repo.create(
             # current_user=current_user,
             entity=request
         )
@@ -73,9 +75,9 @@ class WriteService:
     async def update(
         self,
         id: str,
-        request: PolicyCreate,
+        request: Policy,
         # current_user: User
-    ) -> Policy:
+    ) -> Optional[Policy]:
         """
         Updates the given policy
 
@@ -90,7 +92,9 @@ class WriteService:
         logger.debug("Entering. id: %s request: %s", id, request)
 
         try:
-            result: Policy = await self.policy_db_repo.update(id=id, policy=request)
+            result: Optional[Policy] = await self.policy_db_repo.update(
+                id=id, policy=request
+            )
 
             return result
 

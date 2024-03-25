@@ -4,7 +4,7 @@ from typing import List, Optional
 from web_api_template.core.repository.manager.sqlalchemy.repository_base import (
     RepositoryBase,
 )
-from web_api_template.domain.entities import Content, ContentFilter
+from web_api_template.domain.entities import Content, ContentCreate, ContentFilter
 
 
 class ContentWriteRepository(RepositoryBase):
@@ -16,7 +16,7 @@ class ContentWriteRepository(RepositoryBase):
     """
 
     @abstractmethod
-    async def create(self, *, entity: Content) -> Optional[Content]:
+    async def create(self, *, entity: ContentCreate) -> Optional[Content]:
         raise NotImplementedError()
 
     @abstractmethod

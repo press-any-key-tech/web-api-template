@@ -108,7 +108,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         """
 
         try:
-            entity_model: AddressModel = await self.__get_by_id(id)
+            entity_model: Optional[AddressModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if address is in delete status
@@ -122,7 +122,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             logger.exception("Database error")
             raise ex
 
-    async def __update(self, id: str, model: AddressModel) -> AddressModel:
+    async def __update(self, id: str, model: AddressModel) -> Optional[AddressModel]:
         """update address model with the given ID
 
         Args:
@@ -177,7 +177,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         """
 
         try:
-            entity_model: AddressModel = await self.__get_by_id(id)
+            entity_model: Optional[AddressModel] = await self.__get_by_id(id)
 
             if not entity_model:
                 # TODO : check if address is in delete status
@@ -187,7 +187,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             new_model: AddressModel = mapper.to(AddressModel).map(address)
 
             # Update the given (and existing) id
-            result: AddressModel = await self.__update(id=id, model=new_model)
+            result: Optional[AddressModel] = await self.__update(id=id, model=new_model)
 
             return mapper.to(Address).map(result)
 

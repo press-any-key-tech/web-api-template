@@ -1,11 +1,14 @@
 from contextlib import asynccontextmanager
-from typing import Dict
+from typing import Dict, Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from web_api_template.core.logging import logger
+from web_api_template.core.repository.manager.sqlalchemy.engine_settings import (
+    EngineSettings,
+)
 from web_api_template.core.repository.model.sqlalchemy import metadata
 
 from .settings import settings
@@ -102,7 +105,7 @@ class Database:
             yield session
 
     @staticmethod
-    async def initialize(label: str = None):
+    async def initialize(label: Optional[str] = None):
         """Initialize database (if active in settings)
 
         Args:
@@ -110,7 +113,12 @@ class Database:
         """
         labels = [label] if label else settings.labels
         for label in labels:
-            if settings.get_settings(label).INITIALIZE:
-                async with Database().get_engine(label).begin() as conn:
-                    logger.debug("Creating tables for: %s", label)
-                    await conn.run_sync(metadata.create_all)
+            if label is not None:
+                settings_by_label: EngineSettings = settings.get_settings(label)
+                if (
+                    hasattr(settings_by_label, "INITIALIZE")
+                    and settings_by_label.INITIALIZE
+                ):
+                    async with Database().get_engine(label).begin() as conn:
+                        logger.debug("Creating tables for: %s", label)
+                        await conn.run_sync(metadata.create_all)

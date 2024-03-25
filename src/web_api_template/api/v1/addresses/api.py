@@ -13,7 +13,6 @@ from starlette.responses import Response
 from web_api_template.api.v1.addresses.services import ReadService, WriteService
 from web_api_template.core.api import ApiMessage
 from web_api_template.core.api.common_query_model import CommonQueryModel
-from web_api_template.core.api.utils import get_address_type
 from web_api_template.core.auth.functions import require_groups
 from web_api_template.core.auth.user import User
 from web_api_template.core.http.validators import (
@@ -70,7 +69,7 @@ async def get_list(
 
     return JSONResponse(
         status_code=status_code,
-        address=error_message,
+        content=error_message,
     )
 
 
@@ -124,7 +123,7 @@ async def get_by_id(
 
     return JSONResponse(
         status_code=status_code,
-        address=error_message,
+        content=error_message,
     )
 
 
@@ -172,10 +171,6 @@ async def delete_by_id(
     try:
         await WriteService().delete_by_id(id=id)
         return
-    except AddressIsActiveException as e:
-        logger.exception(f"Address with id {id} is active and cannot be deleted")
-        status_code = status.HTTP_409_CONFLICT
-        error_message = {"message": str(e)}
     except AddressNotFoundException as e:
         logger.exception(f"Address with id {id} not found")
         status_code = status.HTTP_404_NOT_FOUND
@@ -187,7 +182,7 @@ async def delete_by_id(
 
     return JSONResponse(
         status_code=status_code,
-        address=error_message,
+        content=error_message,
     )
 
 
@@ -218,7 +213,7 @@ async def update(
     response: Response,
     id: str,
     address: AddressCreate,
-) -> Address:
+) -> Address | JSONResponse:
     """Update the address with the given information.
     - Do not allow to dissasociate any active polcies from the address.
 
@@ -238,13 +233,13 @@ async def update(
     logger.debug("update request: %s", address)
 
     try:
-        response: Address = await WriteService().update(
+        entity: Address = await WriteService().update(
             id=id,
             # current_user=current_user,
             request=address,
         )
 
-        return response
+        return entity
 
     except AddressNotFoundException as e:
         logger.exception(f"Address with id {id} not found")
@@ -257,7 +252,7 @@ async def update(
 
     return JSONResponse(
         status_code=status_code,
-        address=error_message,
+        content=error_message,
     )
 
 
@@ -305,12 +300,12 @@ async def create(
 
     try:
 
-        response: Address = await WriteService().create(
+        entity: Address = await WriteService().create(
             # current_user=current_user,
             request=address,
         )
 
-        return response
+        return entity
 
     # except NotAllowedCreationException as e:
     #     logger.exception("You are not allowed to create this item")
@@ -335,5 +330,5 @@ async def create(
 
     return JSONResponse(
         status_code=status_code,
-        address=error_message,
+        content=error_message,
     )
