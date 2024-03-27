@@ -5,7 +5,6 @@ from datetime import datetime
 from time import time, time_ns
 from typing import List, Optional
 
-# from botocore.exceptions import ClientError
 import requests
 from jose import jwk
 from jose.utils import base64url_decode
@@ -13,15 +12,15 @@ from jose.utils import base64url_decode
 from web_api_template.core.logging import logger
 
 from ...types import JWK, JWKS, JWTAuthorizationCredentials
-from .aws_exception import AWSException
+from .azure_exception import AzureException
 from .settings import settings
 
 
-class CognitoClient:
+class EntraIDClient:
 
     def __new__(cls):
         if not hasattr(cls, "instance"):
-            cls.instance = super(CognitoClient, cls).__new__(cls)
+            cls.instance = super(EntraIDClient, cls).__new__(cls)
         return cls.instance
 
     def __get_jwks(self) -> JWKS | None:
@@ -45,13 +44,16 @@ class CognitoClient:
 
         try:
             if reload_cache:
+
                 # TODO: Control errors
-                keys: List[JWK] = requests.get(
-                    settings.AWS_COGNITO_JWKS_URL_TEMPLATE.format(
-                        settings.AWS_COGNITO_USER_POOL_REGION,
-                        settings.AWS_COGNITO_USER_POOL_ID,
+                openid_config = requests.get(
+                    settings.AZURE_ENTRA_ID_JWKS_URL_TEMPLATE.format(
+                        settings.AZURE_ENTRA_ID_TENANT_ID,
                     )
-                ).json()["keys"]
+                ).json()
+                jwks_uri = openid_config["jwks_uri"]
+                keys: List[JWK] = requests.get(jwks_uri).json()["keys"]
+
                 timestamp: int = (
                     time_ns()
                     + settings.AUTH_JWKS_CACHE_INTERVAL_MINUTES * 60 * 1000000000
@@ -84,7 +86,7 @@ class CognitoClient:
             logger.error(
                 "No public key found that matches the one present in the TOKEN!"
             )
-            raise AWSException("No public key found!")
+            raise AzureException("No public key found!")
 
         hmac_key = jwk.construct(hmac_key_candidate)
 

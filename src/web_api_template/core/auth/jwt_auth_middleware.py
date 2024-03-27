@@ -130,6 +130,7 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
 
         # TODO: token claims scope is a string but contains a list of groups
         # separated by space. Modify the token claims to allow to include a list of groups
+        # TODO: send group management to a separate class as cognito and Entra Id manage them differently
         return User(
             id=token.claims["sub"],
             name=(
