@@ -7,17 +7,22 @@ from starlette.requests import Request
 from starlette.status import HTTP_403_FORBIDDEN
 
 from web_api_template.core.auth.invalid_token_exception import InvalidTokenException
+from web_api_template.core.auth.jwt_auth_provider import JWTAuthProvider
 from web_api_template.core.logging import logger
 
-from ...jwt_bearer_manager_protocol import JWTBearerManagerProtocol
-from ...types import JWTAuthorizationCredentials
-from .entraid_client import EntraIDClient
 from .settings import settings
+from .types import JWTAuthorizationCredentials
 
 
-class JWTBearerManager(HTTPBearer, JWTBearerManagerProtocol):
-    def __init__(self, auto_error: bool = True):
+class JWTBearerManager(HTTPBearer):
+
+    def __init__(
+        self,
+        auth_provider: JWTAuthProvider,
+        auto_error: bool = True,
+    ):
         super().__init__(auto_error=auto_error)
+        self.auth_provider = auth_provider
 
     async def get_credentials(
         self, request: Request
@@ -67,7 +72,7 @@ class JWTBearerManager(HTTPBearer, JWTBearerManagerProtocol):
                     detail="JWK-invalid",
                 )
 
-            if not EntraIDClient().verify_token(jwt_credentials):
+            if not self.auth_provider.verify_token(jwt_credentials):
                 logger.error("Error in JWTBearerManager: token not verified")
                 raise InvalidTokenException(
                     status_code=HTTP_403_FORBIDDEN,
@@ -77,11 +82,3 @@ class JWTBearerManager(HTTPBearer, JWTBearerManagerProtocol):
             return jwt_credentials
 
         return None
-
-    def get_groups(self, token: JWTAuthorizationCredentials) -> Optional[List[str]]:
-
-        return (
-            token.claims["groups"]
-            if "groups" in token.claims
-            else [str(token.claims["scope"]).split("/")[-1]]
-        )
