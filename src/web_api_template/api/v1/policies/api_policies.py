@@ -198,6 +198,7 @@ async def delete_by_id(
 
 @api_router.put(
     "/{id}",
+    response_model=Policy,
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_409_CONFLICT: {

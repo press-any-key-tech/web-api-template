@@ -31,17 +31,6 @@ class ModuleSettings(Settings):
         default="https://cognito-idp.{}.amazonaws.com/{}/.well-known/jwks.json",
     )
 
-    AWS_COGNITO_JWKS_CACHE_INTERVAL_MINUTES: int = config(
-        "AWS_COGNITO_JWKS_CACHE_INTERVAL_MINUTES",
-        cast=int,
-        default=20,
-    )
-    AWS_COGNITO_JWKS_CACHE_USAGES: int = config(
-        "AWS_COGNITO_JWKS_CACHE_USAGES",
-        cast=int,
-        default=1000,
-    )
-
     AWS_COGNITO_USER_POOL_CLIENT_ID: Optional[str] = config(
         "AWS_COGNITO_USER_POOL_CLIENT_ID",
         cast=str,

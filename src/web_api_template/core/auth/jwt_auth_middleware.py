@@ -6,14 +6,11 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.responses import JSONResponse, Response
 
 from web_api_template.core.auth.invalid_token_exception import InvalidTokenException
-from web_api_template.core.auth.providers.cognito.jwt_bearer_manager import (
-    JWTBearerManager,
-)
+from web_api_template.core.auth.jwt_auth_provider import JWTAuthProvider
+from web_api_template.core.auth.jwt_bearer_manager import JWTBearerManager
 from web_api_template.core.auth.types import JWTAuthorizationCredentials
 from web_api_template.core.auth.user import User
 from web_api_template.core.logging import logger
-
-from .jwt_bearer_manager_protocol import JWTBearerManagerProtocol
 
 
 class JwtAuthMiddleware(BaseHTTPMiddleware):
@@ -24,9 +21,15 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
         BaseHTTPMiddleware (_type_): _description_
     """
 
-    def __init__(self, jwt_bearer_manager: JWTBearerManagerProtocol, *args, **kwargs):
+    _auth_provider: JWTAuthProvider
+    _jwt_bearer_manager = JWTBearerManager
+
+    def __init__(self, auth_provider: JWTAuthProvider, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.jwt_bearer_manager = jwt_bearer_manager
+        self._auth_provider = auth_provider
+        self._jwt_bearer_manager = JWTBearerManager(
+            auth_provider=self._auth_provider,
+        )
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -70,12 +73,12 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
                 return None
 
             token: Optional[JWTAuthorizationCredentials] = (
-                await self.jwt_bearer_manager.get_credentials(request=request)
+                await self._jwt_bearer_manager.get_credentials(request=request)
             )
 
             # Create User object from token
             user: User = (
-                self.__create_user_from_token(token=token)
+                self._auth_provider.create_user_from_token(token=token)
                 if token
                 else self.__create_synthetic_user()
             )
@@ -85,7 +88,7 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
             logger.error("Invalid Token %s", str(ite))
             raise
         except Exception as e:
-            logger.error("Not controlled exception")
+            logger.error("Not controlled exception %s", str(e))
             raise
 
     def __validate_credentials(self, request: Request) -> bool:
@@ -112,35 +115,4 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
             name="synthetic",
             groups=[],
             email="synthetic@email.com",
-        )
-
-    def __create_user_from_token(self, token: JWTAuthorizationCredentials) -> User:
-        """Initializes a domain User object with data recovered from a JWT TOKEN.
-        Args:
-        token (JWTAuthorizationCredentials): Defaults to Depends(oauth2_scheme).
-
-        Returns:
-            User: Domain object.
-
-        """
-
-        name_propetry: str = (
-            "username" if "username" in token.claims else "cognito:username"
-        )
-
-        # TODO: token claims scope is a string but contains a list of groups
-        # separated by space. Modify the token claims to allow to include a list of groups
-        return User(
-            id=token.claims["sub"],
-            name=(
-                token.claims[name_propetry]
-                if name_propetry in token.claims
-                else token.claims["sub"]
-            ),
-            groups=(
-                token.claims["cognito:groups"]
-                if "cognito:groups" in token.claims
-                else [str(token.claims["scope"]).split("/")[-1]]
-            ),
-            email=token.claims["email"] if "email" in token.claims else None,
         )

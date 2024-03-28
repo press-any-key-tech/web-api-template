@@ -16,7 +16,7 @@ from web_api_template.api.v1.policies.services import WriteService as PolicyWrit
 from web_api_template.core.api import ApiMessage
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_content_type
-from web_api_template.core.auth.functions import require_groups
+from web_api_template.core.auth.functions import require_groups, require_user
 from web_api_template.core.auth.user import User
 from web_api_template.core.http.validators import (
     ksuid_path_validator,
@@ -45,7 +45,8 @@ api_router = APIRouter()
         },
     },
     dependencies=[
-        Depends(require_groups(["customer", "administrator"])),
+        # Depends(require_groups(["customer", "administrator"])),
+        Depends(require_user()),
     ],
 )
 async def get_list(
@@ -200,6 +201,7 @@ async def delete_by_id(
 
 @api_router.put(
     "/{id}",
+    response_model=Person,
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_409_CONFLICT: {
@@ -216,7 +218,8 @@ async def delete_by_id(
         },
     },
     dependencies=[
-        Depends(require_groups(["customer"])),
+        # Depends(require_groups(["customer"])),
+        Depends(require_user()),
         Depends(ksuid_path_validator),
     ],
 )

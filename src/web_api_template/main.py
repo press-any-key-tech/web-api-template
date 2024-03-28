@@ -5,8 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydilite import Provider, configure
 
 from web_api_template.core.auth.jwt_auth_middleware import JwtAuthMiddleware
-from web_api_template.core.auth.providers.cognito.jwt_bearer_manager import (
-    JWTBearerManager,
+from web_api_template.core.auth.providers.entraid.entra_id_provider import (
+    EntraIDProvider,
 )
 from web_api_template.core.cors import include_cors
 from web_api_template.core.logging import logger
@@ -37,10 +37,18 @@ def start_application(app: FastAPI):
     # Add middlewares (in order of desired execution)
 
     # CORS should be the first middleware (if needed)
-    include_cors(app)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.CORS_ALLOWED_ORIGINS,
+        allow_credentials=True,
+        allow_methods=settings.CORS_ALLOWED_METHODS,
+        allow_headers=settings.CORS_ALLOWED_HEADERS,
+    )
+    logger.debug("CORS initialized")
 
     # AuthMiddleware (creates current_user). Requires auth provider
-    app.add_middleware(JwtAuthMiddleware, jwt_bearer_manager=JWTBearerManager())
+    app.add_middleware(JwtAuthMiddleware, auth_provider=EntraIDProvider())
+    logger.debug("Auth middleware initialized")
 
     # AuditMiddleware (requires current_user)
 
