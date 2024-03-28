@@ -138,10 +138,6 @@ class JwtAuthMiddleware(BaseHTTPMiddleware):
                 if name_propetry in token.claims
                 else token.claims["sub"]
             ),
-            groups=(
-                token.claims["cognito:groups"]
-                if "cognito:groups" in token.claims
-                else [str(token.claims["scope"]).split("/")[-1]]
-            ),
+            groups=self.jwt_bearer_manager.get_groups(token=token),
             email=token.claims["email"] if "email" in token.claims else None,
         )

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydilite import Provider, configure
 
 from web_api_template.core.auth.jwt_auth_middleware import JwtAuthMiddleware
-from web_api_template.core.auth.providers.cognito.jwt_bearer_manager import (
+from web_api_template.core.auth.providers.entraid.jwt_bearer_manager import (
     JWTBearerManager,
 )
 from web_api_template.core.cors import include_cors

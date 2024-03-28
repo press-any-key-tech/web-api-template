@@ -6,7 +6,7 @@ from time import time, time_ns
 from typing import List, Optional
 
 import requests
-from jose import jwk
+from jose import JWTError, jwk, jwt
 from jose.utils import base64url_decode
 
 from web_api_template.core.logging import logger
@@ -25,7 +25,7 @@ class EntraIDClient:
 
     def __get_jwks(self) -> JWKS | None:
         """
-        Returns a structure that caches the public keys used by cognito to sign its JWT tokens.
+        Returns a structure that caches the public keys used by Entra ID to sign its JWT tokens.
         Cache is refreshed after a settable time or number of reads (usages)
         """
         reload_cache = False
@@ -52,7 +52,12 @@ class EntraIDClient:
                     )
                 ).json()
                 jwks_uri = openid_config["jwks_uri"]
-                keys: List[JWK] = requests.get(jwks_uri).json()["keys"]
+                keys = requests.get(jwks_uri).json()["keys"]
+
+                # Convert 'x5c' field in each key from list to string
+                for key in keys:
+                    if "x5c" in key and isinstance(key["x5c"], list):
+                        key["x5c"] = "".join(key["x5c"])
 
                 timestamp: int = (
                     time_ns()
@@ -69,6 +74,10 @@ class EntraIDClient:
         except KeyError:
             return None
 
+        except Exception as e:
+            logger.error("Error in EntraIDClient: %s", str(e))
+            raise AzureException("Error in EntraIDClient")
+
         return self.jks
 
     def __get_hmac_key(self, token: JWTAuthorizationCredentials) -> Optional[JWK]:
@@ -80,6 +89,18 @@ class EntraIDClient:
         return None
 
     def verify_token(self, token: JWTAuthorizationCredentials) -> bool:
+        """Verifiy token signature
+
+        Args:
+            token (JWTAuthorizationCredentials): _description_
+
+        Raises:
+            AzureException: _description_
+
+        Returns:
+            bool: _description_
+        """
+
         hmac_key_candidate = self.__get_hmac_key(token)
 
         if not hmac_key_candidate:
@@ -88,12 +109,29 @@ class EntraIDClient:
             )
             raise AzureException("No public key found!")
 
-        hmac_key = jwk.construct(hmac_key_candidate)
+        # hmac_key = jwk.construct(hmac_key_candidate)
 
-        decoded_signature = base64url_decode(token.signature.encode())
+        try:
+            rsa_key = {
+                "kty": hmac_key_candidate["kty"],
+                "kid": hmac_key_candidate["kid"],
+                "use": hmac_key_candidate["use"],
+                "n": hmac_key_candidate["n"],
+                "e": hmac_key_candidate["e"],
+            }
 
-        # if crypto is OK, then check expiry date
-        if hmac_key.verify(token.message.encode(), decoded_signature):
-            return token.claims["exp"] > time()
-
-        return False
+            # Decode jwt token
+            payload = jwt.decode(
+                token.jwt_token,
+                rsa_key,
+                algorithms=["RS256"],
+                audience=settings.AZURE_ENTRA_ID_AUDIENCE_ID,
+                options={"verify_at_hash": False},  # Disable at_hash verification
+            )
+            return False if payload.get("sub") is None else True
+        except JWTError as je:
+            logger.error("Error in EntraIDClient: %s", str(je))
+            return False
+        except Exception as e:
+            logger.error("Error in JWTBearerManager: %s", str(e))
+            raise AzureException("Error in JWTBearerManager")

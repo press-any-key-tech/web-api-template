@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -85,3 +85,11 @@ class JWTBearerManager(HTTPBearer, JWTBearerManagerProtocol):
             return jwt_credentials
 
         return None
+
+    def get_groups(self, token: JWTAuthorizationCredentials) -> Optional[List[str]]:
+
+        return (
+            token.claims["cognito:groups"]
+            if "cognito:groups" in token.claims
+            else [str(token.claims["scope"]).split("/")[-1]]
+        )

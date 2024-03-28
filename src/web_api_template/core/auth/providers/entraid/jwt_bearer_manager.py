@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -67,14 +67,6 @@ class JWTBearerManager(HTTPBearer, JWTBearerManagerProtocol):
                     detail="JWK-invalid",
                 )
 
-            # TODO: perhaps these checks are a bit too excessive...
-            if "token_use" not in jwt_credentials.claims:
-                logger.error("Error in JWTBearerManager: token_use not in claims")
-                raise InvalidTokenException(
-                    status_code=HTTP_403_FORBIDDEN,
-                    detail="JWK invalid",
-                )
-
             if not EntraIDClient().verify_token(jwt_credentials):
                 logger.error("Error in JWTBearerManager: token not verified")
                 raise InvalidTokenException(
@@ -85,3 +77,11 @@ class JWTBearerManager(HTTPBearer, JWTBearerManagerProtocol):
             return jwt_credentials
 
         return None
+
+    def get_groups(self, token: JWTAuthorizationCredentials) -> Optional[List[str]]:
+
+        return (
+            token.claims["groups"]
+            if "groups" in token.claims
+            else [str(token.claims["scope"]).split("/")[-1]]
+        )

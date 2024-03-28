@@ -6,6 +6,12 @@ from pydantic import BaseModel
 JWK = Dict[str, str]
 
 
+class JWKSEntraID(BaseModel):
+    keys: Optional[Dict[str, Any]] = {}
+    timestamp: Optional[int] = None
+    usage_counter: Optional[int] = 0
+
+
 class JWKS(BaseModel):
     keys: Optional[List[JWK]] = []
     timestamp: Optional[int] = None

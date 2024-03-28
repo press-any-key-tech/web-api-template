@@ -19,6 +19,13 @@ class ModuleSettings(Settings):
         default=None,
     )
 
+    # The audience id is the client id of the application
+    AZURE_ENTRA_ID_AUDIENCE_ID: Optional[str] = config(
+        "AZURE_ENTRA_ID_AUDIENCE_ID",
+        cast=str,
+        default=None,
+    )
+
     AZURE_ENTRA_ID_JWKS_URL_TEMPLATE: str = config(
         "AZURE_ENTRA_ID_JWKS_URL_TEMPLATE",
         cast=str,
