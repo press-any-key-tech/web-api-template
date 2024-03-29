@@ -137,3 +137,43 @@ Response
 ```
 http://localhost:4200/#id_token=eyJraWQiOiJZbEFQcjZiRzNaZk82b1o2YUFvc295aCtTd1dYMEJON3M5V0JjNG5qbTJvPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiTGdGOFFCcmVQTkE0UWs2U2ZUeGFLUSIsInN1YiI6IjJmNGJkOTFhLWY0NWEtNDYzOS1hMzkzLTRhYWYxOGE1MDk4MSIsImNvZ25pdG86Z3JvdXBzIjpbImN1c3RvbWVyIl0sImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5ldS13ZXN0LTEuYW1hem9uYXdzLmNvbVwvZXUtd2VzdC0xX1N0dk5xbnVMdiIsImNvZ25pdG86dXNlcm5hbWUiOiJ0ZXN0ZXIiLCJhdWQiOiI1cDZ2bG50OHU4czFsMWI2YjdoYzJ2bnVsdiIsImV2ZW50X2lkIjoiZWEzNDU2ZmUtZGQwNi00YTJlLWJlOGYtNjgwMDYyYzgwMTFjIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3MTE2NjM3MTEsImV4cCI6MTcxMTY2NzMxMSwiaWF0IjoxNzExNjYzNzExLCJqdGkiOiIxODAzNzkyZS1lOThhLTQwMzEtYjhhOC1iNmEzYzVlODY0OTkiLCJlbWFpbCI6InRlc3RlckBtYWlsLmNvbSJ9.N9DZyZYCnfFS9eeIyHUiscrsn5Yce168rUeD28eVRu3Hg_ucea_VIC3COnBFe1rSgOjZZ-evWyYVYsxS-IFzWTGCAAbrOkCivZTQ85vTpjlStwDVLQ0rUjqIC5JEkRyqAc_Dj2jHPL3emV2Y9rti7PWs_0FZ3vxwCzf-ndtqDLSvGGGhC8cZPX8B5FLH4ZERAdTPhkXUAtO4Tovsho0JSieWn58vlIbwmtPD0Aov2CX415cYwxtrIpbAZQj6KLLbx6TDcUPGMByzDNWMPni6tdirfSjI5ShM_P_IpPOoAFGIz74fo5JNxorCwdfwQ2UBhtbE9LXWVXbfV5ZOKkljlQ&access_token=eyJraWQiOiI1YlJPR0g4S1V2U3JnRU85VXh1MGdyekJtT1c2RlpMVW5WdjcyczI2VXdBPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIyZjRiZDkxYS1mNDVhLTQ2MzktYTM5My00YWFmMThhNTA5ODEiLCJjb2duaXRvOmdyb3VwcyI6WyJjdXN0b21lciJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb21cL2V1LXdlc3QtMV9TdHZOcW51THYiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiI1cDZ2bG50OHU4czFsMWI2YjdoYzJ2bnVsdiIsImV2ZW50X2lkIjoiZWEzNDU2ZmUtZGQwNi00YTJlLWJlOGYtNjgwMDYyYzgwMTFjIiwidG9rZW5fdXNlIjoiYWNjZXNzIiwic2NvcGUiOiJwaG9uZSBvcGVuaWQgcHJvZmlsZSBlbWFpbCIsImF1dGhfdGltZSI6MTcxMTY2MzcxMSwiZXhwIjoxNzExNjY3MzExLCJpYXQiOjE3MTE2NjM3MTEsImp0aSI6IjM1ZmVjMjhmLTA3YTctNDFjNi04YzNjLWQ0MzFhNjAyOTliOSIsInVzZXJuYW1lIjoidGVzdGVyIn0.pMuWJAbK4JUnRdpSaDP6ohnb0goHzAed1qZc6krejvEHPLzd63MUtn1OorCEhO92Gl0NRj9nEc2i4_8V_rUsAbX4j_JXowd09HtQkEGzie4jJzdQH6xolSOKMmRv6LQjWW9iA6G6vDGvI_3w247t1feOCm5mZJIMXGZl5qoz7eQhBGlN1lRQm5F2-Inuw9VKyH5VzxjN74p9eYNtrOkJQE9-jH2aSAYfrMP36Z60iCs0z4H0pYD3YvOMZ9iidXlfwXNy0mdavVmb1Ex9yiurt-merjHLUH0wY804mQ0ps6KR6v4xOF7IWmubCZ_zi2GzGvXFz7rNWxmJfN2qNscDAg&expires_in=3600&token_type=Bearer
 ```
+
+
+## Lambda
+
+### Install SAM cli for testing locally
+
+(SAM CLI)[https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html]
+
+
+### Create a template.yaml file
+
+AWS SAM uses a template file to define your application. Here's an example of what this file might look like for your Lambda container:
+
+```yaml
+Resources:
+  MyLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      ImageUri: mylambda:latest
+```
+
+In this file, ImageUri should be the name and tag of your Docker image.
+
+### Start the AWS SAM local environment
+
+Now you can start the AWS SAM local environment with the following command:
+
+```bash
+sam local start-lambda
+```
+
+### Invoke your function
+
+You can invoke your function with the following command:
+
+```bash
+sam local invoke MyLambdaFunction
+```
+

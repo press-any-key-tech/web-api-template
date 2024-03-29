@@ -1,0 +1,14 @@
+Resources:
+  WebApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      ImageUri: web-api-template:lambda
+    Metadata:
+      Dockerfile: Dockerfile.lambda
+      DockerContext: .
+      DockerTag: lambda
+
+
