@@ -21,6 +21,9 @@ FROM python:3.12-alpine
 ARG package_name=web_api_template
 ARG module_name=web_api_template
 
+# Install additional libraries
+RUN apk add --no-cache curl-dev
+
 ENV PORT 8000
 
 EXPOSE 8000/tcp
