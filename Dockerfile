@@ -22,7 +22,7 @@ ARG package_name=web_api_template
 ARG module_name=web_api_template
 
 # Install additional libraries
-RUN apk add --no-cache curl-dev
+RUN apk add --no-cache gcc musl-dev curl-dev
 
 ENV PORT 8000
 
