@@ -1,0 +1,61 @@
+name: main-lambda-cicd
+
+on:
+  release:
+    types: [created]
+
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: "Log level"
+        required: true
+        default: "warning"
+      tags:
+        description: "Manual launch"
+jobs:
+  BuildJob:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Print release information
+        run: |
+          echo "Release tag: ${{ github.event.release.tag_name }}"
+          echo "Release description: ${{ github.event.release.body }}"
+
+      - name: Set ImageTag
+        id: version
+        run: |
+          if [[ "${{ github.event.release.tag_name }}" != "" ]]; then
+            echo "IMAGE_TAG=lambda${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "IMAGE_TAG=lambda0.0.0" >> $GITHUB_ENV
+          fi
+
+      - name: Display Image Tag
+        run: echo "IMAGE_TAG is ${{ env.IMAGE_TAG }}"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push image
+        id: build-push-image
+        uses: docker/build-push-action@v2
+        env:
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        with:
+          context: .
+          file: ./Dockerfile.lambda
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}

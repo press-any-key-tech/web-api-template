@@ -1,10 +1,6 @@
-name: github-actions-cicd
+name: main-cicd
 
 on:
-  # push:
-  #   branches:
-  #     - main
-
   release:
     types: [created]
 
@@ -38,21 +34,8 @@ jobs:
             echo "IMAGE_TAG=0.0.0" >> $GITHUB_ENV
           fi
 
-      # - name: Read VERSION.txt and set ImageTag
-      #   id: version
-      #   run: |
-      #     VERSION=$(cat VERSION.txt)
-      #     echo "IMAGE_TAG=${VERSION}.${{ github.run_number }}" >> $GITHUB_ENV
-
       - name: Display Image Tag
         run: echo "IMAGE_TAG is ${{ env.IMAGE_TAG }}"
-
-      # - name: Display Env vars
-      #   run: |
-      #     echo "AWS_REGION is ${{ vars.AWS_REGION }}"
-      #     echo "ECR_REPOSITORY is ${{ vars.ECR_REPOSITORY }}"
-      #     echo "DOCKER_HUB_REPOSITORY is ${{ vars.DOCKER_HUB_REPOSITORY }}"
-      #     echo "DOCKER_HUB_USERNAME is ${{ secrets.DOCKER_HUB_USERNAME }}"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -65,13 +48,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Login to DockerHub
-        id: login-dockerhub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
       - name: Build and push image
         id: build-push-image
         uses: docker/build-push-action@v2
@@ -79,9 +55,8 @@ jobs:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         with:
           context: .
+          file: ./Dockerfile
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:latest
-            ${{ vars.DOCKER_HUB_REPOSITORY }}:${{ env.IMAGE_TAG }}
-            ${{ vars.DOCKER_HUB_REPOSITORY }}:latest
