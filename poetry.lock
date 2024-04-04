@@ -246,6 +246,26 @@ tests-mypy = ["mypy (>=1.6)", "pytest-mypy-plugins"]
 tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "pytest (>=4.3.0)", "pytest-xdist[psutil]"]
 
 [[package]]
+name = "auth-middleware"
+version = "0.1.0"
+description = "Async Auth Middleware for FastAPI/Starlette"
+optional = false
+python-versions = "<4.0,>=3.12"
+files = [
+    {file = "auth_middleware-0.1.0-py3-none-any.whl", hash = "sha256:e5c776d58a128ee27e59206e9b7aec9771616c6d7bb4869d91b62eb5d54ebf95"},
+    {file = "auth_middleware-0.1.0.tar.gz", hash = "sha256:d0c4582085c0ffb4015dda56959a9d4352079a91559d8a772f9bdc4329478c33"},
+]
+
+[package.dependencies]
+colorlog = ">=6.8.0,<7.0.0"
+fastapi = ">=0.105.0,<0.106.0"
+pydantic = {version = ">=2.5.3,<3.0.0", extras = ["email"]}
+python-dotenv = ">=1.0.0,<2.0.0"
+python-jose = {version = ">=3.3.0,<4.0.0", extras = ["cryptography"]}
+requests = ">=2.31.0,<3.0.0"
+svix-ksuid = ">=0.6.2,<0.7.0"
+
+[[package]]
 name = "babel"
 version = "2.14.0"
 description = "Internationalization utilities"
@@ -3477,4 +3497,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "c15cb4fed4d291829997be41622c4fda6ed346acf7124a00cf3467ef432a6514"
+content-hash = "9dced6fe70ad05818c5338bb09b362d0a63dad7c955aa534e77cdb41e8bc5caf"
