@@ -6,6 +6,7 @@ from auth_middleware.providers.entra_id.entra_id_provider import EntraIDProvider
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydilite import Provider, configure
+from transaction_middleware import TransactionMiddleware
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
@@ -48,7 +49,9 @@ def start_application(app: FastAPI):
     app.add_middleware(JwtAuthMiddleware, auth_provider=CognitoProvider())
     logger.debug("Auth middleware initialized")
 
-    # AuditMiddleware (requires current_user)
+    # TransactionMiddleware (creates transaction_id)
+    app.add_middleware(TransactionMiddleware)
+    logger.debug("Transaction middleware initialized")
 
     # ----------------------------------------
     # Lifespan (startup/shutdown async actions)
