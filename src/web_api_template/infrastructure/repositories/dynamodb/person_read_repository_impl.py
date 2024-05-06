@@ -31,14 +31,14 @@ class PersonReadRepositoryImpl(PersonReadRepository):
             dict
         """
 
-        logger.debug("filter: %s", filter)
+        logger.debug("filter: {}", filter)
         # logger.debug("query: %s", query)
 
         try:
             return [mapper.to(Person).map(item) for item in PersonModel.scan()]
 
         except Exception as ex:
-            logger.exception(f"Database error reading persons: {ex}")
+            logger.exception("Database error reading persons: {}", ex)
             raise ex
 
     async def get_by_id(self, id: str) -> Person:
@@ -55,7 +55,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
             entity_model: PersonModel = PersonModel.get(id)
 
             if not entity_model:
-                logger.debug("Item with id: %s not found", id)
+                logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
             return mapper.to(Person).map(entity_model)

@@ -119,7 +119,7 @@ async def get_by_id(
         entity: Policy = await ReadService().get_by_id(id=id)
         return entity
     except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+        logger.exception("Policy with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -178,11 +178,11 @@ async def delete_by_id(
         await WriteService().delete_by_id(id=id)
         return
     except PolicyIsActiveException as e:
-        logger.exception(f"Policy with id {id} is active and cannot be deleted")
+        logger.exception("Policy with id {} is active and cannot be deleted", id)
         status_code = status.HTTP_409_CONFLICT
         error_message = {"message": str(e)}
     except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+        logger.exception("Policy with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -241,7 +241,7 @@ async def update(
     status_code: int
     error_message: dict
 
-    logger.debug("update request: %s", policy)
+    logger.debug("update request: {}", policy)
 
     try:
         entity: Policy = await WriteService().update(
@@ -253,7 +253,7 @@ async def update(
         return entity
 
     except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+        logger.exception("Policy with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -331,7 +331,7 @@ async def create(
     #     error_message = {"message": str(e)}
 
     except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+        logger.exception("Policy with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:

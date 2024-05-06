@@ -51,7 +51,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             entity_model: PersonModel = PersonModel.get(id)
 
             if not entity_model:
-                logger.debug("Item with id: %s not found", id)
+                logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
             return entity_model
@@ -100,7 +100,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
 
             if not entity_model:
                 # TODO : check if pot is in delete status
-                logger.debug("Item with id: %s not found", id)
+                logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
             # Delete the given (and existing) id
@@ -132,7 +132,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
 
             if not entity_model:
                 # TODO : check if person is in delete status
-                logger.debug("Item with id: %s not found", id)
+                logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
             # TODO: check for unique slug

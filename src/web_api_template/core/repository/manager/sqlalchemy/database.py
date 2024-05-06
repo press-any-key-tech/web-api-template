@@ -120,5 +120,5 @@ class Database:
                     and settings_by_label.INITIALIZE
                 ):
                     async with Database().get_engine(label).begin() as conn:
-                        logger.debug("Creating tables for: %s", label)
+                        logger.debug("Creating tables for: {}", label)
                         await conn.run_sync(metadata.create_all)

@@ -112,7 +112,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
 
             if not entity_model:
                 # TODO : check if content is in delete status
-                logger.debug("Item with id: %s not found", id)
+                logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
             # Delete the given (and existing) id
@@ -181,7 +181,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
 
             if not entity_model:
                 # TODO : check if content is in delete status
-                logger.debug("Item with id: %s not found", id)
+                logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
             new_model: ContentModel = mapper.to(ContentModel).map(content)

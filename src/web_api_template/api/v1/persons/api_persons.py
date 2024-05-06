@@ -122,7 +122,7 @@ async def get_by_id(
         entity: Person = await ReadService().get_by_id(id=id)
         return entity
     except PersonNotFoundException as e:
-        logger.exception(f"Person with id {id} not found")
+        logger.exception("Person with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -181,11 +181,11 @@ async def delete_by_id(
         await WriteService().delete_by_id(id=id)
         return
     except PersonHasActivePoliciesException as e:
-        logger.exception(f"Person with id {id} has active policies associated with it")
+        logger.exception("Person with id {} has active policies associated with it", id)
         status_code = status.HTTP_409_CONFLICT
         error_message = {"message": str(e)}
     except PersonNotFoundException as e:
-        logger.exception(f"Person with id {id} not found")
+        logger.exception("Person with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -245,7 +245,7 @@ async def update(
     status_code: int
     error_message: dict
 
-    logger.debug("update request: %s", person)
+    logger.debug("update request: {}", person)
 
     try:
         entity: Person = await WriteService().update(
@@ -257,11 +257,11 @@ async def update(
         return entity
 
     except PersonHasActivePoliciesException as e:
-        logger.exception(f"Person with id {id} has active policies associated with it")
+        logger.exception("Person with id {} has active policies associated with it", id)
         status_code = status.HTTP_409_CONFLICT
         error_message = {"message": str(e)}
     except PersonNotFoundException as e:
-        logger.exception(f"Person with id {id} not found")
+        logger.exception("Person with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -341,11 +341,11 @@ async def create(
 
     except PolicyNotFoundException as e:
         # TODO: Be careful with the message, it is using the person id
-        logger.exception(f"Policy with id {id} not found")
+        logger.exception("Policy with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except PersonNotFoundException as e:
-        logger.exception(f"Person with id {id} not found")
+        logger.exception("Person with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -393,7 +393,7 @@ async def get_policies_by_person(
     status_code: int
     error_message: dict
 
-    logger.debug("Person id: %s", id)
+    logger.debug("Person id: {}", id)
 
     try:
         # TODO: generalize filter
@@ -405,7 +405,7 @@ async def get_policies_by_person(
         return result
 
     except PersonNotFoundException as e:
-        logger.exception(f"Person with id {id} not found")
+        logger.exception("Person with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:

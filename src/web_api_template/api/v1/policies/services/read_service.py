@@ -27,7 +27,7 @@ class ReadService:
             List[Policy]: domain entity to return
         """
 
-        logger.debug("Entering. filter: %s", filter)
+        logger.debug("Entering. filter: {}", filter)
 
         entities: List[Policy] = await self.policy_db_repo.get_list(filter=filter)
 
@@ -44,7 +44,7 @@ class ReadService:
             policy: domain entity to return
         """
 
-        logger.debug("Entering. id: %s", id)
+        logger.debug("Entering. id: {}", id)
 
         try:
             entity: Optional[Policy] = await self.policy_db_repo.get_by_id(id=id)
@@ -65,7 +65,7 @@ class ReadService:
             List[Policy]: domain entity to return
         """
 
-        logger.debug("Entering. filter: %s", id)
+        logger.debug("Entering. filter: {}", id)
 
         entities: List[Policy] = await self.policy_db_repo.get_list_by_person_id(id=id)
 

@@ -34,7 +34,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
             dict
         """
 
-        logger.debug("filter: %s", filter)
+        logger.debug("filter: {}", filter)
         # logger.debug("query: %s", query)
 
         async with Database.get_db_session(self._label) as session:
@@ -70,7 +70,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
             dict
         """
 
-        logger.debug("Person id: %s", id)
+        logger.debug("Person id: {}", id)
         # logger.debug("query: %s", query)
 
         async with Database.get_db_session(self._label) as session:
@@ -122,7 +122,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
             entity_model: Optional[PolicyModel] = await self.__get_by_id(id)
 
             if not entity_model:
-                logger.debug("Item with id: %s not found", id)
+                logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
             return mapper.to(Policy).map(entity_model)

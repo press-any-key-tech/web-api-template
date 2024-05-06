@@ -114,7 +114,7 @@ async def get_by_id(
         entity: Content = await ReadService().get_by_id(id=id)
         return entity
     except ContentNotFoundException as e:
-        logger.exception(f"Content with id {id} not found")
+        logger.exception("Content with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -173,7 +173,7 @@ async def delete_by_id(
         await WriteService().delete_by_id(id=id)
         return
     except ContentNotFoundException as e:
-        logger.exception(f"Content with id {id} not found")
+        logger.exception("Content with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -231,7 +231,7 @@ async def update(
     status_code: int
     error_message: dict
 
-    logger.debug("update request: %s", content)
+    logger.debug("update request: {}", content)
 
     try:
         entity: Content = await WriteService().update(
@@ -243,7 +243,7 @@ async def update(
         return entity
 
     except ContentNotFoundException as e:
-        logger.exception(f"Content with id {id} not found")
+        logger.exception("Content with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -321,7 +321,7 @@ async def create(
     #     error_message = {"message": str(e)}
 
     except ContentNotFoundException as e:
-        logger.exception(f"Content with id {id} not found")
+        logger.exception("Content with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:

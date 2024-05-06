@@ -34,7 +34,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
             dict
         """
 
-        logger.debug("filter: %s", filter)
+        logger.debug("filter: {}", filter)
         # logger.debug("query: %s", query)
 
         # async with Database.get_db_session(self._label) as session:
@@ -86,7 +86,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
             entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
             if not entity_model:
-                logger.debug("Item with id: %s not found", id)
+                logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
             return mapper.to(Person).map(entity_model)

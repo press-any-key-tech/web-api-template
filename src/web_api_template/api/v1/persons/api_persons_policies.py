@@ -69,7 +69,7 @@ async def get_policies_by_person(
     status_code: int
     error_message: dict
 
-    logger.debug("Person id: %s", id)
+    logger.debug("Person id: {}", id)
 
     try:
         # TODO: generalize filter
@@ -81,7 +81,7 @@ async def get_policies_by_person(
         return result
 
     except PersonNotFoundException as e:
-        logger.exception(f"Person with id {id} not found")
+        logger.exception("Person with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -167,7 +167,7 @@ async def create_policy(
     #     error_message = {"message": str(e)}
 
     except PersonNotFoundException as e:
-        logger.exception(f"Person with id {id} not found")
+        logger.exception("Person with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:

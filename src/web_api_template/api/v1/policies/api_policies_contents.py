@@ -64,7 +64,7 @@ async def get_contents_by_policy(
     status_code: int
     error_message: dict
 
-    logger.debug("Policy id: %s", id)
+    logger.debug("Policy id: {}", id)
 
     try:
         # TODO: generalize filter
@@ -76,7 +76,7 @@ async def get_contents_by_policy(
         return result
 
     except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+        logger.exception("Policy with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -155,7 +155,7 @@ async def create(
     #     error_message = {"message": str(e)}
 
     except PolicyNotFoundException as e:
-        logger.exception(f"Policy with id {id} not found")
+        logger.exception("Policy with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:

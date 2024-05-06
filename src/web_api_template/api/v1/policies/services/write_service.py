@@ -33,7 +33,7 @@ class WriteService:
             Policy: The newly created policy in the response format.
         """
 
-        logger.debug("Entering. policy: %s", request)
+        logger.debug("Entering. policy: {}", request)
 
         # if not await can_create(current_user=current_user):
         #     raise NotAllowedCreationException(
@@ -63,7 +63,7 @@ class WriteService:
             None
         """
 
-        logger.debug("Entering. id: %s", id)
+        logger.debug("Entering. id: {}", id)
 
         try:
             await self.policy_db_repo.delete(id=id)
@@ -89,7 +89,7 @@ class WriteService:
             Policy: domain entity to return
         """
 
-        logger.debug("Entering. id: %s request: %s", id, request)
+        logger.debug("Entering. id: {} request: {}", id, request)
 
         try:
             result: Optional[Policy] = await self.policy_db_repo.update(

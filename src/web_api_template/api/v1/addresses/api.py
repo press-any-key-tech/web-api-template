@@ -113,7 +113,7 @@ async def get_by_id(
         entity: Address = await ReadService().get_by_id(id=id)
         return entity
     except AddressNotFoundException as e:
-        logger.exception(f"Address with id {id} not found")
+        logger.exception("Address with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -172,7 +172,7 @@ async def delete_by_id(
         await WriteService().delete_by_id(id=id)
         return
     except AddressNotFoundException as e:
-        logger.exception(f"Address with id {id} not found")
+        logger.exception("Address with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -230,7 +230,7 @@ async def update(
     status_code: int
     error_message: dict
 
-    logger.debug("update request: %s", address)
+    logger.debug("update request: {}", address)
 
     try:
         entity: Address = await WriteService().update(
@@ -242,7 +242,7 @@ async def update(
         return entity
 
     except AddressNotFoundException as e:
-        logger.exception(f"Address with id {id} not found")
+        logger.exception("Address with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
@@ -320,7 +320,7 @@ async def create(
     #     error_message = {"message": str(e)}
 
     except AddressNotFoundException as e:
-        logger.exception(f"Address with id {id} not found")
+        logger.exception("Address with id {} not found", id)
         status_code = status.HTTP_404_NOT_FOUND
         error_message = {"message": str(e)}
     except Exception as e:
