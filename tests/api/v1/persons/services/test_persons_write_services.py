@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import List
 
 import pytest
+from auth_middleware.types import User
 from ksuid import Ksuid
 from mock import AsyncMock, patch
 from pydantic import ValidationError
 
 from web_api_template.api.v1.persons.services import ReadService, WriteService
-from web_api_template.core.auth.user import User
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities import Person, PersonFilter
 from web_api_template.domain.exceptions import PersonNotFoundException

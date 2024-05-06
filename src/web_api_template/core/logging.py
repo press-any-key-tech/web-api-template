@@ -1,33 +1,14 @@
-import logging
+import sys
 
-import colorlog
+from loguru import logger
 
 from .settings import settings
 
-logger = logging.getLogger(
-    __name__ if settings.LOGGER_NAME == "" else settings.LOGGER_NAME
+# Configurar el logger
+logger.remove()
+logger.add(
+    sink=sys.stderr,
+    level=settings.LOG_LEVEL,
+    format=settings.LOG_FORMAT,
+    colorize=True,
 )
-logger.setLevel(settings.LOG_LEVEL)
-
-# create console handler and set level to debug
-ch = logging.StreamHandler()
-ch.setLevel(settings.LOG_LEVEL)
-
-# create formatter
-formatter = colorlog.ColoredFormatter(
-    settings.LOG_FORMAT,
-    reset=True,
-    log_colors={
-        "DEBUG": "cyan",
-        "INFO": "green",
-        "WARNING": "yellow",
-        "ERROR": "red",
-        "CRITICAL": "red,bg_white",
-    },
-)
-
-# add formatter to ch
-ch.setFormatter(formatter)
-
-# add ch to logger
-logger.addHandler(ch)

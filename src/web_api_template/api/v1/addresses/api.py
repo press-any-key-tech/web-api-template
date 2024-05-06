@@ -4,6 +4,8 @@
 
 from typing import List, Optional
 
+from auth_middleware.functions import require_groups
+from auth_middleware.types import User
 from fastapi import APIRouter, Body, Depends, Header, Path, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -13,8 +15,6 @@ from starlette.responses import Response
 from web_api_template.api.v1.addresses.services import ReadService, WriteService
 from web_api_template.core.api import ApiMessage
 from web_api_template.core.api.common_query_model import CommonQueryModel
-from web_api_template.core.auth.functions import require_groups
-from web_api_template.core.auth.user import User
 from web_api_template.core.http.validators import (
     ksuid_path_validator,
     ksuid_query_validator,

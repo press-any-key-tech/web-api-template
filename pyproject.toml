@@ -26,6 +26,9 @@ requests = "^2.31.0"
 pydantic = {extras = ["email"], version = "^2.5.3"}
 pydilite = "^0.1.0"
 mangum = "^0.17.0"
+auth-middleware = "^0.1.17"
+loguru = "^0.7.2"
+transaction-middleware = "^0.1.7"
 
 
 [tool.poetry.group.dev.dependencies]
