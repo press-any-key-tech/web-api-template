@@ -38,11 +38,11 @@ class PolicyModel(BaseModel):
     class Meta(BaseModel.Meta):
         table_name = "policies"
 
-    id = UnicodeAttribute(hash_key=True, default=lambda: str(Ksuid()), null=False)
+    id: str = UnicodeAttribute(hash_key=True, default=lambda: str(Ksuid()), null=False)
 
     person_index = PersonIndex()
-    person_id = UnicodeAttribute(null=False)
+    person_id: str = UnicodeAttribute(null=False)
 
-    policy_number = UnicodeAttribute(null=False)
+    policy_number: str = UnicodeAttribute(null=False)
 
-    status = EnumAttribute(enum_type=PolicyStatusEnum, null=True)
+    status: str = EnumAttribute(enum_type=PolicyStatusEnum, null=True)

@@ -32,7 +32,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
 
         try:
             entity_model.save()
-            return mapper.to(Person).map(entity_model)
+            return mapper.map(entity_model, Person)
         except Exception as ex:
             logger.exception("Saving error")
             raise ex
@@ -145,7 +145,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             new_model.save()
             new_model.refresh()
 
-            return mapper.to(Person).map(new_model)
+            return mapper.map(new_model, Person)
 
         except Exception as ex:
             logger.exception("Database error")
