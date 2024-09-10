@@ -24,7 +24,7 @@ class EmailIndex(GlobalSecondaryIndex):
     # This attribute is the hash key for the index
     # Note that this attribute must also exist
     # in the model
-    email = UnicodeAttribute(default="", hash_key=True)
+    email: str = UnicodeAttribute(default="", hash_key=True)
 
 
 class PersonModel(BaseModel):
@@ -35,9 +35,9 @@ class PersonModel(BaseModel):
     class Meta(BaseModel.Meta):
         table_name = "persons"
 
-    id = UnicodeAttribute(hash_key=True, default=lambda: str(Ksuid()), null=False)
-    name = UnicodeAttribute()
-    surname = UnicodeAttribute()
+    id: str = UnicodeAttribute(hash_key=True, default=lambda: str(Ksuid()), null=False)
+    name: str = UnicodeAttribute()
+    surname: str = UnicodeAttribute()
 
     email_index = EmailIndex()
-    email = UnicodeAttribute()
+    email: str = UnicodeAttribute()

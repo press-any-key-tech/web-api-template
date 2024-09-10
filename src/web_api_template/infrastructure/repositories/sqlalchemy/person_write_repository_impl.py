@@ -30,7 +30,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             person (person): person created
         """
 
-        entity_model: PersonModel = mapper.to(PersonModel).map(entity)
+        entity_model: PersonModel = mapper.map(entity, PersonModel)
 
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
@@ -53,7 +53,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
                 logger.exception("Commit error")
                 raise ex
 
-            return mapper.to(Person).map(entity_model)
+            return mapper.map(entity_model, Person)
 
     async def __get_by_id(self, id: str) -> PersonModel | None:
         """Get person model by ID
@@ -184,12 +184,12 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            new_model: PersonModel = mapper.to(PersonModel).map(person)
+            new_model: PersonModel = mapper.map(person, PersonModel)
 
             # Update the given (and existing) id
             result: Optional[PersonModel] = await self.__update(id=id, model=new_model)
 
-            return mapper.to(Person).map(result)
+            return mapper.map(result, Person)
 
         except Exception as ex:
             logger.exception("Database error")

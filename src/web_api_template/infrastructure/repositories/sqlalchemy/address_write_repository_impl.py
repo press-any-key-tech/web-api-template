@@ -30,7 +30,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             address (address): address created
         """
 
-        entity_model: AddressModel = mapper.to(AddressModel).map(entity)
+        entity_model: AddressModel = mapper.map(entity, AddressModel)
 
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
@@ -53,7 +53,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
                 logger.exception("Commit error")
                 raise ex
 
-            return mapper.to(Address).map(entity_model)
+            return mapper.map(entity_model, Address)
 
     async def __get_by_id(self, id: str) -> AddressModel | None:
         """Get address model by ID
@@ -184,12 +184,12 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            new_model: AddressModel = mapper.to(AddressModel).map(address)
+            new_model: AddressModel = mapper.map(address, AddressModel)
 
             # Update the given (and existing) id
             result: Optional[AddressModel] = await self.__update(id=id, model=new_model)
 
-            return mapper.to(Address).map(result)
+            return mapper.map(result, Address)
 
         except Exception as ex:
             logger.exception("Database error")

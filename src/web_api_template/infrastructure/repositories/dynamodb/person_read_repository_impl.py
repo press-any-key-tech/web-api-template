@@ -35,7 +35,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
         # logger.debug("query: %s", query)
 
         try:
-            return [mapper.to(Person).map(item) for item in PersonModel.scan()]
+            return [mapper.map(item, Person) for item in PersonModel.scan()]
 
         except Exception as ex:
             logger.exception("Database error reading persons: {}", ex)
@@ -58,7 +58,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            return mapper.to(Person).map(entity_model)
+            return mapper.map(entity_model, Person)
 
         except PersonModel.DoesNotExist as nex:
             logger.exception("Item does not exists")

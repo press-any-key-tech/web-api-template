@@ -38,14 +38,14 @@ class ContentModel(BaseModel):
     class Meta(BaseModel.Meta):
         table_name = "contents"
 
-    id = UnicodeAttribute(hash_key=True, default=lambda: str(Ksuid()), null=False)
+    id: str = UnicodeAttribute(hash_key=True, default=lambda: str(Ksuid()), null=False)
 
     policy_index = PolicyIndex()
-    policy_id = UnicodeAttribute(null=False)
+    policy_id: str = UnicodeAttribute(null=False)
 
-    name = UnicodeAttribute(null=False)
-    description = UnicodeAttribute(null=False)
-    value = NumberAttribute(null=False)
-    value_currency = EnumAttribute(
+    name: str = UnicodeAttribute(null=False)
+    description: str = UnicodeAttribute(null=False)
+    value: float = NumberAttribute(null=False)
+    value_currency: str = EnumAttribute(
         enum_type=CurrencyEnum, null=False, default=CurrencyEnum.EUR.value
     )

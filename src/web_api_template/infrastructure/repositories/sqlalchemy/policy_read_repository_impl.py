@@ -45,7 +45,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Policy).map(item) for item in items]
+                return [mapper.map(item, Policy) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
@@ -82,7 +82,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Policy).map(item) for item in items]
+                return [mapper.map(item, Policy) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
@@ -125,7 +125,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            return mapper.to(Policy).map(entity_model)
+            return mapper.map(entity_model, Policy)
 
         except Exception as ex:
             logger.exception("Database error")

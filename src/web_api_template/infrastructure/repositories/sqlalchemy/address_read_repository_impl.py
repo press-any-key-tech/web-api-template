@@ -45,7 +45,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Address).map(item) for item in items]
+                return [mapper.map(item, Address) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
@@ -82,7 +82,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Address).map(item) for item in items]
+                return [mapper.map(item, Address) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
@@ -125,7 +125,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            return mapper.to(Address).map(entity_model)
+            return mapper.map(entity_model, Address)
 
         except Exception as ex:
             logger.exception("Database error")

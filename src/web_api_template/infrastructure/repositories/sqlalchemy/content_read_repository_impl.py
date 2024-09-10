@@ -45,7 +45,7 @@ class ContentReadRepositoryImpl(ContentReadRepository):
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Content).map(item) for item in items]
+                return [mapper.map(item, Content) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
@@ -82,7 +82,7 @@ class ContentReadRepositoryImpl(ContentReadRepository):
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
-                return [mapper.to(Content).map(item) for item in items]
+                return [mapper.map(item, Content) for item in items]
 
             except Exception as ex:
                 logger.exception("Database error")
@@ -125,7 +125,7 @@ class ContentReadRepositoryImpl(ContentReadRepository):
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            return mapper.to(Content).map(entity_model)
+            return mapper.map(entity_model, Content)
 
         except Exception as ex:
             logger.exception("Database error")

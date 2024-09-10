@@ -30,7 +30,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
             policy (policy): policy created
         """
 
-        entity_model: PolicyModel = mapper.to(PolicyModel).map(entity)
+        entity_model: PolicyModel = mapper.map(entity, PolicyModel)
 
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
@@ -53,7 +53,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
                 logger.exception("Commit error")
                 raise ex
 
-            return mapper.to(Policy).map(entity_model)
+            return mapper.map(entity_model, Policy)
 
     async def __get_by_id(self, id: str) -> PolicyModel | None:
         """Get policy model by ID
@@ -184,12 +184,12 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            new_model: PolicyModel = mapper.to(PolicyModel).map(policy)
+            new_model: PolicyModel = mapper.map(policy, PolicyModel)
 
             # Update the given (and existing) id
             result: Optional[PolicyModel] = await self.__update(id=id, model=new_model)
 
-            return mapper.to(Policy).map(result)
+            return mapper.map(result, Policy)
 
         except Exception as ex:
             logger.exception("Database error")

@@ -30,7 +30,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
             content (content): content created
         """
 
-        entity_model: ContentModel = mapper.to(ContentModel).map(entity)
+        entity_model: ContentModel = mapper.map(entity, ContentModel)
 
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
@@ -53,7 +53,7 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
                 logger.exception("Commit error")
                 raise ex
 
-            return mapper.to(Content).map(entity_model)
+            return mapper.map(entity_model, Content)
 
     async def __get_by_id(self, id: str) -> ContentModel | None:
         """Get content model by ID
@@ -184,12 +184,12 @@ class ContentWriteRepositoryImpl(ContentWriteRepository):
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            new_model: ContentModel = mapper.to(ContentModel).map(content)
+            new_model: ContentModel = mapper.map(content, ContentModel)
 
             # Update the given (and existing) id
             result: Optional[ContentModel] = await self.__update(id=id, model=new_model)
 
-            return mapper.to(Content).map(result)
+            return mapper.map(result, Content)
 
         except Exception as ex:
             logger.exception("Database error")
