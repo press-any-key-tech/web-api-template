@@ -80,9 +80,11 @@ async def get_list(
     responses={
         status.HTTP_404_NOT_FOUND: {
             "model": ApiMessage,
+            "description": "Address not found",
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
             "model": ApiMessage,
+            "description": "Internal server error",
         },
     },
     dependencies=[
