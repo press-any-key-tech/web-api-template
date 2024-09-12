@@ -146,7 +146,7 @@ async def test_get_by_id_error_not_found():
     with patch(PATCH_READ_SERVICE) as service_mock:
 
         service_mock.return_value.get_by_id = MagicMock(
-            side_effect=PersonNotFoundException(f"Person with id [{id}] not found")
+            side_effect=PersonNotFoundException(id=id)
         )
 
         # Act
@@ -232,7 +232,7 @@ async def test_delete_by_id_error_not_found():
     with patch(PATCH_WRITE_SERVICE) as service_mock:
 
         service_mock.return_value.delete_by_id = MagicMock(
-            side_effect=PersonNotFoundException(f"Person with id [{id}] not found")
+            side_effect=PersonNotFoundException(id=id)
         )
 
         # Act
@@ -301,7 +301,7 @@ async def test_update_error_not_found():
     with patch(PATCH_WRITE_SERVICE) as service_mock:
 
         service_mock.return_value.update = MagicMock(
-            side_effect=PersonNotFoundException(f"Person with id [{id}] not found")
+            side_effect=PersonNotFoundException(id=id)
         )
 
         # Act

@@ -13,7 +13,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from web_api_template.api.v1.contents.services import ReadService, WriteService
-from web_api_template.core.api import ApiMessage
+from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_content_type
 from web_api_template.core.http.validators import (
@@ -33,7 +33,7 @@ api_router = APIRouter()
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -80,10 +80,10 @@ async def get_list(
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_404_NOT_FOUND: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -133,16 +133,16 @@ async def get_by_id(
     status_code=status.HTTP_204_NO_CONTENT,
     responses={
         status.HTTP_403_FORBIDDEN: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_404_NOT_FOUND: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -192,16 +192,16 @@ async def delete_by_id(
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_404_NOT_FOUND: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_400_BAD_REQUEST: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -263,16 +263,16 @@ async def update(
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_403_FORBIDDEN: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_400_BAD_REQUEST: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[

@@ -50,6 +50,6 @@ class ReadService:
             entity: Optional[Person] = await self.person_db_repo.get_by_id(id=id)
         except ItemNotFoundException:
             # Domain exception raise if pot doesn't exists
-            raise PersonNotFoundException(f"Person with id [{id}] not found")
+            raise PersonNotFoundException(id=id)
 
         return entity

@@ -15,7 +15,7 @@ from starlette.responses import Response
 from web_api_template.api.v1.persons.services import ReadService, WriteService
 from web_api_template.api.v1.policies.services import ReadService as PolicyReadService
 from web_api_template.api.v1.policies.services import WriteService as PolicyWriteService
-from web_api_template.core.api import ApiMessage
+from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_content_type
 from web_api_template.core.http.validators import (
@@ -41,7 +41,8 @@ api_router = APIRouter()
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+            "description": "Internal Server Error",
         },
     },
     dependencies=[
@@ -65,22 +66,8 @@ async def get_list(
         List[Person] | JSONResponse: _description_
     """
 
-    status_code: int
-    error_message: dict
-
-    try:
-        result: List[Person] = await ReadService().get_list(filter=list_filter)
-        return result
-
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
-    )
+    result: List[Person] = await ReadService().get_list(filter=list_filter)
+    return result
 
 
 @api_router.get(
@@ -89,14 +76,17 @@ async def get_list(
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_404_NOT_FOUND: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+            "description": "Person not found",
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+            "description": "Internal Server Error",
         },
     },
     dependencies=[
         Depends(require_groups(["customer"])),
+        Depends(ksuid_path_validator),
     ],
 )
 async def get_by_id(
@@ -115,25 +105,8 @@ async def get_by_id(
         Person: _description_
     """
 
-    status_code: int
-    error_message: dict
-
-    try:
-        entity: Person = await ReadService().get_by_id(id=id)
-        return entity
-    except PersonNotFoundException as e:
-        logger.exception("Person with id {} not found", id)
-        status_code = status.HTTP_404_NOT_FOUND
-        error_message = {"message": str(e)}
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
-    )
+    entity: Person = await ReadService().get_by_id(id=id)
+    return entity
 
 
 @api_router.delete(
@@ -141,16 +114,18 @@ async def get_by_id(
     status_code=status.HTTP_204_NO_CONTENT,
     responses={
         status.HTTP_403_FORBIDDEN: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_404_NOT_FOUND: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+            "description": "Person not found",
         },
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+            "description": "Internal Server Error",
         },
     },
     dependencies=[
@@ -175,28 +150,8 @@ async def delete_by_id(
         _type_: _description_
     """
 
-    error_message: dict
-
-    try:
-        await WriteService().delete_by_id(id=id)
-        return
-    except PersonHasActivePoliciesException as e:
-        logger.exception("Person with id {} has active policies associated with it", id)
-        status_code = status.HTTP_409_CONFLICT
-        error_message = {"message": str(e)}
-    except PersonNotFoundException as e:
-        logger.exception("Person with id {} not found", id)
-        status_code = status.HTTP_404_NOT_FOUND
-        error_message = {"message": str(e)}
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
-    )
+    await WriteService().delete_by_id(id=id)
+    return
 
 
 @api_router.put(
@@ -205,16 +160,18 @@ async def delete_by_id(
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_404_NOT_FOUND: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+            "description": "Person not found",
         },
         status.HTTP_400_BAD_REQUEST: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+            "description": "Internal Server Error",
         },
     },
     dependencies=[
@@ -242,37 +199,15 @@ async def update(
         Person | JSONResponse: _description_
     """
 
-    status_code: int
-    error_message: dict
-
     logger.debug("update request: {}", person)
 
-    try:
-        entity: Person = await WriteService().update(
-            id=id,
-            # current_user=current_user,
-            request=person,
-        )
-
-        return entity
-
-    except PersonHasActivePoliciesException as e:
-        logger.exception("Person with id {} has active policies associated with it", id)
-        status_code = status.HTTP_409_CONFLICT
-        error_message = {"message": str(e)}
-    except PersonNotFoundException as e:
-        logger.exception("Person with id {} not found", id)
-        status_code = status.HTTP_404_NOT_FOUND
-        error_message = {"message": str(e)}
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
+    entity: Person = await WriteService().update(
+        id=id,
+        # current_user=current_user,
+        request=person,
     )
+
+    return entity
 
 
 @api_router.post(
@@ -280,17 +215,21 @@ async def update(
     response_model=Person,
     status_code=status.HTTP_201_CREATED,
     responses={
-        status.HTTP_403_FORBIDDEN: {
-            "model": ApiMessage,
-        },
         status.HTTP_400_BAD_REQUEST: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "model": ProblemDetail,
         },
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+            "description": "Internal Server Error",
         },
     },
     dependencies=[
@@ -314,49 +253,12 @@ async def create(
         Person | JSONResponse: _description_
     """
 
-    status_code: int
-    error_message: dict
-
-    try:
-        # TODO: inject
-
-        entity: Person = await WriteService().create(
-            # current_user=current_user,
-            request=person,
-        )
-
-        return entity
-
-    # except NotAllowedCreationException as e:
-    #     logger.exception("You are not allowed to create this item")
-    #     status_code = status.HTTP_403_FORBIDDEN
-    #     error_message = {"message": str(e)}
-
-    # except (
-    #     ItemNotFoundException,
-    # ) as e:
-    #     logger.exception("Controlled exception")
-    #     status_code = status.HTTP_400_BAD_REQUEST
-    #     error_message = {"message": str(e)}
-
-    except PolicyNotFoundException as e:
-        # TODO: Be careful with the message, it is using the person id
-        logger.exception("Policy with id {} not found", id)
-        status_code = status.HTTP_404_NOT_FOUND
-        error_message = {"message": str(e)}
-    except PersonNotFoundException as e:
-        logger.exception("Person with id {} not found", id)
-        status_code = status.HTTP_404_NOT_FOUND
-        error_message = {"message": str(e)}
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
+    entity: Person = await WriteService().create(
+        # current_user=current_user,
+        request=person,
     )
+
+    return entity
 
 
 @api_router.get(
@@ -365,7 +267,8 @@ async def create(
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
+            "description": "Internal Server Error",
         },
     },
     dependencies=[

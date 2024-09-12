@@ -39,7 +39,6 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             try:
                 session.add(entity_model)
                 await session.commit()
-                await session.refresh(entity_model)
             # except IntegrityError as ie:
             #     await session.rollback()
             #     logger.exception("Integrity exception")
@@ -50,6 +49,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             #         detail_message = error_info[detail_index + len("DETAIL:") :].strip()
             #     raise DuplicatedSlugException(detail_message)
             except Exception as ex:
+                await session.rollback()
                 logger.exception("Commit error")
                 raise ex
 
@@ -93,6 +93,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
                 return
 
             except Exception as ex:
+                await session.rollback()
                 logger.exception("Database error")
                 raise ex
 

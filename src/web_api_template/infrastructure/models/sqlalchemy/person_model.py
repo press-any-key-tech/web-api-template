@@ -14,13 +14,13 @@ class PersonModel(Base, BaseModel):
 
     __tablename__ = "persons"
 
-    id = Column(
+    id: str = Column(
         String(27),
         primary_key=True,
         default=lambda: str(Ksuid()),
         index=True,
     )
 
-    name = Column(String(500), nullable=False)
-    surname = Column(String(500), nullable=False)
-    email = Column(String(500), nullable=False)
+    name: str = Column(String(500), nullable=False)
+    surname: str = Column(String(500), nullable=False)
+    email: str = Column(String(500), nullable=False)

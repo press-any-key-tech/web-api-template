@@ -4,6 +4,7 @@ from auth_middleware.jwt_auth_middleware import JwtAuthMiddleware
 from auth_middleware.providers.cognito.cognito_provider import CognitoProvider
 from auth_middleware.providers.entra_id.entra_id_provider import EntraIDProvider
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from pydilite import Provider, configure
 from transaction_middleware import TransactionMiddleware
@@ -16,6 +17,7 @@ from web_api_template.di import include_di
 from web_api_template.exception_handlers import (
     general_exception_handler,
     http_exception_handler,
+    validation_exception_handler,
 )
 from web_api_template.lifespan import lifespan
 from web_api_template.routes import include_routers
@@ -38,6 +40,7 @@ def start_application(app: FastAPI):
     # ----------------------------------------
     app.add_exception_handler(Exception, general_exception_handler)
     app.add_exception_handler(HTTPException, http_exception_handler)
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
     # ----------------------------------------
     # Middlewares

@@ -15,7 +15,7 @@ from starlette.responses import Response
 from web_api_template.api.v1.persons.services import ReadService, WriteService
 from web_api_template.api.v1.policies.services import ReadService as PolicyReadService
 from web_api_template.api.v1.policies.services import WriteService as PolicyWriteService
-from web_api_template.core.api import ApiMessage
+from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_content_type
 from web_api_template.core.http.validators import (
@@ -41,7 +41,7 @@ api_router = APIRouter()
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -101,16 +101,16 @@ async def get_policies_by_person(
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_403_FORBIDDEN: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_400_BAD_REQUEST: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[

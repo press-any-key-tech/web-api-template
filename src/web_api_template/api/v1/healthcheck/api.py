@@ -5,7 +5,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from starlette.requests import Request
 
-from web_api_template.core.api import ApiMessage
+from web_api_template.core.api import ProblemDetail
 from web_api_template.core.settings import settings
 
 from .response import HealthCheckResponse
@@ -20,10 +20,10 @@ api_router = APIRouter()
     response_model=HealthCheckResponse,
     responses={
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_503_SERVICE_UNAVAILABLE: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
 )
