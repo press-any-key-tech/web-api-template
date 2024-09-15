@@ -23,9 +23,10 @@ from web_api_template.core.http.validators import (
     ksuid_query_validator,
 )
 from web_api_template.core.logging import logger
-from web_api_template.domain.entities import Person, PersonCreate, PersonFilter
-from web_api_template.domain.entities.policy import Policy
-from web_api_template.domain.entities.policy_create import PolicyCreate
+from web_api_template.domain.aggregates import Policy, PolicyCreate
+from web_api_template.domain.entities.person import Person
+from web_api_template.domain.entities.person_create import PersonCreate
+from web_api_template.domain.entities.person_filter import PersonFilter
 from web_api_template.domain.exceptions import (
     PersonHasActivePoliciesException,
     PersonNotFoundException,

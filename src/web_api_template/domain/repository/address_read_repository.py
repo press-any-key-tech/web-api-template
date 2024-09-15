@@ -1,8 +1,11 @@
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional
 
-from web_api_template.domain.entities import Address, AddressFilter
-from web_api_template.core.repository.manager.sqlalchemy.repository_base import RepositoryBase
+from web_api_template.core.repository.manager.sqlalchemy.repository_base import (
+    RepositoryBase,
+)
+from web_api_template.domain.value_objects import Address, AddressFilter
+
 
 class AddressReadRepository(RepositoryBase):
     """

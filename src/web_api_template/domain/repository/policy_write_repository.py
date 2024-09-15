@@ -4,7 +4,7 @@ from typing import List, Optional
 from web_api_template.core.repository.manager.sqlalchemy.repository_base import (
     RepositoryBase,
 )
-from web_api_template.domain.entities import Policy, PolicyCreate, PolicyFilter
+from web_api_template.domain.aggregates import Policy, PolicyCreate, PolicyFilter
 
 
 class PolicyWriteRepository(RepositoryBase):

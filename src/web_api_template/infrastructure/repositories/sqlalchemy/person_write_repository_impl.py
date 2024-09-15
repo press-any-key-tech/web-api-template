@@ -7,7 +7,10 @@ from sqlalchemy.exc import IntegrityError
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Person, PersonCreate, PersonFilter
+from web_api_template.domain.entities.person import Person
+from web_api_template.domain.entities.person_create import PersonCreate
+from web_api_template.domain.entities.person_filter import PersonFilter
+from web_api_template.domain.exceptions import PersonAlreadyExistsException
 from web_api_template.domain.repository import PersonWriteRepository
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 
@@ -39,15 +42,10 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             try:
                 session.add(entity_model)
                 await session.commit()
-            # except IntegrityError as ie:
-            #     await session.rollback()
-            #     logger.exception("Integrity exception")
-            #     error_info: str = str(ie.orig)
-            #     detail_message: str = error_info
-            #     detail_index = error_info.find("DETAIL:")
-            #     if detail_index != -1:
-            #         detail_message = error_info[detail_index + len("DETAIL:") :].strip()
-            #     raise DuplicatedSlugException(detail_message)
+            except IntegrityError as ie:
+                await session.rollback()
+                logger.exception("Integrity exception, person already exists.")
+                raise PersonAlreadyExistsException(entity.identification_number)
             except Exception as ex:
                 await session.rollback()
                 logger.exception("Commit error")
@@ -140,7 +138,28 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
 
         async with Database.get_db_session(self._label) as session:
             try:
-                # Vuild the update query
+
+                # TODO: send to another function
+                # Verify that the identification number is unique
+
+                existing_person = (
+                    await session.execute(
+                        select(PersonModel).where(
+                            PersonModel.id != id
+                            and PersonModel.identification_number
+                            == model.identification_number
+                        )
+                    )
+                ).scalar_one_or_none()
+
+                if existing_person:
+                    raise IntegrityError(
+                        f"The identification number {model.identification_number} is already in use.",
+                        params=None,
+                        orig=None,
+                    )
+
+                # Build the update query
                 update_query = (
                     update(PersonModel)
                     .where(PersonModel.id == id)
@@ -148,13 +167,23 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
                         name=model.name,
                         surname=model.surname,
                         email=model.email,
+                        identification_number=model.identification_number,
                     )
                 )
 
                 await session.execute(update_query)
                 await session.commit()
 
-                return await self.__get_by_id(id)
+                # return await self.__get_by_id(id)
+                model.id = id
+                return model
+
+            except IntegrityError as ie:
+                await session.rollback()
+                logger.exception(
+                    "Integrity exception, identification number already exists."
+                )
+                raise PersonAlreadyExistsException(model.identification_number)
 
             except Exception as ex:
                 await session.rollback()

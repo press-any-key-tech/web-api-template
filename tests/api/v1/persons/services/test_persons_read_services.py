@@ -7,7 +7,9 @@ from mock import AsyncMock, patch
 
 from web_api_template.api.v1.persons.services import ReadService
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.domain.entities import Person, PersonFilter
+from web_api_template.domain.entities.person import Person
+from web_api_template.domain.entities.person_create import PersonCreate
+from web_api_template.domain.entities.person_filter import PersonFilter
 from web_api_template.domain.exceptions import PersonNotFoundException
 from web_api_template.infrastructure.models.sqlalchemy.person_model import PersonModel
 

@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Policy, PolicyFilter
+from web_api_template.domain.aggregates import Policy, PolicyFilter
 from web_api_template.domain.repository import PolicyReadRepository
 from web_api_template.infrastructure.models.sqlalchemy import PolicyModel
 

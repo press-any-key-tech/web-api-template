@@ -4,11 +4,9 @@
 from pydilite import Provider
 
 from web_api_template.core.logging import logger
-from web_api_template.domain.repository import (
+from web_api_template.domain.repository import (  # PolicyReadRepository,; PolicyWriteRepository,
     AddressReadRepository,
     AddressWriteRepository,
-    ContentReadRepository,
-    ContentWriteRepository,
     HealthcheckRepository,
     PersonReadRepository,
     PersonWriteRepository,
@@ -20,11 +18,9 @@ from web_api_template.domain.repository import (
 #     PersonReadRepositoryImpl,
 #     PersonWriteRepositoryImpl,
 # )
-from web_api_template.infrastructure.repositories.sqlalchemy import (
+from web_api_template.infrastructure.repositories.sqlalchemy import (  # PolicyReadRepositoryImpl,; PolicyWriteRepositoryImpl,
     AddressReadRepositoryImpl,
     AddressWriteRepositoryImpl,
-    ContentReadRepositoryImpl,
-    ContentWriteRepositoryImpl,
     HealthcheckRepositoryImpl,
     PersonReadRepositoryImpl,
     PersonWriteRepositoryImpl,
@@ -48,11 +44,6 @@ def include_di(provider: Provider):
         HealthcheckRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
-    # provider.bind(
-    #     PersonReadRepository,
-    #     PersonReadRepositoryImpl(label="DEFAULT"),
-    #     lazy=True,
-    # )
     provider.bind(
         PersonReadRepository,
         PersonReadRepositoryImpl(label="DEFAULT"),
@@ -61,11 +52,6 @@ def include_di(provider: Provider):
     provider.bind(
         PolicyReadRepository,
         PolicyReadRepositoryImpl,
-        lazy=True,
-    )
-    provider.bind(
-        ContentReadRepository,
-        ContentReadRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
     provider.bind(
@@ -78,19 +64,9 @@ def include_di(provider: Provider):
         PersonWriteRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
-    # provider.bind(
-    #     PersonWriteRepository,
-    #     PersonWriteRepositoryImpl,
-    #     lazy=True,
-    # )
     provider.bind(
         PolicyWriteRepository,
         PolicyWriteRepositoryImpl(label="DEFAULT"),
-        lazy=True,
-    )
-    provider.bind(
-        ContentWriteRepository,
-        ContentWriteRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
     provider.bind(

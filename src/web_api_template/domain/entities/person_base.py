@@ -2,9 +2,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from web_api_template.domain.entities import Address
-from web_api_template.domain.entities.policy import Policy
-
 from web_api_template.core.domain.validators import ksuid_validator
 
 
@@ -48,14 +45,13 @@ class PersonBase(BaseModel):
         },
     )
 
-    addresses: Optional[List[Address]] = Field(
-        default=[],
-        json_schema_extra={"description": "Person addresses"},
-    )
-
-    policies: Optional[List[Policy]] = Field(
-        default=[],
-        json_schema_extra={"description": "Person policies"},
+    identification_number: str = Field(
+        ...,
+        max_length=50,
+        json_schema_extra={
+            "description": "Person identification number",
+            "example": "123456789",
+        },
     )
 
     @field_validator("id")

@@ -12,7 +12,6 @@ from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import Response
 
-from web_api_template.api.v1.contents.services import ReadService as ContentReadService
 from web_api_template.api.v1.policies.services import ReadService, WriteService
 from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.common_query_model import CommonQueryModel
@@ -22,8 +21,7 @@ from web_api_template.core.http.validators import (
     ksuid_query_validator,
 )
 from web_api_template.core.logging import logger
-from web_api_template.domain.entities import Policy, PolicyCreate, PolicyFilter
-from web_api_template.domain.entities.content import Content
+from web_api_template.domain.aggregates import Policy, PolicyCreate, PolicyFilter
 from web_api_template.domain.exceptions import (
     PolicyIsActiveException,
     PolicyNotFoundException,

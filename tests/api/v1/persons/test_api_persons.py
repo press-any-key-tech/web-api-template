@@ -11,7 +11,9 @@ from pydilite import Provider, configure
 from web_api_template.api.v1.persons.api_persons import api_router, get_list
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.di import include_di
-from web_api_template.domain.entities import Person, PersonFilter
+from web_api_template.domain.entities.person import Person
+from web_api_template.domain.entities.person_create import PersonCreate
+from web_api_template.domain.entities.person_filter import PersonFilter
 from web_api_template.domain.exceptions import PersonNotFoundException
 
 # To patch the method that makes the API call to repository

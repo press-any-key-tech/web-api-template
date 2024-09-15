@@ -4,7 +4,7 @@ from pydilite import inject
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.domain.entities import Policy, PolicyFilter
+from web_api_template.domain.aggregates import Policy, PolicyFilter
 from web_api_template.domain.exceptions import PolicyNotFoundException
 from web_api_template.domain.repository import PolicyReadRepository
 
