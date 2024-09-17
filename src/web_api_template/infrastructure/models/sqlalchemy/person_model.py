@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, List
 
 from ksuid import Ksuid
+from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
+
 from sqlalchemy import Column, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
 
 from .address_model import AddressModel
 from .policy_model import PolicyModel

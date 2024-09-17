@@ -2,7 +2,6 @@ from datetime import date
 from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
-
 from web_api_template.core.domain.validators import ksuid_validator
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.types import PolicyStatusEnum, PolicyTypeEnum
@@ -46,8 +45,8 @@ class PolicyBase(BaseModel):
         },
     )
 
-    policy_holder: Person = Field(
-        ...,
+    policy_holder: Optional[Person] = Field(
+        default=None,
         json_schema_extra={
             "description": "Policy holder",
             "example": "Person object",

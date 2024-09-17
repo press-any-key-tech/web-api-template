@@ -1,10 +1,6 @@
 from typing import List, Optional
 
 from automapper import mapper
-from sqlalchemy import delete, desc, select, text, update
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import selectinload
-
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
@@ -13,6 +9,10 @@ from web_api_template.domain.entities.person_create import PersonCreate
 from web_api_template.domain.entities.person_filter import PersonFilter
 from web_api_template.domain.repository import PersonReadRepository
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel
+
+from sqlalchemy import delete, desc, select, text, update
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 
 
 class PersonReadRepositoryImpl(PersonReadRepository):
@@ -45,9 +45,12 @@ class PersonReadRepositoryImpl(PersonReadRepository):
             try:
                 # TODO: Apply filters
 
-                # Load dependent addresses for each person
+                # Load dependent objects for each person
                 result = await session.execute(
-                    select(PersonModel).options(selectinload(PersonModel.addresses))
+                    select(PersonModel).options(
+                        selectinload(PersonModel.addresses),
+                        selectinload(PersonModel.policies),
+                    )
                 )
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
@@ -68,12 +71,16 @@ class PersonReadRepositoryImpl(PersonReadRepository):
         Returns:
             PersonModel: _description_
         """
+
         async with Database.get_db_session(self._label) as session:
             try:
                 result = await session.execute(
                     select(PersonModel)
                     .where(PersonModel.id == id)
-                    .options(selectinload(PersonModel.addresses))
+                    .options(
+                        selectinload(PersonModel.addresses),
+                        selectinload(PersonModel.policies),
+                    )
                 )
                 return result.scalar_one_or_none()
 

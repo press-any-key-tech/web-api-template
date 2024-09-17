@@ -1,9 +1,6 @@
 from typing import List, Optional
 
 from automapper import mapper
-from sqlalchemy import delete, desc, select, text, update
-from sqlalchemy.exc import IntegrityError
-
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
@@ -12,8 +9,11 @@ from web_api_template.domain.exceptions import (
     PersonNotFoundException,
 )
 from web_api_template.domain.repository import AddressWriteRepository
-from web_api_template.domain.value_objects import Address, AddressFilter
+from web_api_template.domain.value_objects import Address, AddressBase, AddressFilter
 from web_api_template.infrastructure.models.sqlalchemy import AddressModel
+
+from sqlalchemy import delete, desc, select, text, update
+from sqlalchemy.exc import IntegrityError
 
 
 class AddressWriteRepositoryImpl(AddressWriteRepository):
@@ -164,9 +164,11 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
                     update(AddressModel)
                     .where(AddressModel.id == id)
                     .values(
-                        address_number=model.address_number,
-                        person_id=model.person_id,
-                        status=model.status,
+                        street=model.street,
+                        city=model.city,
+                        postal_code=model.postal_code,
+                        province=model.province,
+                        country=model.country,
                     )
                 )
 
@@ -184,7 +186,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         self,
         *,
         id: str,
-        address: Address,
+        address: AddressBase,
         # current_user: User
     ) -> Optional[Address]:
         """
@@ -209,7 +211,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             # Update the given (and existing) id
             result: Optional[AddressModel] = await self.__update(id=id, model=new_model)
 
-            return mapper.map(result, Address)
+            return mapper.map(result, AddressBase)
 
         except Exception as ex:
             logger.exception("Database error")

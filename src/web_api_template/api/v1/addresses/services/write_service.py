@@ -1,7 +1,6 @@
 from typing import Optional
 
 from pydilite import inject
-
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.exceptions import (
@@ -9,7 +8,7 @@ from web_api_template.domain.exceptions import (
     PersonNotFoundException,
 )
 from web_api_template.domain.repository import AddressWriteRepository
-from web_api_template.domain.value_objects import Address, AddressCreate
+from web_api_template.domain.value_objects import Address, AddressBase, AddressCreate
 
 
 class WriteService:
@@ -19,7 +18,7 @@ class WriteService:
     def __init__(self, address_db_repo: AddressWriteRepository):
         self.address_db_repo = address_db_repo
 
-    async def create(
+    async def create_for_person(
         self,
         # current_user: User,
         person_id: str,
@@ -85,32 +84,32 @@ class WriteService:
             # Domain exception raise if content doesn't exists
             raise AddressNotFoundException(f"Address with id [{id}] not found")
 
-    # async def update(
-    #     self,
-    #     id: str,
-    #     request: Content,
-    #     # current_user: User
-    # ) -> Optional[Content]:
-    #     """
-    #     Updates the given content
+    async def update(
+        self,
+        id: str,
+        request: AddressBase,
+        # current_user: User
+    ) -> Optional[AddressBase]:
+        """
+        Updates the given content
 
-    #     Args:
-    #         id (UUID): Content ID
-    #         content_request (Content): New values for the Content
+        Args:
+            id (UUID): Content ID
+            content_request (Content): New values for the Content
 
-    #     Returns:
-    #         Content: domain entity to return
-    #     """
+        Returns:
+            Content: domain entity to return
+        """
 
-    #     logger.debug("Entering. id: {} request: {}", id, request)
+        logger.debug("Entering. id: {} request: {}", id, request)
 
-    #     try:
-    #         result: Optional[Content] = await self.content_db_repo.update(
-    #             id=id, content=request
-    #         )
+        try:
+            result: Optional[AddressBase] = await self.address_db_repo.update(
+                id=id, address=request
+            )
 
-    #         return result
+            return result
 
-    #     except ItemNotFoundException:
-    #         # Domain exception raise if template does not exists
-    #         raise ContentNotFoundException(f"Content with id [{id}] not found")
+        except ItemNotFoundException:
+            # Domain exception raise if template does not exists
+            raise AddressNotFoundException(f"Address with id [{id}] not found")

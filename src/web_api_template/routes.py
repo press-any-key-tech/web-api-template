@@ -3,6 +3,8 @@
 
 from fastapi import FastAPI
 
+from web_api_template.api.v1.addresses.router import api_router as addresses_v1_router
+
 # Healthcheck (do not touch)
 from web_api_template.api.v1.healthcheck.router import (
     api_router as healthcheck_v1_router,
@@ -25,3 +27,4 @@ def include_routers(app: FastAPI):
 
     app.include_router(persons_v1_router)
     app.include_router(policies_v1_router)
+    app.include_router(addresses_v1_router)

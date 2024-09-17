@@ -11,7 +11,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import Response
-
 from web_api_template.api.v1.addresses.services import ReadService, WriteService
 from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.common_query_model import CommonQueryModel
@@ -159,6 +158,7 @@ async def delete_by_id(
 
 @api_router.put(
     "/{id}",
+    response_model=Address,
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_409_CONFLICT: {
