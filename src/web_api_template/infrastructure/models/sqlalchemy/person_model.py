@@ -7,7 +7,8 @@ from sqlalchemy import Column, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .address_model import AddressModel
-from .policy_model import PolicyModel
+
+# from .policy_model import PolicyModel
 
 
 class PersonModel(BaseModel, Base):

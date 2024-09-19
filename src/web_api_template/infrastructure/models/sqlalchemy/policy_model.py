@@ -2,13 +2,15 @@ from datetime import date
 from typing import cast
 
 from ksuid import Ksuid
+from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
+from web_api_template.domain.types.policy_status_enum import PolicyStatusEnum
+from web_api_template.domain.types.policy_type_enum import PolicyTypeEnum
+
 from sqlalchemy import Column, Date, Enum, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.sqltypes import Enum as SQLAEnum
 
-from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
-from web_api_template.domain.types.policy_status_enum import PolicyStatusEnum
-from web_api_template.domain.types.policy_type_enum import PolicyTypeEnum
+from .person_model import PersonModel
 
 
 class PolicyModel(Base, BaseModel):
@@ -32,7 +34,9 @@ class PolicyModel(Base, BaseModel):
         String(27), ForeignKey("persons.id"), nullable=False
     )
 
-    policy_holder = relationship("PersonModel", back_populates="policies")
+    policy_holder: Mapped["PersonModel"] = relationship(
+        "PersonModel", back_populates="policies"
+    )
 
     policy_number: Mapped[str] = mapped_column(String(500), nullable=False)
     status: Mapped[Column[SQLAEnum]] = mapped_column(
