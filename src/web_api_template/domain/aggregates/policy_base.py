@@ -2,6 +2,7 @@ from datetime import date
 from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
+
 from web_api_template.core.domain.validators import ksuid_validator
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.types import PolicyStatusEnum, PolicyTypeEnum
@@ -57,7 +58,7 @@ class PolicyBase(BaseModel):
         ...,
         json_schema_extra={
             "description": "Policy start date",
-            "example": "2024/01/01",
+            "example": "2024-01-01",
         },
     )
 
@@ -65,7 +66,7 @@ class PolicyBase(BaseModel):
         default=None,
         json_schema_extra={
             "description": "Policy end date",
-            "example": "2025/01/01",
+            "example": "2025-01-01",
         },
     )
 

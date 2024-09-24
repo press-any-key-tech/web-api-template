@@ -1,14 +1,15 @@
-from typing import TYPE_CHECKING, List
+from typing import ForwardRef, List
 
 from ksuid import Ksuid
-from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
-
 from sqlalchemy import Column, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
+
 from .address_model import AddressModel
 
-# from .policy_model import PolicyModel
+# Use ForwardRef to resolve circular imports
+PolicyModel = ForwardRef("PolicyModel")
 
 
 class PersonModel(BaseModel, Base):
@@ -40,5 +41,12 @@ class PersonModel(BaseModel, Base):
     )
 
     policies: Mapped[List["PolicyModel"]] = relationship(
-        "PolicyModel", back_populates="policy_holder"
+        "PolicyModel", back_populates="holder"
     )
+
+
+# Now we can resolve the circular import
+from .policy_model import PolicyModel
+
+# Update the annotations
+PersonModel.__annotations__["policies"] = List[PolicyModel]

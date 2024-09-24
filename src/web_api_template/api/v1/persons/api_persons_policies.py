@@ -53,7 +53,7 @@ async def get_policies_by_person(
     request: Request,
     response: Response,
     id: str = Path(..., description="The ID of the person"),
-) -> List[Policy] | JSONResponse:
+) -> List[Policy]:
     """Get a list of policies associated with the person.
 
     Args:
@@ -62,7 +62,7 @@ async def get_policies_by_person(
         id (str, optional): _description_. Defaults to Path(..., description="The ID of the person").
 
     Returns:
-        List[Policy] | JSONResponse: _description_
+        List[Policy]: _description_
     """
 
     # TODO: Filter policies by status
@@ -123,7 +123,7 @@ async def create_policy(
     response: Response,
     policy: PolicyCreate,
     id: str = Path(..., description="The ID of the person"),
-) -> Policy | JSONResponse:
+) -> Policy:
     """Create a new policy for the given person.
     - Check for existence of addresses and policies.
 
@@ -133,7 +133,7 @@ async def create_policy(
         person (PersonCreate): _description_
 
     Returns:
-        Person | JSONResponse: _description_
+        Person: _description_
     """
 
     status_code: int

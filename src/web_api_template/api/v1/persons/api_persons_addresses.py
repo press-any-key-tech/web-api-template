@@ -51,7 +51,7 @@ api_router = APIRouter()
 #     request: Request,
 #     response: Response,
 #     id: str = Path(..., description="The ID of the person"),
-# ) -> List[Policy] | JSONResponse:
+# ) -> List[Policy]:
 #     """Get a list of policies associated with the person.
 
 #     Args:
@@ -60,7 +60,7 @@ api_router = APIRouter()
 #         id (str, optional): _description_. Defaults to Path(..., description="The ID of the person").
 
 #     Returns:
-#         List[Policy] | JSONResponse: _description_
+#         List[Policy]: _description_
 #     """
 
 #     # TODO: Filter policies by status
@@ -121,7 +121,7 @@ async def add_address(
     response: Response,
     address: AddressCreate,
     id: str = Path(..., description="The ID of the person"),
-) -> Address | JSONResponse:
+) -> Address:
     """Add a new address to the person.
     - TODO: Check for the existence of the address associated to the person.
 
@@ -131,7 +131,7 @@ async def add_address(
         person (PersonCreate): _description_
 
     Returns:
-        Person | JSONResponse: _description_
+        Person: _description_
     """
 
     # Check if person exists
@@ -139,7 +139,7 @@ async def add_address(
     # entity_person: Person = await PersonReadService().get_by_id(id=id)
 
     # TODO: it is better to have an explicit method for creating a policy with a person id + policy data
-    entity: Address = await AddressWriteService().create(
+    entity: Address = await AddressWriteService().create_for_person(
         # current_user=current_user,
         person_id=id,
         request=address,

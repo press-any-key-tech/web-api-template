@@ -20,7 +20,7 @@ class WriteService:
         self,
         # current_user: User,
         request: PolicyCreate,
-    ) -> Optional[Policy]:
+    ) -> Optional[PolicyCreate]:
         """
         Create a Policy.
 
@@ -39,7 +39,7 @@ class WriteService:
         #         "You are not allowed to create this item"
         #     )
 
-        response: Optional[Policy] = await self.policy_db_repo.create(
+        response: Optional[PolicyCreate] = await self.policy_db_repo.create(
             # current_user=current_user,
             entity=request
         )

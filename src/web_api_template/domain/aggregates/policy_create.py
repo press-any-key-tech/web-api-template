@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
+
 from web_api_template.domain.aggregates import PolicyBase
 
 
@@ -13,10 +14,8 @@ class PolicyCreate(PolicyBase):
 
     """
 
-    ...
-
     policy_holder_id: str = Field(
-        default=None,
+        ...,
         json_schema_extra={
             "description": "Policy holder person id",
             "example": "0ujsswThIGTUYm2K8FjOOfXtY1K",

@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import Response
+
 from web_api_template.api.v1.addresses.services import ReadService, WriteService
 from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.common_query_model import CommonQueryModel
@@ -44,7 +45,7 @@ api_router = APIRouter()
 #     response: Response,
 #     list_filter: AddressFilter = Depends(),
 #     query: CommonQueryModel = Depends(),
-# ) -> List[Address] | JSONResponse:
+# ) -> List[Address]:
 #     """Get a list of policies
 
 #     Args:
@@ -52,7 +53,7 @@ api_router = APIRouter()
 #         response (Response): _description_
 
 #     Returns:
-#         List[Address] | JSONResponse: _description_
+#         List[Address]: _description_
 #     """
 
 #     status_code: int
@@ -96,7 +97,7 @@ async def get_by_id(
     request: Request,
     response: Response,
     id: str,
-) -> Address | JSONResponse:
+) -> Address:
     """Get a address by id
 
     Args:
@@ -185,7 +186,7 @@ async def update(
     response: Response,
     id: str,
     address: AddressCreate,
-) -> Address | JSONResponse:
+) -> Address:
     """Update the address with the given information.
     - Do not allow to dissasociate any active polcies from the address.
 
@@ -196,7 +197,7 @@ async def update(
         pot_request (AddressCreate): _description_
 
     Returns:
-        Address | JSONResponse: _description_
+        Address: _description_
     """
 
     entity: Address = await WriteService().update(
@@ -235,7 +236,7 @@ async def update(
 #     request: Request,
 #     response: Response,
 #     address: AddressCreate,
-# ) -> Address | JSONResponse:
+# ) -> Address:
 #     """Create a new address with the given information.
 #     - Check for existence of addresses and policies.
 
@@ -245,7 +246,7 @@ async def update(
 #         address (AddressCreate): _description_
 
 #     Returns:
-#         Address | JSONResponse: _description_
+#         Address: _description_
 #     """
 
 #     status_code: int

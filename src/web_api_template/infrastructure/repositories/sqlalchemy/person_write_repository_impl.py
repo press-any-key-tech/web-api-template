@@ -23,7 +23,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         *,
         # current_user: User,
         entity: PersonCreate,
-    ) -> Person:
+    ) -> PersonCreate:
         """
         Create a person on DB
 
@@ -51,7 +51,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
                 logger.exception("Commit error")
                 raise ex
 
-            return mapper.map(entity_model, Person)
+            return mapper.map(entity_model, PersonCreate)
 
     async def __get_by_id(self, id: str) -> PersonModel | None:
         """Get person model by ID

@@ -16,7 +16,7 @@ class PolicyWriteRepository(RepositoryBase):
     """
 
     @abstractmethod
-    async def create(self, *, entity: PolicyCreate) -> Optional[Policy]:
+    async def create(self, *, entity: PolicyCreate) -> Optional[PolicyCreate]:
         raise NotImplementedError()
 
     @abstractmethod

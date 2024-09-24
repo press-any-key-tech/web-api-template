@@ -52,7 +52,7 @@ async def get_list(
     response: Response,
     list_filter: PersonFilter = Depends(),
     query: CommonQueryModel = Depends(),
-) -> List[Person] | JSONResponse:
+) -> List[Person]:
     """Get a list of persons
 
     Args:
@@ -60,7 +60,7 @@ async def get_list(
         response (Response): _description_
 
     Returns:
-        List[Person] | JSONResponse: _description_
+        List[Person]: _description_
     """
 
     result: List[Person] = await ReadService().get_list(filter=list_filter)
@@ -90,7 +90,7 @@ async def get_by_id(
     request: Request,
     response: Response,
     id: str,
-) -> Person | JSONResponse:
+) -> Person:
     """Get a person by id
 
     Args:
@@ -182,7 +182,7 @@ async def update(
     response: Response,
     id: str,
     person: PersonCreate,
-) -> Person | JSONResponse:
+) -> Person:
     """Update the person with the given information.
     - Do not allow to dissasociate any active polcies from the person.
 
@@ -193,7 +193,7 @@ async def update(
         pot_request (PersonCreate): _description_
 
     Returns:
-        Person | JSONResponse: _description_
+        Person: _description_
     """
 
     logger.debug("update request: {}", person)
@@ -237,7 +237,7 @@ async def create(
     request: Request,
     response: Response,
     person: PersonCreate,
-) -> Person | JSONResponse:
+) -> Person:
     """Create a new person with the given information.
     - Check for existence of addresses and policies.
 
@@ -247,7 +247,7 @@ async def create(
         person (PersonCreate): _description_
 
     Returns:
-        Person | JSONResponse: _description_
+        Person: _description_
     """
 
     entity: Person = await WriteService().create(

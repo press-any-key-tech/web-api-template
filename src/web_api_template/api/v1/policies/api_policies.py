@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import Response
+
 from web_api_template.api.v1.policies.services import ReadService, WriteService
 from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.common_query_model import CommonQueryModel
@@ -47,7 +48,7 @@ async def get_list(
     response: Response,
     list_filter: PolicyFilter = Depends(),
     query: CommonQueryModel = Depends(),
-) -> List[Policy] | JSONResponse:
+) -> List[Policy]:
     """Get a list of policies
 
     Args:
@@ -55,7 +56,7 @@ async def get_list(
         response (Response): _description_
 
     Returns:
-        List[Policy] | JSONResponse: _description_
+        List[Policy]: _description_
     """
 
     result: List[Policy] = await ReadService().get_list(filter=list_filter)
@@ -83,7 +84,7 @@ async def get_by_id(
     request: Request,
     response: Response,
     id: str,
-) -> Policy | JSONResponse:
+) -> Policy:
     """Get a policy by id
 
     Args:
@@ -170,7 +171,7 @@ async def update(
     response: Response,
     id: str,
     policy: PolicyCreate,
-) -> Policy | JSONResponse:
+) -> Policy:
     """Update the policy with the given information.
     - Do not allow to dissasociate any active polcies from the policy.
 
@@ -181,7 +182,7 @@ async def update(
         pot_request (PolicyCreate): _description_
 
     Returns:
-        Policy | JSONResponse: _description_
+        Policy: _description_
     """
 
     logger.debug("update request: {}", policy)
@@ -221,7 +222,7 @@ async def create(
     request: Request,
     response: Response,
     policy: PolicyCreate,
-) -> Policy | JSONResponse:
+) -> PolicyCreate:
     """Create a new policy with the given information.
     - Check for existence of addresses and policies.
 
@@ -231,10 +232,10 @@ async def create(
         policy (PolicyCreate): _description_
 
     Returns:
-        Policy | JSONResponse: _description_
+        Policy: _description_
     """
 
-    entity: Policy = await WriteService().create(
+    entity: PolicyCreate = await WriteService().create(
         # current_user=current_user,
         request=policy,
     )
