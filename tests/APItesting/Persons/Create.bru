@@ -1,0 +1,20 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/persons
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Gustavo",
+    "surname": "De Básica",
+    "email": "gustavo.debasica@mail.com",
+    "identification_number": "987654321"
+  }
+}
