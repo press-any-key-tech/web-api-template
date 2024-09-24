@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.sqltypes import Enum as SQLAEnum
 
 from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
+from web_api_template.domain.types.currency_enum import CurrencyEnum
 from web_api_template.domain.types.policy_status_enum import PolicyStatusEnum
 from web_api_template.domain.types.policy_type_enum import PolicyTypeEnum
 
@@ -57,3 +58,7 @@ class PolicyModel(Base, BaseModel):
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
 
     premium: Mapped[float] = mapped_column(Float, nullable=False)
+
+    currency: Mapped[Column[SQLAEnum]] = mapped_column(
+        Enum(CurrencyEnum), nullable=False, default=CurrencyEnum.EUR
+    )
