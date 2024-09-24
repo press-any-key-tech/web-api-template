@@ -208,6 +208,52 @@ Use -p flag to specify an alternative project name instead of the directory name
 docker-compose -f docker-compose.yaml -p my-web-api-template down
 ```
 
+## Data migrations with Alembic
+
+### Initialize alembic
+
+This will create the alembic basic files and should be only executed once.
+
+```bash
+poetry run alembic init alembic
+```
+
+The folder and file structure is similar to the one shown below.
+
+project/
+│
+├── alembic/
+│ ├── versions/ # Migrations stored here
+│ └── env.py # Main Alembic configuration file
+│
+└── alembic.ini # Alembic configuration file
+
+### Configure alembic to work with the existing database
+
+Edit alembic.ini:
+
+```ini
+sqlalchemy.url = postgresql://test:test123@localhost:5432/mytemplate
+```
+
+### Create migration
+
+```bash
+poetry run alembic revision --autogenerate -m "Initial migration"
+```
+
+### Run migration
+
+```bash
+poetry run alembic upgrade head
+```
+
+Only generate sql script
+
+```bash
+poetry run alembic upgrade head --sql
+```
+
 ## IaC
 
 ### Create bucket on AWS

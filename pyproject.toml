@@ -25,6 +25,8 @@ auth-middleware = "^0.1.17"
 loguru = "^0.7.2"
 transaction-middleware = "^0.1.7"
 advanced-automapper = "^0.1.6"
+alembic = "^1.13.3"
+psycopg2 = "^2.9.9"
 
 
 [tool.poetry.group.dev.dependencies]
