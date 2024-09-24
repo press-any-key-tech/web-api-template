@@ -1,15 +1,19 @@
 from typing import List, Optional
 
 from automapper import mapper
-from sqlalchemy import delete, desc, select, text, update
-from sqlalchemy.exc import IntegrityError
-
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Address, AddressFilter
+from web_api_template.domain.exceptions import (
+    AddressNotFoundException,
+    PersonNotFoundException,
+)
 from web_api_template.domain.repository import AddressWriteRepository
+from web_api_template.domain.value_objects import Address, AddressBase, AddressFilter
 from web_api_template.infrastructure.models.sqlalchemy import AddressModel
+
+from sqlalchemy import delete, desc, select, text, update
+from sqlalchemy.exc import IntegrityError
 
 
 class AddressWriteRepositoryImpl(AddressWriteRepository):
@@ -19,6 +23,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         self,
         *,
         # current_user: User,
+        person_id: str,
         entity: Address,
     ) -> Address:
         """
@@ -26,11 +31,13 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
 
         Args:
             entity (address): address to create
+            person_id (str): person_id to associate the address with
         Returns:
             address (address): address created
         """
 
         entity_model: AddressModel = mapper.map(entity, AddressModel)
+        entity_model.person_id = person_id
 
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
@@ -39,18 +46,19 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             try:
                 session.add(entity_model)
                 await session.commit()
-                await session.refresh(entity_model)
-            # except IntegrityError as ie:
-            #     await session.rollback()
-            #     logger.exception("Integrity exception")
-            #     error_info: str = str(ie.orig)
-            #     detail_message: str = error_info
-            #     detail_index = error_info.find("DETAIL:")
-            #     if detail_index != -1:
-            #         detail_message = error_info[detail_index + len("DETAIL:") :].strip()
-            #     raise DuplicatedSlugException(detail_message)
+
+                # await session.refresh(entity_model)
+
+            except IntegrityError as fke:
+                await session.rollback()
+                logger.exception(
+                    "Foreign key violation exception, Person does not exists."
+                )
+                raise ItemNotFoundException(f"Item with id: {person_id} not found")
+
             except Exception as ex:
-                logger.exception("Commit error")
+                await session.rollback()
+                logger.exception("Database error")
                 raise ex
 
             return mapper.map(entity_model, Address)
@@ -75,7 +83,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
                 logger.exception("Database error")
                 raise ex
 
-    async def __delete(self, id: str) -> None:
+    async def delete(self, id: str) -> None:
         """Delete address model by ID
 
         Args:
@@ -92,35 +100,47 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
                 await session.commit()
                 return
 
+            except IntegrityError as fke:
+                await session.rollback()
+                logger.exception(
+                    "Foreign key violation exception, Address does not exists."
+                )
+                raise ItemNotFoundException(f"Item with id: {id} not found")
+
             except Exception as ex:
                 logger.exception("Database error")
                 raise ex
 
-    async def delete(self, id: str) -> None:
-        """Delete address by id
+    async def delete_by_person(self, person_id: str, id: str) -> None:
+        """Delete address model by ID
 
         Args:
-            request (Request): request (from fastAPI)
-            id: str
+            person_id (str): _description_
+            id (str): _description_
 
         Returns:
             None
+
         """
+        async with Database.get_db_session(self._label) as session:
+            try:
+                delete_query = delete(AddressModel).where(
+                    AddressModel.id == id and AddressModel.person_id == person_id
+                )
+                await session.execute(delete_query)
+                await session.commit()
+                return
 
-        try:
-            entity_model: Optional[AddressModel] = await self.__get_by_id(id)
-
-            if not entity_model:
-                # TODO : check if address is in delete status
-                logger.debug("Item with id: {} not found", id)
+            except IntegrityError as fke:
+                await session.rollback()
+                logger.exception(
+                    "Key violation exception, Address or person does not exists."
+                )
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            # Delete the given (and existing) id
-            await self.__delete(id)
-
-        except Exception as ex:
-            logger.exception("Database error")
-            raise ex
+            except Exception as ex:
+                logger.exception("Database error")
+                raise ex
 
     async def __update(self, id: str, model: AddressModel) -> Optional[AddressModel]:
         """update address model with the given ID
@@ -144,9 +164,11 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
                     update(AddressModel)
                     .where(AddressModel.id == id)
                     .values(
-                        address_number=model.address_number,
-                        person_id=model.person_id,
-                        status=model.status,
+                        street=model.street,
+                        city=model.city,
+                        postal_code=model.postal_code,
+                        province=model.province,
+                        country=model.country,
                     )
                 )
 
@@ -164,7 +186,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         self,
         *,
         id: str,
-        address: Address,
+        address: AddressBase,
         # current_user: User
     ) -> Optional[Address]:
         """
@@ -189,7 +211,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             # Update the given (and existing) id
             result: Optional[AddressModel] = await self.__update(id=id, model=new_model)
 
-            return mapper.map(result, Address)
+            return mapper.map(result, AddressBase)
 
         except Exception as ex:
             logger.exception("Database error")

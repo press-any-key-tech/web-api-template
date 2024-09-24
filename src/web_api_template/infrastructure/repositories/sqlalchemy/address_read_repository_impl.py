@@ -7,8 +7,8 @@ from sqlalchemy.exc import IntegrityError
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Address, AddressFilter
 from web_api_template.domain.repository import AddressReadRepository
+from web_api_template.domain.value_objects import Address, AddressFilter
 from web_api_template.infrastructure.models.sqlalchemy import AddressModel
 
 

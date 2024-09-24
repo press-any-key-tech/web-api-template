@@ -1,13 +1,13 @@
 from typing import List, Optional
 
 from automapper import mapper
-from sqlalchemy import delete, desc, select, text, update
+from sqlalchemy import delete, desc, inspect, select, text, update
 from sqlalchemy.exc import IntegrityError
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Policy, PolicyCreate, PolicyFilter
+from web_api_template.domain.aggregates import Policy, PolicyCreate, PolicyFilter
 from web_api_template.domain.repository import PolicyWriteRepository
 from web_api_template.infrastructure.models.sqlalchemy import PolicyModel
 
@@ -20,7 +20,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         *,
         # current_user: User,
         entity: PolicyCreate,
-    ) -> Policy:
+    ) -> PolicyCreate:
         """
         Create a policy on DB
 
@@ -30,6 +30,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
             policy (policy): policy created
         """
 
+        mapper.add_custom_mapping(PolicyCreate, "policy_holder_id", "holder_id")
         entity_model: PolicyModel = mapper.map(entity, PolicyModel)
 
         # set_concurrency_fields(source=entity_model, user=current_user)
@@ -39,21 +40,17 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
             try:
                 session.add(entity_model)
                 await session.commit()
-                await session.refresh(entity_model)
             # except IntegrityError as ie:
             #     await session.rollback()
-            #     logger.exception("Integrity exception")
-            #     error_info: str = str(ie.orig)
-            #     detail_message: str = error_info
-            #     detail_index = error_info.find("DETAIL:")
-            #     if detail_index != -1:
-            #         detail_message = error_info[detail_index + len("DETAIL:") :].strip()
-            #     raise DuplicatedSlugException(detail_message)
+            #     logger.exception("Integrity exception, policy already exists.")
+            #     raise PolicyAlreadyExistsException(entity.identification_number)
             except Exception as ex:
+                await session.rollback()
                 logger.exception("Commit error")
                 raise ex
 
-            return mapper.map(entity_model, Policy)
+            mapper.add_custom_mapping(PolicyModel, "holder_id", "policy_holder_id")
+            return mapper.map(entity_model, PolicyCreate)
 
     async def __get_by_id(self, id: str) -> PolicyModel | None:
         """Get policy model by ID

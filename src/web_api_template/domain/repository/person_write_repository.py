@@ -4,7 +4,9 @@ from typing import List, Optional
 from web_api_template.core.repository.manager.sqlalchemy.repository_base import (
     RepositoryBase,
 )
-from web_api_template.domain.entities import Person, PersonCreate, PersonFilter
+from web_api_template.domain.entities.person import Person
+from web_api_template.domain.entities.person_create import PersonCreate
+from web_api_template.domain.entities.person_filter import PersonFilter
 
 
 class PersonWriteRepository(RepositoryBase):

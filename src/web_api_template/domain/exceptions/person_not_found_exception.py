@@ -1,8 +1,16 @@
-class PersonNotFoundException(Exception):
+from fastapi import HTTPException
+
+
+class PersonNotFoundException(HTTPException):
     """Domain exception for person not found
 
     Args:
-        Exception (Exception): inherits from base exception
+        HTTPException (HTTPException): inherits from base http exception
     """
 
-    ...
+    def __init__(self, id: int):
+        super().__init__(
+            status_code=404,
+            detail=f"Person with ID {id} not found",
+            headers={"X-Error": "PersonNotFound"},
+        )

@@ -1,15 +1,18 @@
 from typing import List, Optional
 
 from automapper import mapper
-from sqlalchemy import delete, desc, select, text, update
-from sqlalchemy.exc import IntegrityError
-
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Person, PersonFilter
+from web_api_template.domain.entities.person import Person
+from web_api_template.domain.entities.person_create import PersonCreate
+from web_api_template.domain.entities.person_filter import PersonFilter
 from web_api_template.domain.repository import PersonReadRepository
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel
+
+from sqlalchemy import delete, desc, select, text, update
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 
 
 class PersonReadRepositoryImpl(PersonReadRepository):
@@ -42,10 +45,17 @@ class PersonReadRepositoryImpl(PersonReadRepository):
             try:
                 # TODO: Apply filters
 
-                result = await session.execute(select(PersonModel))
+                # Load dependent objects for each person
+                result = await session.execute(
+                    select(PersonModel).options(
+                        selectinload(PersonModel.addresses),
+                        selectinload(PersonModel.policies),
+                    )
+                )
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
+
                 return [mapper.map(item, Person) for item in items]
 
             except Exception as ex:
@@ -61,10 +71,16 @@ class PersonReadRepositoryImpl(PersonReadRepository):
         Returns:
             PersonModel: _description_
         """
+
         async with Database.get_db_session(self._label) as session:
             try:
                 result = await session.execute(
-                    select(PersonModel).where(PersonModel.id == id)
+                    select(PersonModel)
+                    .where(PersonModel.id == id)
+                    .options(
+                        selectinload(PersonModel.addresses),
+                        selectinload(PersonModel.policies),
+                    )
                 )
                 return result.scalar_one_or_none()
 
@@ -82,18 +98,13 @@ class PersonReadRepositoryImpl(PersonReadRepository):
             Person
         """
 
-        try:
-            entity_model: Optional[PersonModel] = await self.__get_by_id(id)
+        entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
-            if not entity_model:
-                logger.debug("Item with id: {} not found", id)
-                raise ItemNotFoundException(f"Item with id: {id} not found")
+        if not entity_model:
+            logger.debug("Item with id: {} not found", id)
+            raise ItemNotFoundException(f"Item with id: {id} not found")
 
-            return mapper.map(entity_model, Person)
-
-        except Exception as ex:
-            logger.exception("Database error")
-            raise ex
+        return mapper.map(entity_model, Person)
 
     # async def count_Persons(self) -> int:
     #     with DbConnectionManager() as manager:

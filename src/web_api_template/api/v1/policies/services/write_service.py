@@ -4,8 +4,7 @@ from pydilite import inject
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.domain.entities import Policy, PolicyFilter
-from web_api_template.domain.entities.policy_create import PolicyCreate
+from web_api_template.domain.aggregates import Policy, PolicyCreate, PolicyFilter
 from web_api_template.domain.exceptions import PolicyNotFoundException
 from web_api_template.domain.repository import PolicyWriteRepository
 
@@ -21,7 +20,7 @@ class WriteService:
         self,
         # current_user: User,
         request: PolicyCreate,
-    ) -> Optional[Policy]:
+    ) -> Optional[PolicyCreate]:
         """
         Create a Policy.
 
@@ -40,7 +39,7 @@ class WriteService:
         #         "You are not allowed to create this item"
         #     )
 
-        response: Optional[Policy] = await self.policy_db_repo.create(
+        response: Optional[PolicyCreate] = await self.policy_db_repo.create(
             # current_user=current_user,
             entity=request
         )

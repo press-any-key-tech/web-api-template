@@ -12,9 +12,8 @@ from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import Response
 
-from web_api_template.api.v1.contents.services import ReadService as ContentReadService
 from web_api_template.api.v1.policies.services import ReadService, WriteService
-from web_api_template.core.api import ApiMessage
+from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.common_query_model import CommonQueryModel
 from web_api_template.core.api.utils import get_content_type
 from web_api_template.core.http.validators import (
@@ -22,8 +21,7 @@ from web_api_template.core.http.validators import (
     ksuid_query_validator,
 )
 from web_api_template.core.logging import logger
-from web_api_template.domain.entities import Policy, PolicyCreate, PolicyFilter
-from web_api_template.domain.entities.content import Content
+from web_api_template.domain.aggregates import Policy, PolicyCreate, PolicyFilter
 from web_api_template.domain.exceptions import (
     PolicyIsActiveException,
     PolicyNotFoundException,
@@ -38,7 +36,7 @@ api_router = APIRouter()
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -50,7 +48,7 @@ async def get_list(
     response: Response,
     list_filter: PolicyFilter = Depends(),
     query: CommonQueryModel = Depends(),
-) -> List[Policy] | JSONResponse:
+) -> List[Policy]:
     """Get a list of policies
 
     Args:
@@ -58,25 +56,11 @@ async def get_list(
         response (Response): _description_
 
     Returns:
-        List[Policy] | JSONResponse: _description_
+        List[Policy]: _description_
     """
 
-    status_code: int
-    error_message: dict
-
-    try:
-        result: List[Policy] = await ReadService().get_list(filter=list_filter)
-        return result
-
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
-    )
+    result: List[Policy] = await ReadService().get_list(filter=list_filter)
+    return result
 
 
 @api_router.get(
@@ -85,10 +69,10 @@ async def get_list(
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_404_NOT_FOUND: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -100,7 +84,7 @@ async def get_by_id(
     request: Request,
     response: Response,
     id: str,
-) -> Policy | JSONResponse:
+) -> Policy:
     """Get a policy by id
 
     Args:
@@ -112,25 +96,8 @@ async def get_by_id(
         Policy: _description_
     """
 
-    status_code: int
-    error_message: dict
-
-    try:
-        entity: Policy = await ReadService().get_by_id(id=id)
-        return entity
-    except PolicyNotFoundException as e:
-        logger.exception("Policy with id {} not found", id)
-        status_code = status.HTTP_404_NOT_FOUND
-        error_message = {"message": str(e)}
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
-    )
+    entity: Policy = await ReadService().get_by_id(id=id)
+    return entity
 
 
 @api_router.delete(
@@ -138,16 +105,16 @@ async def get_by_id(
     status_code=status.HTTP_204_NO_CONTENT,
     responses={
         status.HTTP_403_FORBIDDEN: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_404_NOT_FOUND: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -172,28 +139,8 @@ async def delete_by_id(
         _type_: _description_
     """
 
-    error_message: dict
-
-    try:
-        await WriteService().delete_by_id(id=id)
-        return
-    except PolicyIsActiveException as e:
-        logger.exception("Policy with id {} is active and cannot be deleted", id)
-        status_code = status.HTTP_409_CONFLICT
-        error_message = {"message": str(e)}
-    except PolicyNotFoundException as e:
-        logger.exception("Policy with id {} not found", id)
-        status_code = status.HTTP_404_NOT_FOUND
-        error_message = {"message": str(e)}
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
-    )
+    await WriteService().delete_by_id(id=id)
+    return
 
 
 @api_router.put(
@@ -202,16 +149,16 @@ async def delete_by_id(
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_404_NOT_FOUND: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_400_BAD_REQUEST: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -224,7 +171,7 @@ async def update(
     response: Response,
     id: str,
     policy: PolicyCreate,
-) -> Policy | JSONResponse:
+) -> Policy:
     """Update the policy with the given information.
     - Do not allow to dissasociate any active polcies from the policy.
 
@@ -235,36 +182,18 @@ async def update(
         pot_request (PolicyCreate): _description_
 
     Returns:
-        Policy | JSONResponse: _description_
+        Policy: _description_
     """
-
-    status_code: int
-    error_message: dict
 
     logger.debug("update request: {}", policy)
 
-    try:
-        entity: Policy = await WriteService().update(
-            id=id,
-            # current_user=current_user,
-            request=policy,
-        )
-
-        return entity
-
-    except PolicyNotFoundException as e:
-        logger.exception("Policy with id {} not found", id)
-        status_code = status.HTTP_404_NOT_FOUND
-        error_message = {"message": str(e)}
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
+    entity: Policy = await WriteService().update(
+        id=id,
+        # current_user=current_user,
+        request=policy,
     )
+
+    return entity
 
 
 @api_router.post(
@@ -273,16 +202,16 @@ async def update(
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_403_FORBIDDEN: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_400_BAD_REQUEST: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_409_CONFLICT: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ApiMessage,
+            "model": ProblemDetail,
         },
     },
     dependencies=[
@@ -293,7 +222,7 @@ async def create(
     request: Request,
     response: Response,
     policy: PolicyCreate,
-) -> Policy | JSONResponse:
+) -> PolicyCreate:
     """Create a new policy with the given information.
     - Check for existence of addresses and policies.
 
@@ -303,43 +232,12 @@ async def create(
         policy (PolicyCreate): _description_
 
     Returns:
-        Policy | JSONResponse: _description_
+        Policy: _description_
     """
 
-    status_code: int
-    error_message: dict
-
-    try:
-
-        entity: Policy = await WriteService().create(
-            # current_user=current_user,
-            request=policy,
-        )
-
-        return entity
-
-    # except NotAllowedCreationException as e:
-    #     logger.exception("You are not allowed to create this item")
-    #     status_code = status.HTTP_403_FORBIDDEN
-    #     error_message = {"message": str(e)}
-
-    # except (
-    #     ItemNotFoundException,
-    # ) as e:
-    #     logger.exception("Controlled exception")
-    #     status_code = status.HTTP_400_BAD_REQUEST
-    #     error_message = {"message": str(e)}
-
-    except PolicyNotFoundException as e:
-        logger.exception("Policy with id {} not found", id)
-        status_code = status.HTTP_404_NOT_FOUND
-        error_message = {"message": str(e)}
-    except Exception as e:
-        logger.exception("Not controlled exception")
-        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        error_message = {"message": f"Something went wrong: {str(e)}"}
-
-    return JSONResponse(
-        status_code=status_code,
-        content=error_message,
+    entity: PolicyCreate = await WriteService().create(
+        # current_user=current_user,
+        request=policy,
     )
+
+    return entity

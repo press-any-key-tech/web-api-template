@@ -2,13 +2,13 @@
 
 [[package]]
 name = "advanced-automapper"
-version = "0.1.8"
+version = "0.1.15"
 description = "Object mapper based on type hints"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "advanced_automapper-0.1.8-py3-none-any.whl", hash = "sha256:1885344cdea0e4154ee39b2b8301d9adb8f20087665dbf203bc0bc1d0e8e1ff6"},
-    {file = "advanced_automapper-0.1.8.tar.gz", hash = "sha256:af2798e6522cce781d6ace9b866ab357465259b539249c3a05150ab0de1483ac"},
+    {file = "advanced_automapper-0.1.15-py3-none-any.whl", hash = "sha256:9d289db08fc5d9ceb59783f62e5c9125abaec9e5c3883fea4ee329dacf6ce9c7"},
+    {file = "advanced_automapper-0.1.15.tar.gz", hash = "sha256:feb7d085aab547ed146896d5b724a05507020a615ce3c165a340af8849560a9d"},
 ]
 
 [package.dependencies]

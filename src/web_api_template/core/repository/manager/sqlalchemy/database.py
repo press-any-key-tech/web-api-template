@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, clear_mappers, sessionmaker
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.engine_settings import (
@@ -111,6 +111,7 @@ class Database:
         Args:
             label (str, optional): _description_. Defaults to None.
         """
+
         labels = [label] if label else settings.labels
         for label in labels:
             if label is not None:

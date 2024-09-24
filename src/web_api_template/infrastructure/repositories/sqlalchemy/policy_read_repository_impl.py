@@ -3,13 +3,14 @@ from typing import List, Optional
 from automapper import mapper
 from sqlalchemy import delete, desc, select, text, update
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.entities import Policy, PolicyFilter
+from web_api_template.domain.aggregates import Policy, PolicyFilter
 from web_api_template.domain.repository import PolicyReadRepository
-from web_api_template.infrastructure.models.sqlalchemy import PolicyModel
+from web_api_template.infrastructure.models.sqlalchemy import PersonModel, PolicyModel
 
 
 class PolicyReadRepositoryImpl(PolicyReadRepository):
@@ -42,9 +43,20 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
                 # TODO: Apply filters
 
                 result = await session.execute(select(PolicyModel))
+
+                result = await session.execute(
+                    select(PolicyModel).options(
+                        selectinload(PolicyModel.holder).selectinload(
+                            PersonModel.addresses
+                        ),
+                    )
+                )
+
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
+                mapper.add_custom_mapping(PolicyModel, "holder", "policy_holder")
+                mapper.add_custom_mapping(PolicyModel, "holder_id", "policy_holder_id")
                 return [mapper.map(item, Policy) for item in items]
 
             except Exception as ex:
@@ -77,11 +89,20 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
             try:
 
                 result = await session.execute(
-                    select(PolicyModel).where(PolicyModel.person_id == id)
+                    select(PolicyModel)
+                    .where(PolicyModel.holder_id == id)
+                    .options(
+                        selectinload(PolicyModel.holder).selectinload(
+                            PersonModel.addresses
+                        ),
+                    )
                 )
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()
+
+                mapper.add_custom_mapping(PolicyModel, "holder", "policy_holder")
+                mapper.add_custom_mapping(PolicyModel, "holder_id", "policy_holder_id")
                 return [mapper.map(item, Policy) for item in items]
 
             except Exception as ex:
@@ -100,8 +121,15 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
         async with Database.get_db_session(self._label) as session:
             try:
                 result = await session.execute(
-                    select(PolicyModel).where(PolicyModel.id == id)
+                    select(PolicyModel)
+                    .where(PolicyModel.id == id)
+                    .options(
+                        selectinload(PolicyModel.holder).selectinload(
+                            PersonModel.addresses
+                        ),
+                    )
                 )
+
                 return result.scalar_one_or_none()
 
             except Exception as ex:
@@ -125,6 +153,8 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
+            mapper.add_custom_mapping(PolicyModel, "holder", "policy_holder")
+            mapper.add_custom_mapping(PolicyModel, "holder_id", "policy_holder_id")
             return mapper.map(entity_model, Policy)
 
         except Exception as ex:

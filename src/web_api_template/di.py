@@ -4,27 +4,26 @@
 from pydilite import Provider
 
 from web_api_template.core.logging import logger
-from web_api_template.domain.repository import (
+from web_api_template.domain.repository import (  # PolicyReadRepository,; PolicyWriteRepository,
     AddressReadRepository,
     AddressWriteRepository,
-    ContentReadRepository,
-    ContentWriteRepository,
     HealthcheckRepository,
     PersonReadRepository,
     PersonWriteRepository,
     PolicyReadRepository,
     PolicyWriteRepository,
 )
-from web_api_template.infrastructure.repositories.dynamodb import (
-    PersonReadRepositoryImpl,
-    PersonWriteRepositoryImpl,
-)
-from web_api_template.infrastructure.repositories.sqlalchemy import (
+
+# from web_api_template.infrastructure.repositories.dynamodb import (
+#     PersonReadRepositoryImpl,
+#     PersonWriteRepositoryImpl,
+# )
+from web_api_template.infrastructure.repositories.sqlalchemy import (  # PolicyReadRepositoryImpl,; PolicyWriteRepositoryImpl,
     AddressReadRepositoryImpl,
     AddressWriteRepositoryImpl,
-    ContentReadRepositoryImpl,
-    ContentWriteRepositoryImpl,
     HealthcheckRepositoryImpl,
+    PersonReadRepositoryImpl,
+    PersonWriteRepositoryImpl,
     PolicyReadRepositoryImpl,
     PolicyWriteRepositoryImpl,
 )
@@ -50,19 +49,9 @@ def include_di(provider: Provider):
         PersonReadRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
-    # provider.bind(
-    #     PersonReadRepository,
-    #     PersonReadRepositoryImpl(label="DEFAULT"),
-    #     lazy=True,
-    # )
     provider.bind(
         PolicyReadRepository,
         PolicyReadRepositoryImpl,
-        lazy=True,
-    )
-    provider.bind(
-        ContentReadRepository,
-        ContentReadRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
     provider.bind(
@@ -70,24 +59,14 @@ def include_di(provider: Provider):
         AddressReadRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
-    # provider.bind(
-    #     PersonWriteRepository,
-    #     PersonWriteRepositoryImpl(label="DEFAULT"),
-    #     lazy=True,
-    # )
     provider.bind(
         PersonWriteRepository,
-        PersonWriteRepositoryImpl,
+        PersonWriteRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
     provider.bind(
         PolicyWriteRepository,
         PolicyWriteRepositoryImpl(label="DEFAULT"),
-        lazy=True,
-    )
-    provider.bind(
-        ContentWriteRepository,
-        ContentWriteRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
     provider.bind(
