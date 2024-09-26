@@ -37,4 +37,4 @@ class AddressModel(Base, BaseModel):
         String(27), ForeignKey("persons.id"), nullable=False
     )
 
-    person = relationship("PersonModel", back_populates="addresses")
+    # person = relationship("PersonModel", back_populates="addresses")

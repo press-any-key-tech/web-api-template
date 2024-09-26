@@ -1,0 +1,21 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/persons/{{person_id}}/addresses
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "street": "1234 Sesame Street",
+    "city": "Anytown",
+    "postal_code": "12345",
+    "province": "Anyprovince",
+    "country": "USA"
+  }
+}

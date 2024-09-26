@@ -26,7 +26,3 @@ class AddressWriteRepository(RepositoryBase):
     @abstractmethod
     async def delete(self, *, id: str):
         return NotImplementedError()
-
-    @abstractmethod
-    async def delete_by_person(self, *, person_id: str, id: str):
-        return NotImplementedError()

@@ -36,13 +36,13 @@ class PersonModel(BaseModel, Base):
         String(500), nullable=False, unique=True
     )
 
-    addresses: Mapped[List["AddressModel"]] = relationship(
-        "AddressModel", back_populates="person"
-    )
+    # addresses: Mapped[List["AddressModel"]] = relationship(
+    #     "AddressModel", back_populates="person"
+    # )
 
-    policies: Mapped[List["PolicyModel"]] = relationship(
-        "PolicyModel", back_populates="holder"
-    )
+    # policies: Mapped[List["PolicyModel"]] = relationship(
+    #     "PolicyModel", back_populates="holder"
+    # )
 
 
 # Now we can resolve the circular import

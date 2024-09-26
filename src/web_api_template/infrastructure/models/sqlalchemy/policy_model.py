@@ -31,19 +31,13 @@ class PolicyModel(Base, BaseModel):
         index=True,
     )
 
-    # person_id: Mapped[str] = mapped_column(
-    #     String(27), ForeignKey("persons.id"), nullable=False
-    # )
-
-    # person = relationship("PersonModel", back_populates="policies")
-
     holder_id: Mapped[str] = mapped_column(
         String(27), ForeignKey("persons.id"), nullable=False
     )
 
-    holder: Mapped["PersonModel"] = relationship(
-        "PersonModel", back_populates="policies"
-    )
+    # holder: Mapped["PersonModel"] = relationship(
+    #     "PersonModel", back_populates="policies"
+    # )
 
     policy_number: Mapped[str] = mapped_column(String(500), nullable=False)
     status: Mapped[Column[SQLAEnum]] = mapped_column(

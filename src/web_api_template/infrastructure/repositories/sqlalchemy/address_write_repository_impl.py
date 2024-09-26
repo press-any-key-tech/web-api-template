@@ -1,6 +1,9 @@
 from typing import List, Optional
 
 from automapper import mapper
+from sqlalchemy import delete, desc, select, text, update
+from sqlalchemy.exc import IntegrityError
+
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
@@ -11,9 +14,6 @@ from web_api_template.domain.exceptions import (
 from web_api_template.domain.repository import AddressWriteRepository
 from web_api_template.domain.value_objects import Address, AddressBase, AddressFilter
 from web_api_template.infrastructure.models.sqlalchemy import AddressModel
-
-from sqlalchemy import delete, desc, select, text, update
-from sqlalchemy.exc import IntegrityError
 
 
 class AddressWriteRepositoryImpl(AddressWriteRepository):
@@ -104,37 +104,6 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
                 await session.rollback()
                 logger.exception(
                     "Foreign key violation exception, Address does not exists."
-                )
-                raise ItemNotFoundException(f"Item with id: {id} not found")
-
-            except Exception as ex:
-                logger.exception("Database error")
-                raise ex
-
-    async def delete_by_person(self, person_id: str, id: str) -> None:
-        """Delete address model by ID
-
-        Args:
-            person_id (str): _description_
-            id (str): _description_
-
-        Returns:
-            None
-
-        """
-        async with Database.get_db_session(self._label) as session:
-            try:
-                delete_query = delete(AddressModel).where(
-                    AddressModel.id == id and AddressModel.person_id == person_id
-                )
-                await session.execute(delete_query)
-                await session.commit()
-                return
-
-            except IntegrityError as fke:
-                await session.rollback()
-                logger.exception(
-                    "Key violation exception, Address or person does not exists."
                 )
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 

@@ -44,13 +44,13 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
 
                 result = await session.execute(select(PolicyModel))
 
-                result = await session.execute(
-                    select(PolicyModel).options(
-                        selectinload(PolicyModel.holder).selectinload(
-                            PersonModel.addresses
-                        ),
-                    )
-                )
+                # result = await session.execute(
+                #     select(PolicyModel).options(
+                #         selectinload(PolicyModel.holder).selectinload(
+                #             PersonModel.addresses
+                #         ),
+                #     )
+                # )
 
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
@@ -120,14 +120,19 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
         """
         async with Database.get_db_session(self._label) as session:
             try:
+
+                # result = await session.execute(
+                #     select(PolicyModel)
+                #     .where(PolicyModel.id == id)
+                #     .options(
+                #         selectinload(PolicyModel.holder).selectinload(
+                #             PersonModel.addresses
+                #         ),
+                #     )
+                # )
+
                 result = await session.execute(
-                    select(PolicyModel)
-                    .where(PolicyModel.id == id)
-                    .options(
-                        selectinload(PolicyModel.holder).selectinload(
-                            PersonModel.addresses
-                        ),
-                    )
+                    select(PolicyModel).where(PolicyModel.id == id)
                 )
 
                 return result.scalar_one_or_none()

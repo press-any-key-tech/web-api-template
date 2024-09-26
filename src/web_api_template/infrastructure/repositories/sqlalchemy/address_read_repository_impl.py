@@ -54,7 +54,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
     async def get_list_by_person_id(
         self,
         *,
-        id: str,
+        person_id: str,
         # query: CommonQueryModel,
         # current_user: User,
     ) -> List[Address]:
@@ -70,14 +70,14 @@ class AddressReadRepositoryImpl(AddressReadRepository):
             dict
         """
 
-        logger.debug("Person id: {}", id)
+        logger.debug("Person id: {}", person_id)
         # logger.debug("query: %s", query)
 
         async with Database.get_db_session(self._label) as session:
             try:
 
                 result = await session.execute(
-                    select(AddressModel).where(AddressModel.person_id == id)
+                    select(AddressModel).where(AddressModel.person_id == person_id)
                 )
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()

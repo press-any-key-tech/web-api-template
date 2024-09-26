@@ -26,52 +26,101 @@ from web_api_template.domain.value_objects import Address, AddressCreate, Addres
 api_router = APIRouter()
 
 
-# @api_router.get(
-#     "/",
-#     response_model=List[Address],
-#     status_code=status.HTTP_200_OK,
-#     responses={
-#         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-#             "model": ProblemDetail,
-#             "description": "Internal Server Error",
-#         },
-#     },
-#     dependencies=[
-#         Depends(require_groups(["customer"])),
-#     ],
-# )
-# async def get_list(
-#     request: Request,
-#     response: Response,
-#     list_filter: AddressFilter = Depends(),
-#     query: CommonQueryModel = Depends(),
-# ) -> List[Address]:
-#     """Get a list of policies
+@api_router.get(
+    "/{person_id}/addresses",
+    response_model=List[Address],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ProblemDetail,
+        },
+    },
+    dependencies=[
+        Depends(require_groups(["customer"])),
+    ],
+)
+async def get_addresses_by_person(
+    request: Request,
+    response: Response,
+    person_id: str = Path(..., description="The ID of the person"),
+) -> List[Address]:
+    """Get a list of addresses associated with the person.
 
-#     Args:
-#         request (Request): _description_
-#         response (Response): _description_
+    Args:
+        request (Request): _description_
+        response (Response): _description_
+        id (str, optional): _description_. Defaults to Path(..., description="The ID of the person").
 
-#     Returns:
-#         List[Address]: _description_
-#     """
+    Returns:
+        List[Address]: _description_
+    """
 
-#     status_code: int
-#     error_message: dict
+    # TODO: Filter addresses by status
 
-#     try:
-#         result: List[Address] = await ReadService().get_list(filter=list_filter)
-#         return result
+    logger.debug("Person id: {}", person_id)
 
-#     except Exception as e:
-#         logger.exception("Not controlled exception")
-#         status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-#         error_message = {"message": f"Something went wrong: {str(e)}"}
+    # TODO: generalize filter
+    # Check if person exists
+    # TODO: create an "exists" method on service
 
-#     return JSONResponse(
-#         status_code=status_code,
-#         content=error_message,
-#     )
+    result: List[Address] = await ReadService().get_list_by_person_id(
+        person_id=person_id
+    )
+    return result
+
+
+@api_router.post(
+    "/{person_id}/addresses",
+    response_model=Address,
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_403_FORBIDDEN: {
+            "model": ProblemDetail,
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ProblemDetail,
+        },
+        status.HTTP_409_CONFLICT: {
+            "model": ProblemDetail,
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ProblemDetail,
+        },
+    },
+    dependencies=[
+        Depends(require_groups(["customer"])),
+    ],
+)
+async def add_address(
+    request: Request,
+    response: Response,
+    address: AddressCreate,
+    person_id: str = Path(..., description="The ID of the person"),
+) -> Address:
+    """Add a new address to the person.
+    - TODO: Check for the existence of the address associated to the person.
+
+    Args:
+        request (Request): _description_
+        response (Response): _description_
+        person (PersonCreate): _description_
+
+    Returns:
+        Person: _description_
+    """
+
+    # Check if person exists
+    # TODO: create an "exists" method on service
+    # entity_person: Person = await PersonReadService().get_by_id(id=id)
+
+    # TODO: it is better to have an explicit method for creating a policy with a person id + policy data
+    entity: Address = await WriteService().create_for_person(
+        # current_user=current_user,
+        person_id=person_id,
+        request=address,
+    )
+
+    return entity
 
 
 @api_router.get(
@@ -207,82 +256,3 @@ async def update(
     )
 
     return entity
-
-
-# @api_router.post(
-#     "/",
-#     response_model=Address,
-#     status_code=status.HTTP_201_CREATED,
-#     responses={
-#         status.HTTP_403_FORBIDDEN: {
-#             "model": ProblemDetail,
-#         },
-#         status.HTTP_400_BAD_REQUEST: {
-#             "model": ProblemDetail,
-#         },
-#         status.HTTP_409_CONFLICT: {
-#             "model": ProblemDetail,
-#         },
-#         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-#             "model": ProblemDetail,
-#             "description": "Internal Server Error",
-#         },
-#     },
-#     dependencies=[
-#         Depends(require_groups(["customer"])),
-#     ],
-# )
-# async def create(
-#     request: Request,
-#     response: Response,
-#     address: AddressCreate,
-# ) -> Address:
-#     """Create a new address with the given information.
-#     - Check for existence of addresses and policies.
-
-#     Args:
-#         request (Request): _description_
-#         response (Response): _description_
-#         address (AddressCreate): _description_
-
-#     Returns:
-#         Address: _description_
-#     """
-
-#     status_code: int
-#     error_message: dict
-
-#     try:
-
-#         entity: Address = await WriteService().create(
-#             # current_user=current_user,
-#             request=address,
-#         )
-
-#         return entity
-
-#     # except NotAllowedCreationException as e:
-#     #     logger.exception("You are not allowed to create this item")
-#     #     status_code = status.HTTP_403_FORBIDDEN
-#     #     error_message = {"message": str(e)}
-
-#     # except (
-#     #     ItemNotFoundException,
-#     # ) as e:
-#     #     logger.exception("Controlled exception")
-#     #     status_code = status.HTTP_400_BAD_REQUEST
-#     #     error_message = {"message": str(e)}
-
-#     except AddressNotFoundException as e:
-#         logger.exception("Address with id {} not found", id)
-#         status_code = status.HTTP_404_NOT_FOUND
-#         error_message = {"message": str(e)}
-#     except Exception as e:
-#         logger.exception("Not controlled exception")
-#         status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-#         error_message = {"message": f"Something went wrong: {str(e)}"}
-
-#     return JSONResponse(
-#         status_code=status_code,
-#         content=error_message,
-#     )
