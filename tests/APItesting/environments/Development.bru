@@ -1,10 +1,10 @@
 vars {
-  host: http://localhost:8000
-  person_id: 2mbjgMqg8nYGWajiJdaahQC3wP3
-  id_provider_domain: https://pro-es-magenda.auth.eu-west-1.amazoncognito.com
-  api_host: https://bgp0qix06a.execute-api.eu-west-1.amazonaws.com
-  client_id: 6f9ukfqv3og31mhuebt349c4fa
-  client_secret: 6u6cu3nb0hbl0qd8jf6tvbtpv9nv1m3ains5s6rfhfvcbpb4n2t
-  address_id: 2mc7RXZqgjB0ZeYr9rj376bLPx6
-  policy_id: 2mcBOJL4qgttOz8VM3AztQHBsXd
+  host: {{process.env.HOST}}
+  person_id: {{process.env.PERSON_ID}}
+  id_provider_domain: {{process.env.ID_PROVIDER_DOMAIN}}
+  api_host: {{process.env.API_HOST}}
+  client_id: {{process.env.CLIENT_ID}}
+  client_secret: {{process.env.CLIENT_SECRET}}
+  address_id: {{process.env.ADDRESS_ID}}
+  policy_id: {{process.env.POLICY_ID}}
 }
