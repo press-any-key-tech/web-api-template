@@ -7,6 +7,9 @@ from sqlalchemy.orm import selectinload
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
+from web_api_template.core.repository.manager.sqlalchemy.async_paginator import (
+    AsyncPaginator,
+)
 from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_create import PersonCreate
@@ -43,6 +46,13 @@ class PersonReadRepositoryImpl(PersonReadRepository):
         # async with Database.get_db_session(self._label) as session:
         async with Database.get_db_session(self._label) as session:
             try:
+
+                # result = await AsyncPaginator(session).list(
+                #     model=PersonModel,
+                #     page=1,
+                #     size=10,
+                # )
+
                 # TODO: Apply filters
 
                 # # Load dependent objects for each person
@@ -54,7 +64,9 @@ class PersonReadRepositoryImpl(PersonReadRepository):
                 # )
 
                 # Load dependent objects for each person
-                result = await session.execute(select(PersonModel))
+                _model = PersonModel
+                query = select(_model)
+                result = await session.execute(query)
 
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()

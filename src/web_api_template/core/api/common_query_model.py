@@ -10,10 +10,10 @@ class CommonQueryModel(BaseModel):
     #     default=None, json_schema_extra={"description": "Query", "example": "something"}
     # )
 
-    sort: Optional[str] = Field(
-        default=None,
-        json_schema_extra={"description": "Sort fields", "example": "-id,key"},
-    )
+    # sort: Optional[str] = Field(
+    #     default=None,
+    #     json_schema_extra={"description": "Sort fields", "example": "-id,key"},
+    # )
     page: Optional[int] = Field(
         default=1,
         ge=1,
