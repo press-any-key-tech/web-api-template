@@ -1,4 +1,10 @@
 vars {
-  host: http://localhost:8000
-  person_id: 2mOKGx6GKWbYqoiGYlONIiPL0lI
+  host: {{process.env.HOST}}
+  person_id: {{process.env.PERSON_ID}}
+  id_provider_domain: {{process.env.ID_PROVIDER_DOMAIN}}
+  api_host: {{process.env.API_HOST}}
+  client_id: {{process.env.CLIENT_ID}}
+  client_secret: {{process.env.CLIENT_SECRET}}
+  address_id: {{process.env.ADDRESS_ID}}
+  policy_id: {{process.env.POLICY_ID}}
 }

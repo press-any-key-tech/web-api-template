@@ -24,5 +24,5 @@ class AddressReadRepository(RepositoryBase):
         raise NotImplementedError()
 
     @abstractmethod
-    async def get_list_by_person_id(self, *, id: str) -> List[Address]:
+    async def get_list_by_person_id(self, *, person_id: str) -> List[Address]:
         raise NotImplementedError()

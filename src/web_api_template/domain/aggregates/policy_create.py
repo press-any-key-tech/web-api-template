@@ -14,13 +14,7 @@ class PolicyCreate(PolicyBase):
 
     """
 
-    policy_holder_id: str = Field(
-        ...,
-        json_schema_extra={
-            "description": "Policy holder person id",
-            "example": "0ujsswThIGTUYm2K8FjOOfXtY1K",
-        },
-    )
+    ...
 
     # contents_ids: Optional[List[str]] = Field(
     #     default=[],

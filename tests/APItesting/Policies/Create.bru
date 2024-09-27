@@ -1,0 +1,22 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/v1/persons/{{person_id}}/policies
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "policy_number": "XX-111-333-555",
+    "status": "inactive",
+    "policy_type": "car",
+    "start_date": "2024-01-01",
+    "end_date": "2025-01-01",
+    "premium": 321
+  }
+}

@@ -19,6 +19,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         self,
         *,
         # current_user: User,
+        person_id: str,
         entity: PolicyCreate,
     ) -> PolicyCreate:
         """
@@ -32,6 +33,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
 
         mapper.add_custom_mapping(PolicyCreate, "policy_holder_id", "holder_id")
         entity_model: PolicyModel = mapper.map(entity, PolicyModel)
+        entity_model.holder_id = person_id
 
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)

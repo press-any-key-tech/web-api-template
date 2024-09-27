@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from pydilite import inject
+
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.exceptions import AddressNotFoundException
@@ -16,6 +17,26 @@ class ReadService:
     @inject()
     def __init__(self, address_db_repo: AddressReadRepository):
         self.address_db_repo = address_db_repo
+
+    async def get_list_by_person_id(self, person_id: str) -> List[Address]:
+        """
+        Get a list of addresses
+
+        Args:
+            person_id (str): person id
+            filter (AddressFilter): Address related filter
+
+        Returns:
+            List[Address]: domain entity to return
+        """
+
+        logger.debug(f"Entering. person: {person_id}")
+
+        entities: List[Address] = await self.address_db_repo.get_list_by_person_id(
+            person_id=person_id
+        )
+
+        return entities
 
     async def get_list(self, filter: AddressFilter) -> List[Address]:
         """

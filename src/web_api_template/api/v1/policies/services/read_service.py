@@ -54,7 +54,7 @@ class ReadService:
 
         return entity
 
-    async def get_list_by_person_id(self, id: str) -> List[Policy]:
+    async def get_list_by_person_id(self, person_id: str) -> List[Policy]:
         """
         Get a list of policys for a given person
 
@@ -67,6 +67,8 @@ class ReadService:
 
         logger.debug("Entering. filter: {}", id)
 
-        entities: List[Policy] = await self.policy_db_repo.get_list_by_person_id(id=id)
+        entities: List[Policy] = await self.policy_db_repo.get_list_by_person_id(
+            person_id=person_id
+        )
 
         return entities

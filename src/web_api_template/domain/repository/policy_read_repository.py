@@ -24,5 +24,5 @@ class PolicyReadRepository(RepositoryBase):
         raise NotImplementedError()
 
     @abstractmethod
-    async def get_list_by_person_id(self, *, id: str) -> List[Policy]:
+    async def get_list_by_person_id(self, *, person_id: str) -> List[Policy]:
         raise NotImplementedError()
