@@ -66,7 +66,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
     async def get_list_by_person_id(
         self,
         *,
-        id: str,
+        person_id: str,
         # query: CommonQueryModel,
         # current_user: User,
     ) -> List[Policy]:
@@ -82,21 +82,26 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
             dict
         """
 
-        logger.debug("Person id: {}", id)
+        logger.debug("Person id: {}", person_id)
         # logger.debug("query: %s", query)
 
         async with Database.get_db_session(self._label) as session:
             try:
 
+                # result = await session.execute(
+                #     select(PolicyModel)
+                #     .where(PolicyModel.holder_id == person_id)
+                #     .options(
+                #         selectinload(PolicyModel.holder).selectinload(
+                #             PersonModel.addresses
+                #         ),
+                #     )
+                # )
+
                 result = await session.execute(
-                    select(PolicyModel)
-                    .where(PolicyModel.holder_id == id)
-                    .options(
-                        selectinload(PolicyModel.holder).selectinload(
-                            PersonModel.addresses
-                        ),
-                    )
+                    select(PolicyModel).where(PolicyModel.holder_id == person_id)
                 )
+
                 # It is done this way while I am creating the unit tests
                 scalars = result.scalars()
                 items = scalars.all()

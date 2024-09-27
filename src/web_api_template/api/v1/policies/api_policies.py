@@ -30,37 +30,37 @@ from web_api_template.domain.exceptions import (
 api_router = APIRouter()
 
 
-@api_router.get(
-    "/",
-    response_model=List[Policy],
-    status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ProblemDetail,
-        },
-    },
-    dependencies=[
-        Depends(require_groups(["customer"])),
-    ],
-)
-async def get_list(
-    request: Request,
-    response: Response,
-    list_filter: PolicyFilter = Depends(),
-    query: CommonQueryModel = Depends(),
-) -> List[Policy]:
-    """Get a list of policies
+# @api_router.get(
+#     "/",
+#     response_model=List[Policy],
+#     status_code=status.HTTP_200_OK,
+#     responses={
+#         status.HTTP_500_INTERNAL_SERVER_ERROR: {
+#             "model": ProblemDetail,
+#         },
+#     },
+#     dependencies=[
+#         Depends(require_groups(["customer"])),
+#     ],
+# )
+# async def get_list(
+#     request: Request,
+#     response: Response,
+#     list_filter: PolicyFilter = Depends(),
+#     query: CommonQueryModel = Depends(),
+# ) -> List[Policy]:
+#     """Get a list of policies
 
-    Args:
-        request (Request): _description_
-        response (Response): _description_
+#     Args:
+#         request (Request): _description_
+#         response (Response): _description_
 
-    Returns:
-        List[Policy]: _description_
-    """
+#     Returns:
+#         List[Policy]: _description_
+#     """
 
-    result: List[Policy] = await ReadService().get_list(filter=list_filter)
-    return result
+#     result: List[Policy] = await ReadService().get_list(filter=list_filter)
+#     return result
 
 
 @api_router.get(
@@ -196,48 +196,48 @@ async def update(
     return entity
 
 
-@api_router.post(
-    "/",
-    response_model=Policy,
-    status_code=status.HTTP_201_CREATED,
-    responses={
-        status.HTTP_403_FORBIDDEN: {
-            "model": ProblemDetail,
-        },
-        status.HTTP_400_BAD_REQUEST: {
-            "model": ProblemDetail,
-        },
-        status.HTTP_409_CONFLICT: {
-            "model": ProblemDetail,
-        },
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ProblemDetail,
-        },
-    },
-    dependencies=[
-        Depends(require_groups(["customer"])),
-    ],
-)
-async def create(
-    request: Request,
-    response: Response,
-    policy: PolicyCreate,
-) -> PolicyCreate:
-    """Create a new policy with the given information.
-    - Check for existence of addresses and policies.
+# @api_router.post(
+#     "/",
+#     response_model=Policy,
+#     status_code=status.HTTP_201_CREATED,
+#     responses={
+#         status.HTTP_403_FORBIDDEN: {
+#             "model": ProblemDetail,
+#         },
+#         status.HTTP_400_BAD_REQUEST: {
+#             "model": ProblemDetail,
+#         },
+#         status.HTTP_409_CONFLICT: {
+#             "model": ProblemDetail,
+#         },
+#         status.HTTP_500_INTERNAL_SERVER_ERROR: {
+#             "model": ProblemDetail,
+#         },
+#     },
+#     dependencies=[
+#         Depends(require_groups(["customer"])),
+#     ],
+# )
+# async def create(
+#     request: Request,
+#     response: Response,
+#     policy: PolicyCreate,
+# ) -> PolicyCreate:
+#     """Create a new policy with the given information.
+#     - Check for existence of addresses and policies.
 
-    Args:
-        request (Request): _description_
-        response (Response): _description_
-        policy (PolicyCreate): _description_
+#     Args:
+#         request (Request): _description_
+#         response (Response): _description_
+#         policy (PolicyCreate): _description_
 
-    Returns:
-        Policy: _description_
-    """
+#     Returns:
+#         Policy: _description_
+#     """
 
-    entity: PolicyCreate = await WriteService().create(
-        # current_user=current_user,
-        request=policy,
-    )
+#     entity: PolicyCreate = await WriteService().create(
+#         # current_user=current_user,
+#         request=policy,
+#     )
 
-    return entity
+#     return entity

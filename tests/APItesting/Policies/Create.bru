@@ -5,19 +5,18 @@ meta {
 }
 
 post {
-  url: {{host}}/api/v1/policies
+  url: {{host}}/api/v1/persons/{{person_id}}/policies
   body: json
   auth: none
 }
 
 body:json {
   {
-    "policy_number": "AB-111-333-555",
+    "policy_number": "XX-111-333-555",
     "status": "inactive",
     "policy_type": "car",
     "start_date": "2024-01-01",
     "end_date": "2025-01-01",
-    "premium": 1230,
-    "policy_holder_id": "{{person_id}}"
+    "premium": 321
   }
 }

@@ -16,6 +16,38 @@ class WriteService:
     def __init__(self, policy_db_repo: PolicyWriteRepository):
         self.policy_db_repo = policy_db_repo
 
+    async def create_for_person(
+        self,
+        # current_user: User,
+        person_id: str,
+        request: PolicyCreate,
+    ) -> Optional[PolicyCreate]:
+        """
+        Create a Policy.
+
+        Args:
+            current_user (User): The current user creating the policy.
+            request (Policy): The requested policy to create.
+
+        Returns:
+            Policy: The newly created policy in the response format.
+        """
+
+        logger.debug("Entering. policy: {}", request)
+
+        # if not await can_create(current_user=current_user):
+        #     raise NotAllowedCreationException(
+        #         "You are not allowed to create this item"
+        #     )
+
+        response: Optional[PolicyCreate] = await self.policy_db_repo.create(
+            # current_user=current_user,
+            person_id=person_id,
+            entity=request,
+        )
+
+        return response
+
     async def create(
         self,
         # current_user: User,

@@ -46,8 +46,8 @@ class PolicyBase(BaseModel):
         },
     )
 
-    policy_holder_id: str = Field(
-        ...,
+    policy_holder_id: Optional[str] = Field(
+        default=None,
         json_schema_extra={
             "description": "Policy holder person id",
             "example": "0ujsswThIGTUYm2K8FjOOfXtY1K",
