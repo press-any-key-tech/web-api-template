@@ -5,6 +5,7 @@ from sqlalchemy import delete, desc, select, text, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 
+from web_api_template.core.api.pagination_query_model import PaginationQueryModel
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.async_paginator import (
@@ -22,11 +23,11 @@ from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 class PersonReadRepositoryImpl(PersonReadRepository):
     """Repository implementation for Person"""
 
-    async def get_list(
+    async def get_paginated_list(
         self,
         *,
         filter: PersonFilter,
-        # query: CommonQueryModel,
+        pagination: PaginationQueryModel,
         # current_user: User,
     ) -> Page:
         """Gets filtered persons
@@ -50,8 +51,9 @@ class PersonReadRepositoryImpl(PersonReadRepository):
 
                 result: Page = await AsyncPaginator(session).list(
                     model=PersonModel,
-                    page=1,
-                    size=10,
+                    page=pagination.page,
+                    size=pagination.size,
+                    order_by=pagination.sort.split(",") if pagination.sort else [],
                 )
 
                 result.items = [mapper.map(item, Person) for item in result.items]

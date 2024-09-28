@@ -14,7 +14,7 @@ from starlette.responses import Response
 
 from web_api_template.api.v1.persons.services import ReadService, WriteService
 from web_api_template.core.api import ProblemDetail
-from web_api_template.core.api.common_query_model import CommonQueryModel
+from web_api_template.core.api.pagination_query_model import PaginationQueryModel
 from web_api_template.core.api.utils import get_content_type
 from web_api_template.core.http.validators import (
     ksuid_path_validator,
@@ -52,7 +52,7 @@ async def get_list(
     request: Request,
     response: Response,
     list_filter: PersonFilter = Depends(),
-    query: CommonQueryModel = Depends(),
+    pagination: PaginationQueryModel = Depends(),
 ) -> Page:
     """Get a list of persons
 
@@ -64,7 +64,10 @@ async def get_list(
         List[Person]: _description_
     """
 
-    result: Page = await ReadService().get_list(filter=list_filter)
+    result: Page = await ReadService().get_list(
+        filter=list_filter,
+        pagination=pagination,
+    )
     return result
 
 

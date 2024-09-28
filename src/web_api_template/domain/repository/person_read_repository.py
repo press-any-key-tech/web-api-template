@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional
 
+from web_api_template.core.api.pagination_query_model import PaginationQueryModel
 from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.core.repository.manager.sqlalchemy.repository_base import (
     RepositoryBase,
@@ -23,7 +24,9 @@ class PersonReadRepository(RepositoryBase):
         raise NotImplementedError()
 
     @abstractmethod
-    async def get_list(self, *, filter: PersonFilter) -> Page:
+    async def get_paginated_list(
+        self, *, filter: PersonFilter, pagination: PaginationQueryModel
+    ) -> Page:
         raise NotImplementedError()
 
     # @abstractmethod

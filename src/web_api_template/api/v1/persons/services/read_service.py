@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from pydilite import inject
 
+from web_api_template.core.api.pagination_query_model import PaginationQueryModel
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.page import Page
@@ -19,7 +20,9 @@ class ReadService:
     def __init__(self, person_db_repo: PersonReadRepository):
         self.person_db_repo = person_db_repo
 
-    async def get_list(self, filter: PersonFilter) -> Page:
+    async def get_list(
+        self, filter: PersonFilter, pagination: PaginationQueryModel
+    ) -> Page:
         """
         Get a list of persons
 
@@ -32,7 +35,9 @@ class ReadService:
 
         logger.debug("Entering. filter: {}", filter)
 
-        result: Page = await self.person_db_repo.get_list(filter=filter)
+        result: Page = await self.person_db_repo.get_paginated_list(
+            filter=filter, pagination=pagination
+        )
 
         return result
 

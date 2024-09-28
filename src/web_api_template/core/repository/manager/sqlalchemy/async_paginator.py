@@ -42,7 +42,7 @@ class AsyncPaginator:
         *,
         model: Any,
         # filter_by: dict = {},
-        # order_by: list = [],
+        order_by: list = [],
         page: int = 1,
         size: int = 10,
     ) -> Page:
