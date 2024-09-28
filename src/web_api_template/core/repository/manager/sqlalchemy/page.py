@@ -3,7 +3,7 @@ from typing import Any, List, Optional
 from pydantic import BaseModel, Field
 
 
-class AsyncPage(BaseModel):
+class Page(BaseModel):
     """Database page model for async queries
 
     Args:

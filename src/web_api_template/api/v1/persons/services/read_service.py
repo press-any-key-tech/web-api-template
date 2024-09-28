@@ -4,6 +4,7 @@ from pydilite import inject
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
+from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_create import PersonCreate
 from web_api_template.domain.entities.person_filter import PersonFilter
@@ -18,7 +19,7 @@ class ReadService:
     def __init__(self, person_db_repo: PersonReadRepository):
         self.person_db_repo = person_db_repo
 
-    async def get_list(self, filter: PersonFilter) -> List[Person]:
+    async def get_list(self, filter: PersonFilter) -> Page:
         """
         Get a list of persons
 
@@ -31,9 +32,9 @@ class ReadService:
 
         logger.debug("Entering. filter: {}", filter)
 
-        entities: List[Person] = await self.person_db_repo.get_list(filter=filter)
+        result: Page = await self.person_db_repo.get_list(filter=filter)
 
-        return entities
+        return result
 
     async def get_by_id(self, id: str) -> Optional[Person]:
         """

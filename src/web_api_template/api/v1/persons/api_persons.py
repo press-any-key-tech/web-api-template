@@ -21,6 +21,7 @@ from web_api_template.core.http.validators import (
     ksuid_query_validator,
 )
 from web_api_template.core.logging import logger
+from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_create import PersonCreate
 from web_api_template.domain.entities.person_filter import PersonFilter
@@ -34,7 +35,7 @@ api_router = APIRouter()
 
 @api_router.get(
     "/",
-    response_model=List[Person],
+    response_model=Page,
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
@@ -52,7 +53,7 @@ async def get_list(
     response: Response,
     list_filter: PersonFilter = Depends(),
     query: CommonQueryModel = Depends(),
-) -> List[Person]:
+) -> Page:
     """Get a list of persons
 
     Args:
@@ -63,7 +64,7 @@ async def get_list(
         List[Person]: _description_
     """
 
-    result: List[Person] = await ReadService().get_list(filter=list_filter)
+    result: Page = await ReadService().get_list(filter=list_filter)
     return result
 
 

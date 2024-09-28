@@ -7,8 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy.orm import Query, Session
 
 from web_api_template.core.logging import logger
-
-from .async_page import AsyncPage
+from web_api_template.core.repository.manager.sqlalchemy.page import Page
 
 
 class AsyncPaginator:
@@ -25,7 +24,7 @@ class AsyncPaginator:
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def count(self, model: Any) -> int:
+    async def count(self) -> int:
         """Counts the number of elements in the model
 
         Args:
@@ -34,9 +33,8 @@ class AsyncPaginator:
         Returns:
             int: Number of elements
         """
-        self._model = model
-        self._query = select(func.count(self._model.id))
-        result = await self._session.execute(self._query)
+        query = select(func.count(self._model.id))
+        result = await self._session.execute(query)
         return result.scalar()
 
     async def list(
@@ -47,7 +45,7 @@ class AsyncPaginator:
         # order_by: list = [],
         page: int = 1,
         size: int = 10,
-    ) -> AsyncPage:
+    ) -> Page:
         """Makes pagination query and returns a paginated object
         TODO: Change return parameter to an object
 
@@ -69,7 +67,7 @@ class AsyncPaginator:
         # self._sort(order_by)
 
         # Get number of elements
-        count: int = await self.count(self._model)
+        count: int = await self.count()
 
         # Calculate offset and limit
         # Pages, round up
@@ -82,20 +80,16 @@ class AsyncPaginator:
 
             offset = (page - 1) * size
 
-            # Load dependent objects for each person
-            # result = await self._session.execute(
-            #     self._query.distinct().offset(offset).limit(size)
-            # )
-            result = await self._session.execute(self._query)
+            result = await self._session.execute(
+                self._query.distinct().offset(offset).limit(size)
+            )
 
             # It is done this way while I am creating the unit tests
             scalars = result.scalars()
             items: List[Any] = scalars.all()
 
-            # items = self._query.distinct().offset(offset).limit(size).all()
-
         # Build the return object
-        return AsyncPage(
+        return Page(
             total=count,
             pages=pages,
             page=page,
