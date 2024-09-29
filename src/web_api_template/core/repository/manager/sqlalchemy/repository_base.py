@@ -1,11 +1,6 @@
-from abc import ABCMeta, abstractmethod
-from typing import List, Optional
+from abc import ABCMeta
 
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from web_api_template.core.repository.manager.sqlalchemy.async_database import (
-    AsyncDatabase,
-)
 
 
 class RepositoryBase(metaclass=ABCMeta):

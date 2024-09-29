@@ -5,4 +5,3 @@ class InvalidArgumentException(Exception):
     An argument is a value passed during function invocation.
     """
 
-    pass

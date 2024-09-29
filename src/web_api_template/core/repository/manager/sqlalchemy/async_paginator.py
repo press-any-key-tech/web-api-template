@@ -2,9 +2,9 @@ import math
 from typing import Any, List
 from uuid import UUID
 
-from sqlalchemy import asc, delete, desc, func, or_, select, text, update
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
-from sqlalchemy.orm import Query, Session
+from sqlalchemy import asc, desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Query
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.page import Page

@@ -7,7 +7,6 @@ from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.exceptions import AddressNotFoundException
 from web_api_template.domain.repository import AddressReadRepository
 from web_api_template.domain.value_objects.address import Address
-from web_api_template.domain.value_objects.address_create import AddressCreate
 from web_api_template.domain.value_objects.address_filter import AddressFilter
 
 

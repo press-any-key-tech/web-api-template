@@ -1,9 +1,7 @@
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from automapper import mapper
-from sqlalchemy import delete, desc, select, text, update
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select
 
 from web_api_template.core.api.pagination_query_model import PaginationQueryModel
 from web_api_template.core.logging import logger
@@ -16,7 +14,6 @@ from web_api_template.core.repository.manager.sqlalchemy.async_paginator import 
 )
 from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.domain.entities.person import Person
-from web_api_template.domain.entities.person_create import PersonCreate
 from web_api_template.domain.entities.person_filter import PersonFilter
 from web_api_template.domain.repository import PersonReadRepository
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel

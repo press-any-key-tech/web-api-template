@@ -1,10 +1,9 @@
 from datetime import date
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
 from web_api_template.core.domain.validators import ksuid_validator
-from web_api_template.domain.entities.person import Person
 from web_api_template.domain.types import PolicyStatusEnum, PolicyTypeEnum
 
 

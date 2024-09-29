@@ -1,7 +1,6 @@
-from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 from web_api_template.domain.types import PolicyStatusEnum
 

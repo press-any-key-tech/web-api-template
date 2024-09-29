@@ -1,6 +1,4 @@
-import json
 import os
-import re
 from typing import Dict, List, Set
 
 from starlette.config import Config
@@ -8,7 +6,6 @@ from starlette.config import Config
 from web_api_template.core.repository.exceptions import SettingsNotFoundException
 from web_api_template.core.settings import Settings
 
-from .db_engines_enum import DbEnginesEnum
 from .engine_settings import EngineSettings
 
 config = Config()

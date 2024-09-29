@@ -1,9 +1,7 @@
 from typing import List, Optional
 
 from automapper import mapper
-from sqlalchemy import delete, desc, select, text, update
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
@@ -12,7 +10,7 @@ from web_api_template.core.repository.manager.sqlalchemy.async_database import (
 )
 from web_api_template.domain.aggregates import Policy, PolicyFilter
 from web_api_template.domain.repository import PolicyReadRepository
-from web_api_template.infrastructure.models.sqlalchemy import PersonModel, PolicyModel
+from web_api_template.infrastructure.models.sqlalchemy import PolicyModel
 
 
 class PolicyReadRepositoryImpl(PolicyReadRepository):

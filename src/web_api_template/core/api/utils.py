@@ -1,5 +1,5 @@
 import re
-from fastapi import Header, Request, Depends
+from fastapi import Request, Depends
 
 
 class ContentType:

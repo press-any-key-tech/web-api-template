@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from pydilite import inject
 
@@ -7,7 +7,6 @@ from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.domain.entities.person import Person
-from web_api_template.domain.entities.person_create import PersonCreate
 from web_api_template.domain.entities.person_filter import PersonFilter
 from web_api_template.domain.exceptions import PersonNotFoundException
 from web_api_template.domain.repository import PersonReadRepository

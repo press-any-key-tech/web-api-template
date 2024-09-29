@@ -1,7 +1,5 @@
 import json
-import os
-import re
-from typing import Dict, List
+from typing import List
 
 from starlette.config import Config
 
@@ -25,13 +23,13 @@ class Settings:
     LOGGER_NAME: str = config("LOGGER_NAME", cast=str, default="")
 
     # CORS Related configurations
-    CORS_ALLOWED_ORIGINS: list = json.loads(
+    CORS_ALLOWED_ORIGINS: List[str] = json.loads(
         config("CORS_ALLOWED_ORIGINS", cast=str, default="[]")
     )
-    CORS_ALLOWED_METHODS: list = json.loads(
+    CORS_ALLOWED_METHODS: List[str] = json.loads(
         config("CORS_ALLOWED_METHODS", cast=str, default='["*"]')
     )
-    CORS_ALLOWED_HEADERS: list = json.loads(
+    CORS_ALLOWED_HEADERS: List[str] = json.loads(
         config("CORS_ALLOWED_HEADERS", cast=str, default='["*"]')
     )
 

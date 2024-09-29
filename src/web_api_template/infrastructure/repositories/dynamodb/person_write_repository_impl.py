@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from automapper import mapper
 
@@ -6,7 +6,6 @@ from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_create import PersonCreate
-from web_api_template.domain.entities.person_filter import PersonFilter
 from web_api_template.domain.repository import PersonWriteRepository
 from web_api_template.infrastructure.models.dynamodb import PersonModel
 

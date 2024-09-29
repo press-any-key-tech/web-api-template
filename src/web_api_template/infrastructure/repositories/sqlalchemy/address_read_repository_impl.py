@@ -1,8 +1,7 @@
 from typing import List, Optional
 
 from automapper import mapper
-from sqlalchemy import delete, desc, select, text, update
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import select
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException

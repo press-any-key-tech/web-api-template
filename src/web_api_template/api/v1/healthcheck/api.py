@@ -2,7 +2,7 @@
     All validations and mappings should be in the services
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from starlette.requests import Request
 
 from web_api_template.core.api import ProblemDetail

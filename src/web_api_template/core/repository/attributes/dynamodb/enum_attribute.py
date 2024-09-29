@@ -1,7 +1,7 @@
 from typing import Any
 
 from pynamodb.attributes import Attribute
-from pynamodb.constants import NUMBER, STRING
+from pynamodb.constants import STRING
 
 
 class EnumAttribute(Attribute[str]):

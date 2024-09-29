@@ -1,13 +1,10 @@
-import uuid
 
 from ksuid import Ksuid
-from pynamodb.attributes import BooleanAttribute, NumberAttribute, UnicodeAttribute
+from pynamodb.attributes import UnicodeAttribute
 from pynamodb.indexes import AllProjection, GlobalSecondaryIndex
-from pynamodb.models import Model
 
 from web_api_template.core.repository.attributes.dynamodb import EnumAttribute
 from web_api_template.core.repository.model.dynamodb import BaseModel
-from web_api_template.core.settings import settings
 from web_api_template.domain.types import PolicyStatusEnum
 
 
