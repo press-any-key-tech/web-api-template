@@ -6,7 +6,9 @@ from sqlalchemy.exc import IntegrityError
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
 from web_api_template.domain.exceptions import (
     AddressNotFoundException,
     PersonNotFoundException,
@@ -42,7 +44,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 session.add(entity_model)
                 await session.commit()
@@ -58,7 +60,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
 
             except Exception as ex:
                 await session.rollback()
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
             return mapper.map(entity_model, Address)
@@ -72,7 +74,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         Returns:
             AddressModel: _description_
         """
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 result = await session.execute(
                     select(AddressModel).where(AddressModel.id == id)
@@ -80,7 +82,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
                 return result.scalar_one_or_none()
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def delete(self, id: str) -> None:
@@ -93,7 +95,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             None
 
         """
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 delete_query = delete(AddressModel).where(AddressModel.id == id)
                 await session.execute(delete_query)
@@ -108,7 +110,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def __update(self, id: str, model: AddressModel) -> Optional[AddressModel]:
@@ -126,7 +128,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
         # model.updated_at = datetime.utcnow()
         # model.updated_by = "fake"
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 # Vuild the update query
                 update_query = (
@@ -148,7 +150,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
 
             except Exception as ex:
                 await session.rollback()
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def update(
@@ -183,7 +185,7 @@ class AddressWriteRepositoryImpl(AddressWriteRepository):
             return mapper.map(result, AddressBase)
 
         except Exception as ex:
-            logger.exception("Database error")
+            logger.exception("AsyncDatabase error")
             raise ex
 
     # async def count_Policies(self) -> int:

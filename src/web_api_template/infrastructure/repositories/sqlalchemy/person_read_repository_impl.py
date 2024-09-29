@@ -1,13 +1,20 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from automapper import mapper
 from sqlalchemy import delete, desc, select, text, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 
+from web_api_template.core.api.pagination_query_model import PaginationQueryModel
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
+from web_api_template.core.repository.manager.sqlalchemy.async_paginator import (
+    AsyncPaginator,
+)
+from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_create import PersonCreate
 from web_api_template.domain.entities.person_filter import PersonFilter
@@ -18,13 +25,13 @@ from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 class PersonReadRepositoryImpl(PersonReadRepository):
     """Repository implementation for Person"""
 
-    async def get_list(
+    async def get_paginated_list(
         self,
         *,
         filter: PersonFilter,
-        # query: CommonQueryModel,
+        pagination: PaginationQueryModel,
         # current_user: User,
-    ) -> List[Person]:
+    ) -> Page:
         """Gets filtered persons
 
         Args:
@@ -40,30 +47,22 @@ class PersonReadRepositoryImpl(PersonReadRepository):
         logger.debug("filter: {}", filter)
         # logger.debug("query: %s", query)
 
-        # async with Database.get_db_session(self._label) as session:
-        async with Database.get_db_session(self._label) as session:
+        # async with AsyncDatabase.get_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
-                # TODO: Apply filters
 
-                # # Load dependent objects for each person
-                # result = await session.execute(
-                #     select(PersonModel).options(
-                #         selectinload(PersonModel.addresses),
-                #         selectinload(PersonModel.policies),
-                #     )
-                # )
+                result: Page = await AsyncPaginator(session).list(
+                    model=PersonModel,
+                    page=pagination.page,
+                    size=pagination.size,
+                    order_by=pagination.sort.split(",") if pagination.sort else [],
+                )
 
-                # Load dependent objects for each person
-                result = await session.execute(select(PersonModel))
-
-                # It is done this way while I am creating the unit tests
-                scalars = result.scalars()
-                items = scalars.all()
-
-                return [mapper.map(item, Person) for item in items]
+                result.items = [mapper.map(item, Person) for item in result.items]
+                return result
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def __get_by_id(self, id: str) -> PersonModel | None:
@@ -76,7 +75,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
             PersonModel: _description_
         """
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 # result = await session.execute(
                 #     select(PersonModel)
@@ -94,7 +93,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
                 return result.scalar_one_or_none()
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def get_by_id(self, id: str) -> Person:

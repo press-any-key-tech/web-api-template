@@ -10,7 +10,9 @@ from pydilite import Provider, configure
 from transaction_middleware import TransactionMiddleware
 
 from web_api_template.core.logging import logger
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
 from web_api_template.core.repository.model.sqlalchemy import metadata
 from web_api_template.core.settings import settings
 from web_api_template.di import include_di

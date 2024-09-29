@@ -2,35 +2,50 @@ import math
 from typing import Any, List
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, or_
+from sqlalchemy import asc, delete, desc, func, or_, select, text, update
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy.orm import Query, Session
 
 from web_api_template.core.logging import logger
+from web_api_template.core.repository.manager.sqlalchemy.page import Page
 
 
-class DbPaginator:
-    """Database paginator (for SQLALchemy)
+class AsyncPaginator:
+    """SQLAlchemy Async Paginator
 
     Returns:
         _type_: _description_
     """
 
-    _session: Session
+    _session: AsyncSession
     _model: Any
     _query: Query
 
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._session = session
 
-    def list(
+    async def count(self) -> int:
+        """Counts the number of elements in the model
+
+        Args:
+            model (Any): SQLAlchemy model
+
+        Returns:
+            int: Number of elements
+        """
+        query = select(func.count(self._model.id))
+        result = await self._session.execute(query)
+        return result.scalar()
+
+    async def list(
         self,
         *,
         model: Any,
-        filter_by: dict = {},
+        # filter_by: dict = {},
         order_by: list = [],
         page: int = 1,
         size: int = 10,
-    ) -> dict:
+    ) -> Page:
         """Makes pagination query and returns a paginated object
         TODO: Change return parameter to an object
 
@@ -46,17 +61,16 @@ class DbPaginator:
         """
         items: list[model] = []
         self._model = model
-        self._query = self._session.query(model)
+        self._query = select(self._model)
 
-        self._filter(filter_by)
+        # self._filter(filter_by)
         self._sort(order_by)
 
         # Get number of elements
-        count: int = self._query.distinct().count()
+        count: int = await self.count()
 
         # Calculate offset and limit
         # Pages, round up
-
         pages: int = 0 if count == 0 else int(math.ceil(count / size))
 
         if count > 0:
@@ -66,10 +80,22 @@ class DbPaginator:
 
             offset = (page - 1) * size
 
-            items = self._query.distinct().offset(offset).limit(size).all()
+            result = await self._session.execute(
+                self._query.distinct().offset(offset).limit(size)
+            )
+
+            # It is done this way while I am creating the unit tests
+            scalars = result.scalars()
+            items: List[Any] = scalars.all()
 
         # Build the return object
-        return {"total": count, "pages": pages, "page": page, "items": items}
+        return Page(
+            total=count,
+            pages=pages,
+            page=page,
+            items=items,
+            size=size,
+        )
 
     def _filter(self, filter_by: dict = {}):
         """Builds the filter object for SQLAlchemy

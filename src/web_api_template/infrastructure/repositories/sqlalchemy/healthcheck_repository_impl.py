@@ -1,8 +1,10 @@
-from web_api_template.core.logging import logger
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
-from web_api_template.domain.repository import HealthcheckRepository
-
 from sqlalchemy import text
+
+from web_api_template.core.logging import logger
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
+from web_api_template.domain.repository import HealthcheckRepository
 
 
 class HealthcheckRepositoryImpl(HealthcheckRepository):
@@ -22,9 +24,9 @@ class HealthcheckRepositoryImpl(HealthcheckRepository):
         try:
             logger.debug("Checking database health")
             # Run a simple query to check connection
-            async with Database.get_db_session(self._label) as session:
+            async with AsyncDatabase.get_session(self._label) as session:
                 await session.execute(text("SELECT 1"))
                 return True
         except Exception as ex:
-            logger.exception("Database connection error")
+            logger.exception("AsyncDatabase connection error")
             return False

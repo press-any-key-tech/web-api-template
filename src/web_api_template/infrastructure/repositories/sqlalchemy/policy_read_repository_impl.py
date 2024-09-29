@@ -7,7 +7,9 @@ from sqlalchemy.orm import selectinload
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
 from web_api_template.domain.aggregates import Policy, PolicyFilter
 from web_api_template.domain.repository import PolicyReadRepository
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel, PolicyModel
@@ -38,7 +40,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
         logger.debug("filter: {}", filter)
         # logger.debug("query: %s", query)
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 # TODO: Apply filters
 
@@ -60,7 +62,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
                 return [mapper.map(item, Policy) for item in items]
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def get_list_by_person_id(
@@ -85,7 +87,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
         logger.debug("Person id: {}", person_id)
         # logger.debug("query: %s", query)
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
 
                 # result = await session.execute(
@@ -111,7 +113,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
                 return [mapper.map(item, Policy) for item in items]
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def __get_by_id(self, id: str) -> PolicyModel | None:
@@ -123,7 +125,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
         Returns:
             PolicyModel: _description_
         """
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
 
                 # result = await session.execute(
@@ -143,7 +145,7 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
                 return result.scalar_one_or_none()
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def get_by_id(self, id: str) -> Policy:
@@ -168,5 +170,5 @@ class PolicyReadRepositoryImpl(PolicyReadRepository):
             return mapper.map(entity_model, Policy)
 
         except Exception as ex:
-            logger.exception("Database error")
+            logger.exception("AsyncDatabase error")
             raise ex

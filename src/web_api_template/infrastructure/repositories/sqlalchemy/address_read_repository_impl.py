@@ -6,7 +6,9 @@ from sqlalchemy.exc import IntegrityError
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
 from web_api_template.domain.repository import AddressReadRepository
 from web_api_template.domain.value_objects import Address, AddressFilter
 from web_api_template.infrastructure.models.sqlalchemy import AddressModel
@@ -37,7 +39,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
         logger.debug("filter: {}", filter)
         # logger.debug("query: %s", query)
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 # TODO: Apply filters
 
@@ -48,7 +50,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
                 return [mapper.map(item, Address) for item in items]
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def get_list_by_person_id(
@@ -73,7 +75,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
         logger.debug("Person id: {}", person_id)
         # logger.debug("query: %s", query)
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
 
                 result = await session.execute(
@@ -85,7 +87,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
                 return [mapper.map(item, Address) for item in items]
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def __get_by_id(self, id: str) -> AddressModel | None:
@@ -97,7 +99,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
         Returns:
             AddressModel: _description_
         """
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 result = await session.execute(
                     select(AddressModel).where(AddressModel.id == id)
@@ -105,7 +107,7 @@ class AddressReadRepositoryImpl(AddressReadRepository):
                 return result.scalar_one_or_none()
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def get_by_id(self, id: str) -> Address:
@@ -128,5 +130,5 @@ class AddressReadRepositoryImpl(AddressReadRepository):
             return mapper.map(entity_model, Address)
 
         except Exception as ex:
-            logger.exception("Database error")
+            logger.exception("AsyncDatabase error")
             raise ex
