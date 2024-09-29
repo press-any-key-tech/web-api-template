@@ -1,9 +1,8 @@
 from contextlib import asynccontextmanager
 from typing import Dict, Optional
 
-from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
-from sqlalchemy.orm import Session, clear_mappers, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.engine_settings import (

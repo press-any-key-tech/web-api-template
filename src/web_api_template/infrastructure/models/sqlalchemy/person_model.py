@@ -1,12 +1,11 @@
 from typing import ForwardRef, List
 
 from ksuid import Ksuid
-from sqlalchemy import Column, Enum, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
 
 from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
 
-from .address_model import AddressModel
 
 # Use ForwardRef to resolve circular imports
 PolicyModel = ForwardRef("PolicyModel")

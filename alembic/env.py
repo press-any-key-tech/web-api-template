@@ -10,11 +10,6 @@ from alembic import context
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../src"))  # Add src to path
 from web_api_template.core.repository.model.sqlalchemy import metadata
-from web_api_template.infrastructure.models.sqlalchemy import (
-    AddressModel,
-    PersonModel,
-    PolicyModel,
-)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

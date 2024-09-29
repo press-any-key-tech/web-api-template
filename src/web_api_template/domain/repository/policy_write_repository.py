@@ -1,10 +1,10 @@
-from abc import ABCMeta, abstractmethod
-from typing import List, Optional
+from abc import abstractmethod
+from typing import Optional
 
 from web_api_template.core.repository.manager.sqlalchemy.repository_base import (
     RepositoryBase,
 )
-from web_api_template.domain.aggregates import Policy, PolicyCreate, PolicyFilter
+from web_api_template.domain.aggregates import Policy, PolicyCreate
 
 
 class PolicyWriteRepository(RepositoryBase):

@@ -9,7 +9,6 @@ Create Date: 2024-09-29 17:27:57.162369
 from datetime import datetime
 from typing import Sequence, Union
 
-import sqlalchemy as sa
 from faker import Faker
 from ksuid import Ksuid
 

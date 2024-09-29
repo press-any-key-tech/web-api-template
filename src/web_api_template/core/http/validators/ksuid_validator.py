@@ -1,4 +1,3 @@
-import re
 
 from fastapi import HTTPException, Path, Query, status
 

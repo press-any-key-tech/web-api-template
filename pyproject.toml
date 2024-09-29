@@ -43,7 +43,19 @@ jupyter = "^1.0.0"
 py-spy = "^0.3.14"
 types-requests = "^2.31.0.20240311"
 faker = "^30.0.0"
+flake8 = "^7.1.1"
+flake8-bugbear = "^24.8.19"
+flake8-annotations = "^3.1.1"
+autoflake = "^2.3.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.mypy]
+files = ["src/"]  # Source code folder
+ignore_missing_imports = false
+strict = true
+disallow_untyped_defs = false
+

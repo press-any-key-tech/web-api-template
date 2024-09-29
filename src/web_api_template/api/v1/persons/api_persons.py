@@ -2,33 +2,23 @@
     All validations and mappings should be in the services
 """
 
-from typing import List, Optional
 
 from auth_middleware.functions import require_groups, require_user
-from auth_middleware.types import User
-from fastapi import APIRouter, Body, Depends, Header, Path, status
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, status
 from starlette.requests import Request
 from starlette.responses import Response
 
 from web_api_template.api.v1.persons.services import ReadService, WriteService
 from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.pagination_query_model import PaginationQueryModel
-from web_api_template.core.api.utils import get_content_type
 from web_api_template.core.http.validators import (
     ksuid_path_validator,
-    ksuid_query_validator,
 )
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_create import PersonCreate
 from web_api_template.domain.entities.person_filter import PersonFilter
-from web_api_template.domain.exceptions import (
-    PersonHasActivePoliciesException,
-    PersonNotFoundException,
-)
 
 api_router = APIRouter()
 

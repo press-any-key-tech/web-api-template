@@ -1,11 +1,7 @@
-from typing import List, Optional
 
-from pydantic import BaseModel, Field, field_validator
 
-from web_api_template.core.domain.validators import ksuid_validator
 
 # from web_api_template.domain.entities import Person
-from web_api_template.domain.value_objects import Address
 
 from .policy_base import PolicyBase
 

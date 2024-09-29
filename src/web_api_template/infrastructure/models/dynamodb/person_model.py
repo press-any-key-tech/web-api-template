@@ -1,9 +1,7 @@
-import uuid
 
 from ksuid import Ksuid
-from pynamodb.attributes import NumberAttribute, UnicodeAttribute
+from pynamodb.attributes import UnicodeAttribute
 from pynamodb.indexes import AllProjection, GlobalSecondaryIndex
-from pynamodb.models import Model
 
 from web_api_template.core.repository.model.dynamodb import BaseModel
 

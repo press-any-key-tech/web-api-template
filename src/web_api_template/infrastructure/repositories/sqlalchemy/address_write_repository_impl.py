@@ -1,7 +1,7 @@
-from typing import List, Optional
+from typing import Optional
 
 from automapper import mapper
-from sqlalchemy import delete, desc, select, text, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 
 from web_api_template.core.logging import logger
@@ -9,12 +9,8 @@ from web_api_template.core.repository.exceptions import ItemNotFoundException
 from web_api_template.core.repository.manager.sqlalchemy.async_database import (
     AsyncDatabase,
 )
-from web_api_template.domain.exceptions import (
-    AddressNotFoundException,
-    PersonNotFoundException,
-)
 from web_api_template.domain.repository import AddressWriteRepository
-from web_api_template.domain.value_objects import Address, AddressBase, AddressFilter
+from web_api_template.domain.value_objects import Address, AddressBase
 from web_api_template.infrastructure.models.sqlalchemy import AddressModel
 
 

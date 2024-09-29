@@ -1,14 +1,9 @@
-from typing import List
-from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from ksuid import Ksuid
-from sqlalchemy.exc import IntegrityError
 
 from web_api_template.domain.entities.person import Person
-from web_api_template.domain.entities.person_create import PersonCreate
-from web_api_template.domain.entities.person_filter import PersonFilter
-from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 from web_api_template.infrastructure.repositories.sqlalchemy import (
     PersonWriteRepositoryImpl,
 )

@@ -1,6 +1,4 @@
-from typing import List, Optional
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from web_api_template.domain.aggregates import PolicyBase
 

@@ -254,6 +254,28 @@ Only generate sql script
 poetry run alembic upgrade head --sql
 ```
 
+## Code inspection
+
+### Flake8
+
+```bash
+poetry run flake8 .
+```
+
+### Autoflake
+
+Delete unused imports
+
+```bash
+autoflake --remove-all-unused-imports --in-place --recursive .
+```
+
+## MyPy
+
+```bash
+poetry run mypy
+```
+
 ## IaC
 
 ### Create bucket on AWS

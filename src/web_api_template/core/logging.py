@@ -14,6 +14,8 @@ logger.add(
     colorize=True,
 )
 
+__all__ = ["logger"]  # Add logger to __all__ to be able to import it from the package
+
 
 class InterceptHandler(logging.Handler):
     """Redirect logs from sqlalchemy to loguru
