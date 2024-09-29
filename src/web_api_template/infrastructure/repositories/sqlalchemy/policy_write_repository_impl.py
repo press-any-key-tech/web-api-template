@@ -6,7 +6,9 @@ from sqlalchemy.exc import IntegrityError
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
 from web_api_template.domain.aggregates import Policy, PolicyCreate, PolicyFilter
 from web_api_template.domain.repository import PolicyWriteRepository
 from web_api_template.infrastructure.models.sqlalchemy import PolicyModel
@@ -38,7 +40,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 session.add(entity_model)
                 await session.commit()
@@ -63,7 +65,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         Returns:
             PolicyModel: _description_
         """
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 result = await session.execute(
                     select(PolicyModel).where(PolicyModel.id == id)
@@ -71,7 +73,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
                 return result.scalar_one_or_none()
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def __delete(self, id: str) -> None:
@@ -84,7 +86,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
             None
 
         """
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 delete_query = delete(PolicyModel).where(PolicyModel.id == id)
                 await session.execute(delete_query)
@@ -92,7 +94,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
                 return
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def delete(self, id: str) -> None:
@@ -118,7 +120,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
             await self.__delete(id)
 
         except Exception as ex:
-            logger.exception("Database error")
+            logger.exception("AsyncDatabase error")
             raise ex
 
     async def __update(self, id: str, model: PolicyModel) -> Optional[PolicyModel]:
@@ -136,7 +138,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
         # model.updated_at = datetime.utcnow()
         # model.updated_by = "fake"
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 # Vuild the update query
                 update_query = (
@@ -156,7 +158,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
 
             except Exception as ex:
                 await session.rollback()
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def update(
@@ -191,7 +193,7 @@ class PolicyWriteRepositoryImpl(PolicyWriteRepository):
             return mapper.map(result, Policy)
 
         except Exception as ex:
-            logger.exception("Database error")
+            logger.exception("AsyncDatabase error")
             raise ex
 
     # async def count_Policies(self) -> int:

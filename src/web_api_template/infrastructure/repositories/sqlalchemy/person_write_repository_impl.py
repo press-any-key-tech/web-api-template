@@ -6,7 +6,9 @@ from sqlalchemy.exc import IntegrityError
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_create import PersonCreate
 from web_api_template.domain.entities.person_filter import PersonFilter
@@ -38,7 +40,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         # set_concurrency_fields(source=entity_model, user=current_user)
         # entity_model.owner_id = str(current_user.id)
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 session.add(entity_model)
                 await session.commit()
@@ -62,7 +64,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         Returns:
             PersonModel: _description_
         """
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 result = await session.execute(
                     select(PersonModel).where(PersonModel.id == id)
@@ -70,7 +72,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
                 return result.scalar_one_or_none()
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def __delete(self, id: str) -> None:
@@ -83,7 +85,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             None
 
         """
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 delete_query = delete(PersonModel).where(PersonModel.id == id)
                 await session.execute(delete_query)
@@ -92,7 +94,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
 
             except Exception as ex:
                 await session.rollback()
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def delete(self, id: str) -> None:
@@ -118,7 +120,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             await self.__delete(id)
 
         except Exception as ex:
-            logger.exception("Database error")
+            logger.exception("AsyncDatabase error")
             raise ex
 
     async def __update(self, id: str, model: PersonModel) -> Optional[PersonModel]:
@@ -136,7 +138,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         # model.updated_at = datetime.utcnow()
         # model.updated_by = "fake"
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
 
                 # TODO: send to another function
@@ -187,7 +189,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
 
             except Exception as ex:
                 await session.rollback()
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def update(
@@ -222,7 +224,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             return mapper.map(result, Person)
 
         except Exception as ex:
-            logger.exception("Database error")
+            logger.exception("AsyncDatabase error")
             raise ex
 
     # async def count_Persons(self) -> int:

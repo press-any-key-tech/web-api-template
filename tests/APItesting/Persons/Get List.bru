@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/persons/?page=1&size=10
+  url: {{host}}/api/v1/persons/?page=1&size=10&sort=-surname
   body: none
   auth: none
 }
@@ -13,4 +13,5 @@ get {
 params:query {
   page: 1
   size: 10
+  sort: -surname
 }

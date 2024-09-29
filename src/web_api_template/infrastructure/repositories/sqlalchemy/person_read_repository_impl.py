@@ -8,10 +8,12 @@ from sqlalchemy.orm import selectinload
 from web_api_template.core.api.pagination_query_model import PaginationQueryModel
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
 from web_api_template.core.repository.manager.sqlalchemy.async_paginator import (
     AsyncPaginator,
 )
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
 from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_create import PersonCreate
@@ -45,8 +47,8 @@ class PersonReadRepositoryImpl(PersonReadRepository):
         logger.debug("filter: {}", filter)
         # logger.debug("query: %s", query)
 
-        # async with Database.get_db_session(self._label) as session:
-        async with Database.get_db_session(self._label) as session:
+        # async with AsyncDatabase.get_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
 
                 result: Page = await AsyncPaginator(session).list(
@@ -60,7 +62,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
                 return result
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def __get_by_id(self, id: str) -> PersonModel | None:
@@ -73,7 +75,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
             PersonModel: _description_
         """
 
-        async with Database.get_db_session(self._label) as session:
+        async with AsyncDatabase.get_session(self._label) as session:
             try:
                 # result = await session.execute(
                 #     select(PersonModel)
@@ -91,7 +93,7 @@ class PersonReadRepositoryImpl(PersonReadRepository):
                 return result.scalar_one_or_none()
 
             except Exception as ex:
-                logger.exception("Database error")
+                logger.exception("AsyncDatabase error")
                 raise ex
 
     async def get_by_id(self, id: str) -> Person:

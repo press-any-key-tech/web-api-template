@@ -48,7 +48,7 @@ class DatabaseSimple:
 
     @staticmethod
     @asynccontextmanager
-    async def get_db_session():
+    async def get_session():
         """Gets a session from database
 
         Yields:

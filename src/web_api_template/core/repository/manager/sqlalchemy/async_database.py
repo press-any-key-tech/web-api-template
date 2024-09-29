@@ -14,7 +14,7 @@ from web_api_template.core.repository.model.sqlalchemy import metadata
 from .settings import settings
 
 
-class Database:
+class AsyncDatabase:
     _instance = None
     _engine = None
     _async_session = None
@@ -24,7 +24,7 @@ class Database:
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
-            cls._instance = super(Database, cls).__new__(cls)
+            cls._instance = super(AsyncDatabase, cls).__new__(cls)
         return cls._instance
 
     def init_engine(self):
@@ -94,14 +94,14 @@ class Database:
 
     @staticmethod
     @asynccontextmanager
-    async def get_db_session(label: str = "DEFAULT"):
+    async def get_session(label: str = "DEFAULT"):
         """Gets a session from database
 
         Yields:
             _type_: _description_
         """
         # Async session returns a sessión factory (sessionmaker) and it needs () to create a session
-        async with Database().async_session(label)() as session:
+        async with AsyncDatabase().async_session(label)() as session:
             yield session
 
     @staticmethod
@@ -120,6 +120,6 @@ class Database:
                     hasattr(settings_by_label, "INITIALIZE")
                     and settings_by_label.INITIALIZE
                 ):
-                    async with Database().get_engine(label).begin() as conn:
+                    async with AsyncDatabase().get_engine(label).begin() as conn:
                         logger.debug("Creating tables for: {}", label)
                         await conn.run_sync(metadata.create_all)

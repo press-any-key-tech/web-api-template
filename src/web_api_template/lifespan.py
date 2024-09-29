@@ -7,7 +7,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from web_api_template.core.logging import logger
-from web_api_template.core.repository.manager.sqlalchemy.database import Database
+from web_api_template.core.repository.manager.sqlalchemy.async_database import (
+    AsyncDatabase,
+)
 from web_api_template.core.settings import settings
 from web_api_template.infrastructure.models.dynamodb import (
     ContentModel,
@@ -57,7 +59,7 @@ async def initialize_sqlalchemy():
     Initialize SQLALCHEMY database
     """
     logger.debug("Initializing SQLALCHEMY database ...")
-    await Database.initialize()
+    await AsyncDatabase.initialize()
     logger.debug("SQLALCHEMY database initialized")
 
 

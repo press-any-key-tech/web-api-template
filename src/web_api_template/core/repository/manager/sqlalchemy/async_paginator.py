@@ -64,7 +64,7 @@ class AsyncPaginator:
         self._query = select(self._model)
 
         # self._filter(filter_by)
-        # self._sort(order_by)
+        self._sort(order_by)
 
         # Get number of elements
         count: int = await self.count()
