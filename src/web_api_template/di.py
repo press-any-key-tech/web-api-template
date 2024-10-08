@@ -8,6 +8,7 @@ from web_api_template.domain.repository import (  # PolicyReadRepository,; Polic
     AddressReadRepository,
     AddressWriteRepository,
     HealthcheckRepository,
+    PermissionsReadRepository,
     PersonReadRepository,
     PersonWriteRepository,
     PolicyReadRepository,
@@ -22,6 +23,7 @@ from web_api_template.infrastructure.repositories.sqlalchemy import (  # PolicyR
     AddressReadRepositoryImpl,
     AddressWriteRepositoryImpl,
     HealthcheckRepositoryImpl,
+    PermissionsReadRepositoryImpl,
     PersonReadRepositoryImpl,
     PersonWriteRepositoryImpl,
     PolicyReadRepositoryImpl,
@@ -72,6 +74,11 @@ def include_di(provider: Provider):
     provider.bind(
         AddressWriteRepository,
         AddressWriteRepositoryImpl(label="DEFAULT"),
+        lazy=True,
+    )
+    provider.bind(
+        PermissionsReadRepository,
+        PermissionsReadRepositoryImpl(label="DEFAULT"),
         lazy=True,
     )
 
