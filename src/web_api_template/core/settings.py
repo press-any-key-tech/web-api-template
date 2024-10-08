@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import Any, Dict, List
 
 from starlette.config import Config
 
@@ -36,6 +36,43 @@ class Settings:
     # Database basic configuration
     INITIALIZE_DATABASE = config("INITIALIZE_DATABASE", cast=bool, default=True)
     HEALTHCHECK_DATABASE = config("HEALTHCHECK_DATABASE", cast=bool, default=False)
+
+    # Cache settings
+    CACHE_ENABLED = config("CACHE_ENABLED", cast=bool, default=True)
+    CACHE_CONFIG: Dict[str, Any] = json.loads(
+        config(
+            "CACHE_CONFIG",
+            cast=str,
+            default=json.dumps(
+                {
+                    "default": {
+                        "cache": "aiocache.RedisCache",
+                        "endpoint": "127.0.0.1",
+                        "port": 6379,
+                        "db": 0,
+                        "timeout": 5,
+                        "serializer": {"class": "aiocache.serializers.JsonSerializer"},
+                        "plugins": [
+                            {"class": "aiocache.plugins.HitMissRatioPlugin"},
+                            {"class": "aiocache.plugins.TimingPlugin"},
+                        ],
+                    },
+                    "cache_redis_db1": {
+                        "cache": "aiocache.RedisCache",
+                        "endpoint": "127.0.0.1",
+                        "port": 6379,
+                        "db": 1,
+                        "timeout": 5,
+                        "serializer": {"class": "aiocache.serializers.JsonSerializer"},
+                        "plugins": [
+                            {"class": "aiocache.plugins.HitMissRatioPlugin"},
+                            {"class": "aiocache.plugins.TimingPlugin"},
+                        ],
+                    },
+                }
+            ),
+        )
+    )
 
 
 settings = Settings()

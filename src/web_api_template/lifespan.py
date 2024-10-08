@@ -4,6 +4,7 @@
 
 from contextlib import asynccontextmanager
 
+from aiocache import caches
 from fastapi import FastAPI
 
 from web_api_template.core.logging import logger
@@ -63,6 +64,17 @@ async def initialize_sqlalchemy():
     logger.debug("SQLALCHEMY database initialized")
 
 
+async def initialize_cache():
+    """
+    Initialize aiocache cache
+    """
+    logger.debug("Initializing cache ...")
+
+    caches.set_config(settings.CACHE_CONFIG)
+
+    logger.debug("Cache initialized")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -81,6 +93,9 @@ async def lifespan(app: FastAPI):
 
         # Initialize DynamoDB database
         await initialize_dynamodb()
+
+    if settings.CACHE_ENABLED:
+        await initialize_cache()
 
     logger.info("Async startup completed ...")
 

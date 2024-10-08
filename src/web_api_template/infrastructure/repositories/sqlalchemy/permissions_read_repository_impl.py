@@ -13,6 +13,7 @@ from web_api_template.core.repository.manager.sqlalchemy.async_paginator import 
     AsyncPaginator,
 )
 from web_api_template.core.repository.manager.sqlalchemy.page import Page
+from web_api_template.core.selective_cache import selective_cache
 from web_api_template.domain.repository.permissions_read_repository import (
     PermissionsReadRepository,
 )
@@ -24,6 +25,11 @@ from web_api_template.infrastructure.models.sqlalchemy.permissions_model import 
 class PermissionsReadRepositoryImpl(PermissionsReadRepository):
     """Repository implementation for Permissions"""
 
+    @selective_cache(
+        ttl=600,
+        alias="default",
+        key_builder=lambda f, *args, **kwargs: f"{f.__name__}_{kwargs['username']}_permissions",
+    )
     async def get_permissions_by_username(
         self,
         *,

@@ -4,6 +4,7 @@ from pydilite import inject
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.page import Page
+from web_api_template.core.selective_cache import selective_cache
 from web_api_template.domain.repository.permissions_read_repository import (
     PermissionsReadRepository,
 )
