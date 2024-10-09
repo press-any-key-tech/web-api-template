@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: https://caffeine-hub-domain.auth.eu-west-1.amazoncognito.com/login?client_id=5p6vlnt8u8s1l1b6b7hc2vnulv&response_type=code&scope=email+openid+phone+profile&redirect_uri=http%3A%2F%2Flocalhost%3A4200
+  url: {{hosted_ui_url}}
   body: none
   auth: none
 }
 
 params:query {
-  client_id: 5p6vlnt8u8s1l1b6b7hc2vnulv
+  client_id: {{hosted_ui_client_id}}
   response_type: code
   scope: email openid phone profile
   redirect_uri: http://localhost:4200
