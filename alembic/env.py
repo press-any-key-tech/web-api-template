@@ -11,6 +11,14 @@ from alembic import context
 sys.path.append(os.path.join(os.path.dirname(__file__), "../src"))  # Add src to path
 from web_api_template.core.repository.model.sqlalchemy import metadata
 
+# Import Models (use # noqa: F401 for flake8 to ignore imports not used)
+from web_api_template.infrastructure.models.sqlalchemy import AddressModel  # noqa: F401
+from web_api_template.infrastructure.models.sqlalchemy import PersonModel  # noqa: F401
+from web_api_template.infrastructure.models.sqlalchemy import PolicyModel  # noqa: F401
+from web_api_template.infrastructure.models.sqlalchemy import (  # noqa: F401
+    PermissionsModel,
+)
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

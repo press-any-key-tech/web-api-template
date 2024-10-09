@@ -11,7 +11,6 @@ from web_api_template.domain.types.policy_status_enum import PolicyStatusEnum
 from web_api_template.domain.types.policy_type_enum import PolicyTypeEnum
 
 
-
 class PolicyModel(Base, BaseModel):
     """Repository policies model
 
@@ -33,6 +32,7 @@ class PolicyModel(Base, BaseModel):
         String(27), ForeignKey("persons.id"), nullable=False
     )
 
+    # Uncomment if you are using related objects
     # holder: Mapped["PersonModel"] = relationship(
     #     "PersonModel", back_populates="policies"
     # )

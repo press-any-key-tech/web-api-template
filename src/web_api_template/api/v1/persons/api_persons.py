@@ -2,7 +2,6 @@
     All validations and mappings should be in the services
 """
 
-
 from auth_middleware.functions import require_groups, require_user
 from fastapi import APIRouter, Depends, status
 from starlette.requests import Request
@@ -11,9 +10,8 @@ from starlette.responses import Response
 from web_api_template.api.v1.persons.services import ReadService, WriteService
 from web_api_template.core.api import ProblemDetail
 from web_api_template.core.api.pagination_query_model import PaginationQueryModel
-from web_api_template.core.http.validators import (
-    ksuid_path_validator,
-)
+from web_api_template.core.auth.functions import require_permissions
+from web_api_template.core.http.validators import ksuid_path_validator
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.domain.entities.person import Person
@@ -34,7 +32,8 @@ api_router = APIRouter()
         },
     },
     dependencies=[
-        # Depends(require_groups(["customer", "administrator"])),
+        Depends(require_permissions(["persons.list", "persons.read"])),
+        Depends(require_groups(["customer", "administrator"])),
         Depends(require_user()),
     ],
 )

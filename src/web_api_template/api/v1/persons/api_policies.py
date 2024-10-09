@@ -28,7 +28,7 @@ api_router = APIRouter()
         },
     },
     dependencies=[
-        Depends(require_groups(["customer"])),
+        Depends(require_groups(["administrator"])),
     ],
 )
 async def get_policies_by_person(
