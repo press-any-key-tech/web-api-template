@@ -74,5 +74,12 @@ class Settings:
         )
     )
 
+    OTEL_SERVICE_NAME: str = config(
+        "OTEL_SERVICE_NAME", cast=str, default="my-fastapi-service"
+    )
+    OTEL_EXPORTER_OTLP_ENDPOINT: str = config(
+        "OTEL_EXPORTER_OTLP_ENDPOINT", cast=str, default="http://otel-collector:4317"
+    )
+
 
 settings = Settings()

@@ -3,6 +3,7 @@
 """
 
 from fastapi import APIRouter, HTTPException, status
+from opentelemetry import trace
 from starlette.requests import Request
 
 from web_api_template.core.api import ProblemDetail
@@ -12,6 +13,9 @@ from .response import HealthCheckResponse
 from .services import HealthcheckService
 
 api_router = APIRouter()
+
+# Get tracer
+tracer = trace.get_tracer(__name__)
 
 
 @api_router.get(
@@ -32,13 +36,21 @@ async def get(
 ) -> HealthCheckResponse:
     """
     Healthcheck endpoint for orchestrators
-    Do not check database or external services as it could overload the servers
+    Recommendation: Do not check database or external services as it could overload the servers
 
     Returns:
         HealthCheckResponse: health information
     """
 
-    if await HealthcheckService().verify():
-        return HealthCheckResponse(status="Healthy", version=settings.PROJECT_VERSION)
-    else:
-        raise HTTPException(status_code=503, detail="Unhealthy")
+    with tracer.start_as_current_span("healthcheck-span") as span:
+        span.set_attribute("endpoint", "healthcheck")
+        span.add_event("Healthcheck started")
+
+        if await HealthcheckService().verify():
+            span.add_event("Healthcheck successful")
+            return HealthCheckResponse(
+                status="Healthy", version=settings.PROJECT_VERSION
+            )
+        else:
+            span.add_event("Healthcheck failed")
+            raise HTTPException(status_code=503, detail="Unhealthy")

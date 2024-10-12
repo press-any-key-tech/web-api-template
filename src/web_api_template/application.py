@@ -1,9 +1,14 @@
-
 from auth_middleware.jwt_auth_middleware import JwtAuthMiddleware
 from auth_middleware.providers.cognito.cognito_provider import CognitoProvider
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from pydilite import Provider, configure
 from transaction_middleware import TransactionMiddleware
 
@@ -23,6 +28,25 @@ def start_application(app: FastAPI):
     """
     Start the application launching all required modules
     """
+
+    # ----------------------------------------
+    # OpenTelemetry instrumentation
+    # ----------------------------------------
+
+    logger.debug("Initializing OpenTelemetry")
+    resource = Resource.create(attributes={"service.name": settings.OTEL_SERVICE_NAME})
+    trace_provider = TracerProvider(resource=resource)
+    trace.set_tracer_provider(trace_provider)
+
+    otlp_exporter = OTLPSpanExporter(
+        endpoint=settings.OTEL_EXPORTER_OTLP_ENDPOINT, insecure=True
+    )
+    span_processor = BatchSpanProcessor(otlp_exporter)
+    trace_provider.add_span_processor(span_processor)
+
+    # FastAPI instrumentation
+    FastAPIInstrumentor.instrument_app(app)
+    logger.debug("OpenTelemetry initialized")
 
     # ----------------------------------------
     # Dependency injection
