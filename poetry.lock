@@ -2731,13 +2731,13 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
 name = "pydilite"
-version = "0.1.0"
+version = "0.1.3"
 description = "Python lightweight dependency injection framework"
 optional = false
 python-versions = "<4.0,>=3.12"
 files = [
-    {file = "pydilite-0.1.0-py3-none-any.whl", hash = "sha256:d18d05482e7fe2d4a906eb28f5fc082398dada96b29cd5e65cd6f6032e4ef109"},
-    {file = "pydilite-0.1.0.tar.gz", hash = "sha256:81b571628b998e91b740adb10cf551617cfc5b92bc2095b800cdc7b7cf64f3bb"},
+    {file = "pydilite-0.1.3-py3-none-any.whl", hash = "sha256:7063c1bda136697621cfd1b14a18b2d4d0658e081d36dce5008a2fc4d1c017c1"},
+    {file = "pydilite-0.1.3.tar.gz", hash = "sha256:d85cf4b0b003736128c4ddb12080155d1c3ebda11ccbd688fa1d711d2b91248d"},
 ]
 
 [[package]]

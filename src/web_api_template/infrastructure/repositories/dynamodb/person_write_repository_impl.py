@@ -100,7 +100,7 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
             entity_model: Optional[PersonModel] = await self.__get_by_id(id)
 
             if not entity_model:
-                # TODO : check if pot is in delete status
+                # TODO : check if item is in delete status
                 logger.debug("Item with id: {} not found", id)
                 raise ItemNotFoundException(f"Item with id: {id} not found")
 

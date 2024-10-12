@@ -183,7 +183,7 @@ async def update(
         request (Request): _description_
         response (Response): _description_
         id (str): _description_
-        pot_request (PersonCreate): _description_
+        person (PersonCreate): _description_
 
     Returns:
         Person: _description_

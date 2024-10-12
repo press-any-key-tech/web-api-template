@@ -8,7 +8,7 @@ class AddressNotFoundException(HTTPException):
         HTTPException (HTTPException): inherits from base http exception
     """
 
-    def __init__(self, id: int):
+    def __init__(self, id: str):
         super().__init__(
             status_code=404,
             detail=f"Address with ID {id} not found",

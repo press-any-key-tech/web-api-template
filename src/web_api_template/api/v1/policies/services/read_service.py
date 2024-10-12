@@ -49,7 +49,7 @@ class ReadService:
         try:
             entity: Optional[Policy] = await self.policy_db_repo.get_by_id(id=id)
         except ItemNotFoundException:
-            # Domain exception raise if pot doesn't exists
+            # Domain exception raise if policy doesn't exists
             raise PolicyNotFoundException(f"Policy with id [{id}] not found")
 
         return entity
