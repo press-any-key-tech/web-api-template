@@ -3,19 +3,16 @@
 """
 
 from fastapi import APIRouter, HTTPException, status
-from opentelemetry import trace
 from starlette.requests import Request
 
 from web_api_template.core.api import ProblemDetail
+from web_api_template.core.logging import logger
 from web_api_template.core.settings import settings
 
 from .response import HealthCheckResponse
 from .services import HealthcheckService
 
 api_router = APIRouter()
-
-# Get tracer
-tracer = trace.get_tracer(__name__)
 
 
 @api_router.get(
@@ -42,15 +39,11 @@ async def get(
         HealthCheckResponse: health information
     """
 
-    with tracer.start_as_current_span("healthcheck-span") as span:
-        span.set_attribute("endpoint", "healthcheck")
-        span.add_event("Healthcheck started")
+    logger.debug("Healthcheck started")
 
-        if await HealthcheckService().verify():
-            span.add_event("Healthcheck successful")
-            return HealthCheckResponse(
-                status="Healthy", version=settings.PROJECT_VERSION
-            )
-        else:
-            span.add_event("Healthcheck failed")
-            raise HTTPException(status_code=503, detail="Unhealthy")
+    if await HealthcheckService().verify():
+        logger.debug("Healthcheck successful")
+        return HealthCheckResponse(status="Healthy", version=settings.PROJECT_VERSION)
+    else:
+        logger.debug("Healthcheck failed")
+        raise HTTPException(status_code=503, detail="Unhealthy")
