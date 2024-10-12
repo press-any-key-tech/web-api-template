@@ -2,7 +2,6 @@
     All validations and mappings should be in the services
 """
 
-
 from auth_middleware.functions import require_groups
 from fastapi import APIRouter, Depends, status
 from starlette.requests import Request
@@ -10,9 +9,7 @@ from starlette.responses import Response
 
 from web_api_template.api.v1.addresses.services import ReadService, WriteService
 from web_api_template.core.api import ProblemDetail
-from web_api_template.core.http.validators import (
-    ksuid_path_validator,
-)
+from web_api_template.core.http.validators import ksuid_path_validator
 from web_api_template.domain.value_objects import Address, AddressCreate
 
 api_router = APIRouter()
@@ -138,7 +135,7 @@ async def update(
         request (Request): _description_
         response (Response): _description_
         id (str): _description_
-        pot_request (AddressCreate): _description_
+        address (AddressCreate): _description_
 
     Returns:
         Address: _description_

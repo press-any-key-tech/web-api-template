@@ -70,7 +70,7 @@ class ReadService:
         try:
             entity: Optional[Address] = await self.address_db_repo.get_by_id(id=id)
         except ItemNotFoundException:
-            # Domain exception raise if pot doesn't exists
+            # Domain exception raise if address doesn't exists
             raise AddressNotFoundException(id=id)
 
         return entity

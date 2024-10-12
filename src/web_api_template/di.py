@@ -4,7 +4,7 @@
 from pydilite import Provider
 
 from web_api_template.core.logging import logger
-from web_api_template.domain.repository import (  # PolicyReadRepository,; PolicyWriteRepository,
+from web_api_template.domain.repository import (
     AddressReadRepository,
     AddressWriteRepository,
     HealthcheckRepository,
@@ -19,7 +19,7 @@ from web_api_template.domain.repository import (  # PolicyReadRepository,; Polic
 #     PersonReadRepositoryImpl,
 #     PersonWriteRepositoryImpl,
 # )
-from web_api_template.infrastructure.repositories.sqlalchemy import (  # PolicyReadRepositoryImpl,; PolicyWriteRepositoryImpl,
+from web_api_template.infrastructure.repositories.sqlalchemy import (
     AddressReadRepositoryImpl,
     AddressWriteRepositoryImpl,
     HealthcheckRepositoryImpl,
@@ -40,45 +40,48 @@ def include_di(provider: Provider):
 
     logger.debug("Initializing dependency injection")
 
+    # ----------------------------------------
     # Include your modules
+    # ----------------------------------------
+
     provider.bind(
         HealthcheckRepository,
-        HealthcheckRepositoryImpl(label="DEFAULT"),
+        HealthcheckRepositoryImpl(label="DEFAULT"),  # type: ignore
         lazy=True,
     )
     provider.bind(
         PersonReadRepository,
-        PersonReadRepositoryImpl(label="DEFAULT"),
+        PersonReadRepositoryImpl(label="DEFAULT"),  # type: ignore
         lazy=True,
     )
     provider.bind(
         PolicyReadRepository,
-        PolicyReadRepositoryImpl,
+        PolicyReadRepositoryImpl(label="DEFAULT"),  # type: ignore
         lazy=True,
     )
     provider.bind(
         AddressReadRepository,
-        AddressReadRepositoryImpl(label="DEFAULT"),
+        AddressReadRepositoryImpl(label="DEFAULT"),  # type: ignore
         lazy=True,
     )
     provider.bind(
         PersonWriteRepository,
-        PersonWriteRepositoryImpl(label="DEFAULT"),
+        PersonWriteRepositoryImpl(label="DEFAULT"),  # type: ignore
         lazy=True,
     )
     provider.bind(
         PolicyWriteRepository,
-        PolicyWriteRepositoryImpl(label="DEFAULT"),
+        PolicyWriteRepositoryImpl(label="DEFAULT"),  # type: ignore
         lazy=True,
     )
     provider.bind(
         AddressWriteRepository,
-        AddressWriteRepositoryImpl(label="DEFAULT"),
+        AddressWriteRepositoryImpl(label="DEFAULT"),  # type: ignore
         lazy=True,
     )
     provider.bind(
         PermissionsReadRepository,
-        PermissionsReadRepositoryImpl(label="DEFAULT"),
+        PermissionsReadRepositoryImpl(label="DEFAULT"),  # type: ignore
         lazy=True,
     )
 

@@ -14,14 +14,14 @@ def selective_cache(ttl=60, key_builder=None, alias="default"):
 
     def decorator(func):
         async def wrapper(*args, **kwargs):
-            # Aquí entra cada vez que la función decorada es llamada
+            # Enters every time the function is called
             if settings.CACHE_ENABLED:
-                # Aquí es donde entra la lógica de cacheo
+                # Caching is enabled, so it caches the function
                 return await cached(ttl=ttl, key_builder=key_builder, alias=alias)(
                     func
                 )(*args, **kwargs)
             else:
-                # Si la caché está desactivada, simplemente ejecuta la función directamente
+                # Caching disabled, so it calls the function without caching
                 return await func(*args, **kwargs)
 
         return wrapper
