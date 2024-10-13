@@ -13,6 +13,7 @@ from pydilite import Provider, configure
 from transaction_middleware import TransactionMiddleware
 
 from web_api_template.core.logging import logger
+from web_api_template.core.middleware import TraceIDMiddleware
 from web_api_template.core.settings import settings
 from web_api_template.di import include_di
 from web_api_template.exception_handlers import (
@@ -67,6 +68,10 @@ def start_application(app: FastAPI):
     # ----------------------------------------
 
     # Add middlewares (in order of desired execution)
+
+    # Tracing middleware (for logging)
+    app.add_middleware(TraceIDMiddleware)
+    logger.debug("TraceID middleware initialized")
 
     # CORS should be the first middleware (if needed)
     app.add_middleware(

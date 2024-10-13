@@ -1,3 +1,4 @@
+import contextvars
 import logging
 import sys
 
@@ -12,10 +13,24 @@ from opentelemetry.trace.status import Status, StatusCode
 
 from .settings import settings
 
+# Create a context variable to store the trace_id
+trace_id_context = contextvars.ContextVar("trace_id", default=None)
 
-# Crear un handler personalizado para OpenTelemetry
+
+def add_trace_id(record) -> bool:
+    """Add the trace_id to the log record
+
+    Args:
+        record (_type_): _description_
+    """
+    trace_id = trace_id_context.get()
+    record["extra"]["trace_id"] = trace_id if trace_id else "N/A"
+    return True  # Return True to indicate the filter passed
+
+
+# Create a handler to send the logs to OpenTelemetry
 class OpenTelemetryHandler(logging.Handler):
-    def emit(self, record):
+    def emit(self, record) -> None:
         tracer = trace.get_tracer(__name__)
         with tracer.start_as_current_span(
             "loguru-span", kind=SpanKind.INTERNAL
@@ -26,19 +41,35 @@ class OpenTelemetryHandler(logging.Handler):
                 span.record_exception(record.exc_info[1])
 
 
-# Configurar el logger
+# Configure the logger
 logger.remove()
+
+# stderr Logger
 logger.add(
     sink=sys.stderr,
     level=settings.LOG_LEVEL,
     format=settings.LOG_FORMAT,
+    filter=add_trace_id,
     colorize=True,
+    serialize=False,
+    backtrace=True,
+    diagnose=True,
+    enqueue=True,
 )
 
-logger.add(OpenTelemetryHandler(), level=settings.LOG_LEVEL)
+# OpenTelemetry Logger
+logger.add(
+    OpenTelemetryHandler(),
+    level=settings.LOG_LEVEL,
+    format=settings.LOG_FORMAT,
+    filter=add_trace_id,
+)
 
 
-__all__ = ["logger"]  # Add logger to __all__ to be able to import it from the package
+__all__ = [
+    "logger",
+    "trace_id_context",
+]  # Add logger and trace_id_context to __all__ to be able to import them from the package
 
 
 class InterceptHandler(logging.Handler):

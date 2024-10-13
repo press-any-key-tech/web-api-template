@@ -17,7 +17,7 @@ class Settings:
     LOG_FORMAT: str = config(
         "LOG_FORMAT",
         cast=str,
-        default="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+        default="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | trace_id={extra[trace_id]} | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
     )
 
     LOGGER_NAME: str = config("LOGGER_NAME", cast=str, default="")
