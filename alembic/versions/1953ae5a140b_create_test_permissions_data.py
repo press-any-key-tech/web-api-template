@@ -13,13 +13,15 @@ import sqlalchemy as sa
 from faker import Faker
 from ksuid import Ksuid
 
-from alembic import op
+from alembic import context, op
 
 # revision identifiers, used by Alembic.
 revision: str = "1953ae5a140b"
 down_revision: Union[str, None] = "5b4b80397e51"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
+
+db_dialect = context.get_context().dialect.name
 
 
 def upgrade() -> None:
@@ -28,10 +30,17 @@ def upgrade() -> None:
     id: str = str(Ksuid())
     name: str = "wttest"
     created_by: str = "FAKE"
-    created_at: str = datetime.now().isoformat()
-    op.execute(
-        f"INSERT INTO public.permissions (id, username, permission, created_by, created_at, updated_by, updated_at) VALUES('{id}', '{name}', 'persons.list', '{created_by}', '{created_at}', '{created_by}', '{created_at}');"
-    )
+    # created_at: str = datetime.now().isoformat()
+    created_at: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    if db_dialect == "mysql":
+        query = f"INSERT INTO permissions (id, username, permission, created_by, created_at, updated_by, updated_at) VALUES('{id}', '{name}', 'persons.list', '{created_by}', '{created_at}', '{created_by}', '{created_at}');"
+    elif db_dialect == "postgresql":
+        query = f"INSERT INTO public.permissions (id, username, permission, created_by, created_at, updated_by, updated_at) VALUES('{id}', '{name}', 'persons.list', '{created_by}', '{created_at}', '{created_by}', '{created_at}');"
+    else:
+        raise ValueError(f"Unsupported database dialect: {db_dialect}")
+
+    op.execute(query)
 
     # ### end Alembic commands ###
 

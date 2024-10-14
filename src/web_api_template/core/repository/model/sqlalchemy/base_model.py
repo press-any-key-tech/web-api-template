@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, cast
 
 from sqlalchemy import Column, DateTime, String
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -15,16 +15,13 @@ class BaseModel:
     # change your schema here
     # __table_args__ = ({'schema': 'core_schema'})
 
-    created_by = cast(Optional[str], Column(String))
-    created_at = cast(
-        datetime, Column(DateTime(timezone=False), default=datetime.utcnow())
+    created_by: Mapped[str] = mapped_column(String(500), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), default=datetime.now()
     )
-    updated_by = cast(Optional[str], Column(String))
-    updated_at = cast(
-        datetime,
-        Column(
-            DateTime(timezone=False),
-            default=datetime.utcnow(),
-            onupdate=datetime.utcnow(),
-        ),
+    updated_by: Mapped[str] = mapped_column(String(500), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        default=datetime.now(),
+        onupdate=datetime.now(),
     )
