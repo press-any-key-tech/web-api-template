@@ -4,13 +4,13 @@ from __future__ import annotations
 from typing import List
 
 from ksuid import Ksuid
-from sqlalchemy import String
+from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel
+from web_api_template.core.repository.model.sqlalchemy import Base, BaseModel, Versioned
 
 
-class PersonModel(BaseModel, Base):
+class PersonModel(BaseModel, Base, Versioned):
     """Repository persons model
 
     Args:
