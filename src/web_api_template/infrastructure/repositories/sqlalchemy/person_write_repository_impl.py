@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import Optional
 
 from automapper import mapper
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import StaleDataError
 
 from web_api_template.core.logging import logger
 from web_api_template.core.repository.exceptions import ItemNotFoundException
@@ -11,7 +13,10 @@ from web_api_template.core.repository.manager.sqlalchemy.async_database import (
 )
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_create import PersonCreate
-from web_api_template.domain.exceptions import PersonAlreadyExistsException
+from web_api_template.domain.exceptions import (
+    PersonAlreadyExistsException,
+    PersonAlreadyModifiedException,
+)
 from web_api_template.domain.repository import PersonWriteRepository
 from web_api_template.infrastructure.models.sqlalchemy import PersonModel
 
@@ -140,43 +145,42 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
         async with AsyncDatabase.get_session(self._label) as session:
             try:
 
-                # TODO: send to another function
-                # Verify that the identification number is unique
+                # TODO: change to an exists
+                current_person = await session.execute(
+                    select(PersonModel).where(PersonModel.id == id)
+                )
+                current_person = current_person.scalar_one_or_none()
 
-                existing_person = (
-                    await session.execute(
-                        select(PersonModel).where(
-                            PersonModel.id != id
-                            and PersonModel.identification_number
-                            == model.identification_number
-                        )
-                    )
-                ).scalar_one_or_none()
+                if not current_person:
+                    raise ItemNotFoundException(f"Item with id: {id} not found")
 
-                if existing_person:
-                    raise IntegrityError(
-                        f"The identification number {model.identification_number} is already in use.",
-                        params=None,
-                        orig=None,
-                    )
-
-                # Build the update query
                 update_query = (
                     update(PersonModel)
                     .where(PersonModel.id == id)
+                    .where(PersonModel.version == model.version)  # Verify version
                     .values(
                         name=model.name,
                         surname=model.surname,
                         email=model.email,
                         identification_number=model.identification_number,
+                        version=model.version + 1,  # Increment version
+                        updated_at=datetime.now(),
                     )
                 )
 
-                await session.execute(update_query)
+                result = await session.execute(update_query)
+
+                if result.rowcount == 0:
+                    raise StaleDataError(
+                        "Another transaction has modified this record."
+                    )
+
                 await session.commit()
 
                 # return await self.__get_by_id(id)
                 model.id = id
+                model.version = model.version + 1
+
                 return model
 
             except IntegrityError as ie:
@@ -185,6 +189,13 @@ class PersonWriteRepositoryImpl(PersonWriteRepository):
                     "Integrity exception, identification number already exists."
                 )
                 raise PersonAlreadyExistsException(model.identification_number)
+
+            except StaleDataError as sde:
+                await session.rollback()
+                logger.exception(
+                    "Concurrency exception, record was modified by another transaction."
+                )
+                raise PersonAlreadyModifiedException(id)
 
             except Exception as ex:
                 await session.rollback()

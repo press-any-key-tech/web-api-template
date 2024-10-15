@@ -54,6 +54,14 @@ class PersonBase(BaseModel):
         },
     )
 
+    version: int = Field(
+        default=0,
+        json_schema_extra={
+            "description": "Object version for data concurrency writing control.",
+            "example": "1",
+        },
+    )
+
     @field_validator("id")
     def validate_ksuid(cls, value, values, **kwargs):
         return ksuid_validator(value)

@@ -1,0 +1,26 @@
+meta {
+  name: Update
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/v1/persons/{{person_id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bearer_token}}
+}
+
+body:json {
+  {
+    "id": "2mkdex4u5EpZ4t1FEqOrIXMvq6N",
+    "name": "Casey",
+    "surname": "Williams",
+    "email": "suarezamber@example.net",
+    "identification_number": "5746851804",
+    "version": 9
+  }
+}

@@ -32,6 +32,8 @@ class PermissionChecker:
         user: User = request.state.current_user
 
         # Recover permissions for user looking in redis and database
+        if user.name is None:
+            raise ValueError("User name cannot be None")
         user_permissions = await PermissionsReadService().get_permissions(user.name)
 
         if not any(
@@ -51,4 +53,6 @@ class PermissionChecker:
 
             List[str]: List of permissions
         """
+        if user.name is None:
+            raise ValueError("User name cannot be None")
         return await PermissionsReadService().get_permissions(user.name)
