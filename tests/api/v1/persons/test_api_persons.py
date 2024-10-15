@@ -35,20 +35,32 @@ def disable_db_initialization():
         yield
 
 
-@patch("auth_middleware.settings.settings.AUTH_DISABLED", True)
+@patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
 @pytest.mark.asyncio
 async def test_get_list_success():
     # Arrange
     filter: PersonFilter = PersonFilter(name="Person1", surname="Surname1")
     expected_result = [
         Person(
-            id=str(Ksuid()), name="Person1", surname="Surname1", email="email1@mail.com"
+            id=str(Ksuid()),
+            name="Person1",
+            surname="Surname1",
+            email="email1@mail.com",
+            identification_number="1234",
         ),
         Person(
-            id=str(Ksuid()), name="Person2", surname="Surname2", email="email2@mail.com"
+            id=str(Ksuid()),
+            name="Person2",
+            surname="Surname2",
+            email="email2@mail.com",
+            identification_number="5678",
         ),
         Person(
-            id=str(Ksuid()), name="Person3", surname="Surname3", email="email3@mail.com"
+            id=str(Ksuid()),
+            name="Person3",
+            surname="Surname3",
+            email="email3@mail.com",
+            identification_number="4321",
         ),
     ]
 
@@ -77,16 +89,14 @@ async def test_get_list_success():
     assert persons == expected_result
 
 
-@patch("auth_middleware.settings.settings.AUTH_DISABLED", True)
+@patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
 @pytest.mark.asyncio
 async def test_get_list_error():
 
     # Arrange
     # filter: PersonFilter = PersonFilter(name="Person1", surname="Surname1")
 
-    expected_error: Dict[str, str] = {
-        "message": "Something went wrong: Simulated error"
-    }
+    expected_error: Dict[str, str] = {"detail": "Something went wrong: Simulated error"}
 
     with patch(PATCH_READ_SERVICE) as service_mock:
 
@@ -102,14 +112,18 @@ async def test_get_list_error():
     assert response.json() == expected_error
 
 
-@patch("auth_middleware.settings.settings.AUTH_DISABLED", True)
+@patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
 @pytest.mark.asyncio
 async def test_get_by_id_success():
     # Arrange
     id: str = str(Ksuid())
 
     expected_result = Person(
-        id=id, name="Person1", surname="Surname1", email="email1@mail.com"
+        id=id,
+        name="Person1",
+        surname="Surname1",
+        email="email1@mail.com",
+        identification_number="1234",
     )
 
     with patch(PATCH_READ_SERVICE) as service_mock:
@@ -135,13 +149,13 @@ async def test_get_by_id_success():
     assert person == expected_result
 
 
-@patch("auth_middleware.settings.settings.AUTH_DISABLED", True)
+@patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
 @pytest.mark.asyncio
 async def test_get_by_id_error_not_found():
 
     id: str = str(Ksuid())
 
-    expected_error: Dict[str, str] = {"message": f"Person with id [{id}] not found"}
+    expected_error: Dict[str, str] = {"detail": f"Person with ID {id} not found"}
 
     with patch(PATCH_READ_SERVICE) as service_mock:
 
@@ -157,14 +171,18 @@ async def test_get_by_id_error_not_found():
     assert response.json() == expected_error
 
 
-@patch("auth_middleware.settings.settings.AUTH_DISABLED", True)
+@patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
 @pytest.mark.asyncio
 async def test_create_success():
     # Arrange
     id: str = str(Ksuid())
 
     expected_result = Person(
-        id=id, name="Person1", surname="Surname1", email="email1@mail.com"
+        id=id,
+        name="Person1",
+        surname="Surname1",
+        email="email1@mail.com",
+        identification_number="1234",
     )
 
     body: Dict[str, str] = {
@@ -172,6 +190,7 @@ async def test_create_success():
         "name": "Person1",
         "surname": "Surname1",
         "email": "email1@mail.com",
+        "identification_number": "1234",
     }
 
     with patch(PATCH_WRITE_SERVICE) as service_mock:
@@ -197,7 +216,7 @@ async def test_create_success():
     assert person == expected_result
 
 
-@patch("auth_middleware.settings.settings.AUTH_DISABLED", True)
+@patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
 @pytest.mark.asyncio
 async def test_delete_by_id_success():
     # Arrange
@@ -221,13 +240,13 @@ async def test_delete_by_id_success():
     assert response.status_code == 204
 
 
-@patch("auth_middleware.settings.settings.AUTH_DISABLED", True)
+@patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
 @pytest.mark.asyncio
 async def test_delete_by_id_error_not_found():
 
     id: str = str(Ksuid())
 
-    expected_error: Dict[str, str] = {"message": f"Person with id [{id}] not found"}
+    expected_error: Dict[str, str] = {"detail": f"Person with ID {id} not found"}
 
     with patch(PATCH_WRITE_SERVICE) as service_mock:
 
@@ -243,14 +262,18 @@ async def test_delete_by_id_error_not_found():
     assert response.json() == expected_error
 
 
-@patch("auth_middleware.settings.settings.AUTH_DISABLED", True)
+@patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
 @pytest.mark.asyncio
 async def test_update_success():
     # Arrange
     id: str = str(Ksuid())
 
     expected_result = Person(
-        id=id, name="Person1", surname="Surname1", email="email1@mail.com"
+        id=id,
+        name="Person1",
+        surname="Surname1",
+        email="email1@mail.com",
+        identification_number="1234",
     )
 
     body: Dict[str, str] = {
@@ -258,6 +281,7 @@ async def test_update_success():
         "name": "Person1",
         "surname": "Surname1",
         "email": "email1@mail.com",
+        "identification_number": "1234",
     }
 
     with patch(PATCH_WRITE_SERVICE) as service_mock:
@@ -283,7 +307,7 @@ async def test_update_success():
     assert person == expected_result
 
 
-@patch("auth_middleware.settings.settings.AUTH_DISABLED", True)
+@patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
 @pytest.mark.asyncio
 async def test_update_error_not_found():
     # Arrange
@@ -294,9 +318,10 @@ async def test_update_error_not_found():
         "name": "Person1",
         "surname": "Surname1",
         "email": "email1@mail.com",
+        "identification_number": "1234",
     }
 
-    expected_error: Dict[str, str] = {"message": f"Person with id [{id}] not found"}
+    expected_error: Dict[str, str] = {"detail": f"Person with ID {id} not found"}
 
     with patch(PATCH_WRITE_SERVICE) as service_mock:
 

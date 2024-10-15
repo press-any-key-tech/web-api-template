@@ -30,13 +30,25 @@ def create_user_entity() -> User:
 def create_persons_model() -> List[PersonModel]:
     entity: List[PersonModel] = [
         PersonModel(
-            id=str(Ksuid()), name="Person1", surname="Surname1", email="email1@mail.com"
+            id=str(Ksuid()),
+            name="Person1",
+            surname="Surname1",
+            email="email1@mail.com",
+            identification_number="12345678",
         ),
         PersonModel(
-            id=str(Ksuid()), name="Person2", surname="Surname2", email="email2@mail.com"
+            id=str(Ksuid()),
+            name="Person2",
+            surname="Surname2",
+            email="email2@mail.com",
+            identification_number="123456789",
         ),
         PersonModel(
-            id=str(Ksuid()), name="Person3", surname="Surname3", email="email3@mail.com"
+            id=str(Ksuid()),
+            name="Person3",
+            surname="Surname3",
+            email="email3@mail.com",
+            identification_number="1234567890",
         ),
     ]
 
@@ -46,7 +58,11 @@ def create_persons_model() -> List[PersonModel]:
 def create_person_model() -> PersonModel:
 
     entity: PersonModel = PersonModel(
-        id=PERSON_ID, name="Person1", surname="Surname1", email="email1@mail.com"
+        id=PERSON_ID,
+        name="Person1",
+        surname="Surname1",
+        email="email1@mail.com",
+        identification_number="12345678",
     )
 
     return entity
@@ -55,7 +71,11 @@ def create_person_model() -> PersonModel:
 def create_person_entity() -> Person:
 
     entity: Person = Person(
-        id=PERSON_ID, name="Person1", surname="Surname1", email="email1@mail.com"
+        id=PERSON_ID,
+        name="Person1",
+        surname="Surname1",
+        email="email1@mail.com",
+        identification_number="12345678",
     )
 
     return entity

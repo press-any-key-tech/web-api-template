@@ -4,6 +4,7 @@ import pytest
 from ksuid import Ksuid
 
 from web_api_template.domain.entities.person import Person
+from web_api_template.domain.entities.person_create import PersonCreate
 from web_api_template.infrastructure.repositories.sqlalchemy import (
     PersonWriteRepositoryImpl,
 )
@@ -20,8 +21,12 @@ async def test_create_success(mock_database):
     mock_session = AsyncMock()
     mock_database.return_value.__aenter__.return_value = mock_session
 
-    entity = Person(
-        id=PERSON_ID, name="Person1", surname="Surname1", email="email1@mail.com"
+    entity = PersonCreate(
+        id=PERSON_ID,
+        name="Person1",
+        surname="Surname1",
+        email="email1@mail.com",
+        identification_number="1234",
     )
 
     repo = PersonWriteRepositoryImpl()
@@ -30,7 +35,7 @@ async def test_create_success(mock_database):
     mock_session.add.assert_called_once()
     mock_session.commit.assert_awaited_once()
     mock_session.refresh.assert_awaited_once()
-    assert isinstance(result, Person)
+    assert isinstance(result, PersonCreate)
 
 
 # @patch(

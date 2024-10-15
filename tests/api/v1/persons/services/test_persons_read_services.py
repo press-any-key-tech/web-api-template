@@ -6,7 +6,9 @@ from ksuid import Ksuid
 from mock import AsyncMock
 
 from web_api_template.api.v1.persons.services import ReadService
+from web_api_template.core.api.pagination_query_model import PaginationQueryModel
 from web_api_template.core.repository.exceptions import ItemNotFoundException
+from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_filter import PersonFilter
 from web_api_template.domain.exceptions import PersonNotFoundException
@@ -31,13 +33,53 @@ def create_user_entity() -> User:
 def create_persons_model() -> List[PersonModel]:
     entity: List[PersonModel] = [
         PersonModel(
-            id=str(Ksuid()), name="Person1", surname="Surname1", email="email1@mail.com"
+            id=str(Ksuid()),
+            name="Person1",
+            surname="Surname1",
+            email="email1@mail.com",
+            identification_number="12345678",
         ),
         PersonModel(
-            id=str(Ksuid()), name="Person2", surname="Surname2", email="email2@mail.com"
+            id=str(Ksuid()),
+            name="Person2",
+            surname="Surname2",
+            email="email2@mail.com",
+            identification_number="123456789",
         ),
         PersonModel(
-            id=str(Ksuid()), name="Person3", surname="Surname3", email="email3@mail.com"
+            id=str(Ksuid()),
+            name="Person3",
+            surname="Surname3",
+            email="email3@mail.com",
+            identification_number="1234567890",
+        ),
+    ]
+
+    return entity
+
+
+def create_persons() -> List[Person]:
+    entity: List[Person] = [
+        Person(
+            id=str(Ksuid()),
+            name="Person1",
+            surname="Surname1",
+            email="email1@mail.com",
+            identification_number="12345678",
+        ),
+        Person(
+            id=str(Ksuid()),
+            name="Person2",
+            surname="Surname2",
+            email="email2@mail.com",
+            identification_number="123456789",
+        ),
+        Person(
+            id=str(Ksuid()),
+            name="Person3",
+            surname="Surname3",
+            email="email3@mail.com",
+            identification_number="1234567890",
         ),
     ]
 
@@ -47,7 +89,11 @@ def create_persons_model() -> List[PersonModel]:
 def create_person_entity() -> PersonModel:
 
     entity: PersonModel = PersonModel(
-        id=PERSON_ID, name="Person1", surname="Surname1", email="email1@mail.com"
+        id=PERSON_ID,
+        name="Person1",
+        surname="Surname1",
+        email="email1@mail.com",
+        identification_number="12345678",
     )
 
     return entity
@@ -56,10 +102,17 @@ def create_person_entity() -> PersonModel:
 @pytest.fixture
 def mock_db_list() -> AsyncMock:
 
-    model_result: List[PersonModel] = create_persons_model()
+    items: List[Person] = create_persons()
+
+    model_result: Page = Page(
+        items=items,
+        total=3,
+        page=1,
+        size=10,
+    )
 
     mock_repo = AsyncMock()
-    mock_repo.get_list = AsyncMock(return_value=model_result)
+    mock_repo.get_paginated_list = AsyncMock(return_value=model_result)
     return mock_repo
 
 
@@ -84,9 +137,16 @@ async def test_list_persons(mock_db_list):
 
     admin_user: User = create_user_entity()
 
+    pagination: PaginationQueryModel = PaginationQueryModel(page=1, size=10, sort="id")
+
     service: ReadService = ReadService(person_db_repo=mock_db_list)
     person_filter: PersonFilter = PersonFilter()
-    result: List[Person] = await service.get_list(filter=person_filter)
+    result_page: Page = await service.get_list(
+        filter=person_filter,
+        pagination=pagination,
+    )
+
+    result: List[Person] = result_page.items
 
     assert len(result) == 3
     assert result[0].name == "Person1"
