@@ -34,17 +34,17 @@ services:
   #   volumes:
   #     - mysql-data:/var/lib/mysql
   #     # - ./mysql-conf.d:/etc/mysql/conf.d
-  # db-mysql8:
-  #   image: mysql:8
-  #   ports:
-  #     - "3307:3306"
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=Replication_2024
-  #     - MYSQL_DATABASE=mytemplate
-  #     - MYSQL_USER=test
-  #     - MYSQL_PASSWORD=Replication_2024
-  #   volumes:
-  #     - mysql8-data:/var/lib/mysql
+  db-mysql:
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=test123
+      - MYSQL_DATABASE=mytemplate
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test123
+    volumes:
+      - mysql-data:/var/lib/mysql
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
@@ -94,8 +94,8 @@ volumes:
   redis-data:
     driver: local
     # external: true
-  # mysql-data:
-  #   driver: local
-  #   # external: true
+  mysql-data:
+    driver: local
+    # external: true
   # mysql8-data:
   #   driver: local

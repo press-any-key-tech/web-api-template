@@ -9,7 +9,7 @@ packages = [{include = "web_api_template", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.105.0"
-SQLAlchemy = {extras = ["async"], version = "^2.0.23"}
+SQLAlchemy = {extras = ["asyncio"], version = "^2.0.35"}
 uvicorn = "^0.24.0.post1"
 asyncpg = "^0.29.0"
 python-dotenv = "^1.0.0"
@@ -34,6 +34,8 @@ opentelemetry-sdk = "^1.27.0"
 opentelemetry-instrumentation = "^0.48b0"
 opentelemetry-exporter-otlp = "^1.27.0"
 opentelemetry-instrumentation-fastapi = "^0.48b0"
+mysqlclient = "^2.2.4"
+aiomysql = "^0.2.0"
 
 
 [tool.poetry.group.dev.dependencies]

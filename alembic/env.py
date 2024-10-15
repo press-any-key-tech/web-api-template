@@ -40,6 +40,31 @@ target_metadata = metadata
 # ... etc.
 
 
+# Get the database URL from the config
+config = context.config
+db_url = config.get_main_option("sqlalchemy.url")
+
+# Create an engine
+engine = engine_from_config(
+    config.get_section(config.config_ini_section),
+    prefix="sqlalchemy.",
+    poolclass=pool.NullPool,
+)
+
+# Get the dialect name
+db_dialect = engine.dialect.name
+
+
+# Store the dialect in the Alembic context
+context.configure(
+    connection=engine.connect(),
+    target_metadata=target_metadata,
+    compare_type=True,
+    render_as_batch=True,
+    dialect_name=db_dialect,
+)
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -52,12 +77,11 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
+        url=db_url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_name=db_dialect,
     )
 
     with context.begin_transaction():
@@ -71,14 +95,14 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connectable = engine
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            dialect_name=db_dialect,
+        )
 
         with context.begin_transaction():
             context.run_migrations()
