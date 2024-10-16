@@ -26,13 +26,17 @@ api_router = APIRouter()
     response_model=Page,
     status_code=status.HTTP_200_OK,
     responses={
+        status.HTTP_404_NOT_FOUND: {
+            "model": ProblemDetail,
+            "description": "Person not found",
+        },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
             "model": ProblemDetail,
             "description": "Internal Server Error",
         },
     },
     dependencies=[
-        Depends(require_permissions(["persons.list", "persons.read"])),
+        # Depends(require_permissions(["persons.list", "persons.read"])),
         Depends(require_groups(["customer", "administrator"])),
         Depends(require_user()),
     ],

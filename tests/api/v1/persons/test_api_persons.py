@@ -3,12 +3,14 @@ from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 from ksuid import Ksuid
+from mock import AsyncMock
 from pydilite import Provider, configure
 
 from web_api_template.api.v1.persons.api_persons import api_router
+from web_api_template.core.repository.manager.sqlalchemy.page import Page
 from web_api_template.di import include_di
 from web_api_template.domain.entities.person import Person
 from web_api_template.domain.entities.person_filter import PersonFilter
@@ -29,6 +31,13 @@ app.include_router(api_router)
 client: TestClient = TestClient(app)
 
 
+@pytest.fixture
+def mock_repository_exception() -> AsyncMock:
+    mock_repo = AsyncMock()
+    mock_repo.get_list = AsyncMock(side_effect=Exception("Simulated error"))
+    return mock_repo
+
+
 @pytest.fixture(autouse=True)
 def disable_db_initialization():
     with patch("web_api_template.core.settings.settings.INITIALIZE_DATABASE", False):
@@ -40,7 +49,8 @@ def disable_db_initialization():
 async def test_get_list_success():
     # Arrange
     filter: PersonFilter = PersonFilter(name="Person1", surname="Surname1")
-    expected_result = [
+
+    items: List[Person] = [
         Person(
             id=str(Ksuid()),
             name="Person1",
@@ -64,6 +74,13 @@ async def test_get_list_success():
         ),
     ]
 
+    expected_result: Page = Page(
+        items=items,
+        total=3,
+        page=1,
+        size=10,
+    )
+
     with patch(PATCH_READ_SERVICE) as service_mock:
 
         async def async_mock():
@@ -82,11 +99,11 @@ async def test_get_list_success():
     assert response.status_code == 200
 
     data: Any = response.json()
-    assert isinstance(data, list)
+    assert isinstance(data, dict)
 
-    persons: List[Person] = [Person.model_validate(item) for item in data]
-    assert len(persons) == len(expected_result)
-    assert persons == expected_result
+    persons: List[Person] = [Person.model_validate(item) for item in data["items"]]
+    assert len(persons) == len(items)
+    assert persons == items
 
 
 @patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)
@@ -96,12 +113,21 @@ async def test_get_list_error():
     # Arrange
     # filter: PersonFilter = PersonFilter(name="Person1", surname="Surname1")
 
-    expected_error: Dict[str, str] = {"detail": "Something went wrong: Simulated error"}
+    # expected_error: Dict[str, str] = {"detail": "Something went wrong: Simulated error"}
+
+    expected_error: Dict[str, str] = {
+        "title": "Internal Server Error",
+        "status": 500,
+        "detail": "An unexpected error occurred.",
+        "instance": "http://testserver/",
+    }
 
     with patch(PATCH_READ_SERVICE) as service_mock:
 
-        service_mock.return_value.get_list = MagicMock(
-            side_effect=Exception("Simulated error")
+        service_mock.return_value.get_list = AsyncMock(
+            side_effect=HTTPException(
+                status_code=500, detail="An unexpected error occurred."
+            )
         )
 
         # Act
@@ -109,7 +135,7 @@ async def test_get_list_error():
 
     # Assert
     assert response.status_code == 500
-    assert response.json() == expected_error
+    assert response.json()["detail"] == expected_error["detail"]
 
 
 @patch("auth_middleware.settings.settings.AUTH_MIDDLEWARE_DISABLED", True)

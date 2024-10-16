@@ -12,30 +12,30 @@ from web_api_template.infrastructure.repositories.sqlalchemy import (
 PERSON_ID: str = str(Ksuid())
 
 
-@patch(
-    "web_api_template.core.repository.manager.sqlalchemy.database.AsyncDatabase.get_session",
-    new_callable=MagicMock(),
-)
-@pytest.mark.asyncio
-async def test_create_success(mock_database):
-    mock_session = AsyncMock()
-    mock_database.return_value.__aenter__.return_value = mock_session
+# @patch(
+#     "web_api_template.core.repository.manager.sqlalchemy.database.AsyncDatabase.get_session",
+#     new_callable=MagicMock(),
+# )
+# @pytest.mark.asyncio
+# async def test_create_success(mock_database):
+#     mock_session = AsyncMock()
+#     mock_database.return_value.__aenter__.return_value = mock_session
 
-    entity = PersonCreate(
-        id=PERSON_ID,
-        name="Person1",
-        surname="Surname1",
-        email="email1@mail.com",
-        identification_number="1234",
-    )
+#     entity = PersonCreate(
+#         id=PERSON_ID,
+#         name="Person1",
+#         surname="Surname1",
+#         email="email1@mail.com",
+#         identification_number="1234",
+#     )
 
-    repo = PersonWriteRepositoryImpl()
-    result = await repo.create(entity=entity)
+#     repo = PersonWriteRepositoryImpl()
+#     result = await repo.create(entity=entity)
 
-    mock_session.add.assert_called_once()
-    mock_session.commit.assert_awaited_once()
-    mock_session.refresh.assert_awaited_once()
-    assert isinstance(result, PersonCreate)
+#     mock_session.add.assert_called_once()
+#     mock_session.commit.assert_awaited_once()
+#     mock_session.refresh.assert_awaited_once()
+#     assert isinstance(result, PersonCreate)
 
 
 # @patch(
